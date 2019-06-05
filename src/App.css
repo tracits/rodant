@@ -1,0 +1,104 @@
+body, html {
+  margin: 0px;
+}
+
+.App {
+}
+
+a {
+  text-decoration: none;
+  font-weight: bold;
+  color: #333;
+}
+
+.content {
+  margin: 20px;
+}
+
+.toolbar {
+  background: #eee;
+  padding: 10px;
+}
+
+.record_list {
+  margin-bottom: 20px;
+  width: 350px;
+}
+
+.record_list a {
+  display: block;
+  position: relative;
+  padding: 5px;
+  border-radius: 5px;
+  border-bottom: solid 1px #ddd;
+}
+
+.record_list a:hover {
+  background: #eee;
+}
+
+.record_list a button {
+  position: absolute;
+  right: -5px;
+  padding: 2px;
+  background: none;
+}
+
+.record_list a button:hover {
+  background: red;
+  color: white;
+}
+
+
+
+
+.field {
+  display: inline-block;
+  width: 200px;
+  vertical-align: top;
+  border: solid 1px lightblue;
+  margin: 3px;
+  font-size: 11px;
+  background-color: lightblue;
+}
+
+button {
+  background: #ddd;
+  color: #333;
+  border: none;
+  border-radius: 5px;
+  padding: 9px;
+  margin-right: 10px;
+  margin-bottom: 5px;
+  min-width: 20px;
+  cursor: pointer;
+  font-weight: bold;
+  border-bottom: 1px solid #ccc;
+}
+
+button:hover {
+  background: #eee;
+  border-bottom: 1px solid #ddd;
+}
+
+.field > div {
+  margin: 3px;
+}
+
+.field .label {
+  font-weight: bold;
+}
+
+.field .description, .field .coding_description {
+  display: none;
+}
+
+.field input, .field select {
+  margin: 0px;
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  border: none;
+  border-top: solid 1px lightblue;
+  border-bottom: solid 1px lightblue;
+}
