@@ -45,7 +45,13 @@ class FieldEditor extends React.Component {
 	render() {
 		let d = this.props.data
 		let input = null
+
+		let unlabeled = this.props.unlabeled === true
 		
+		let label = unlabeled ? null : (<div className="label">
+			{d.label} ({d.type})
+		</div>)
+
 		if (
 			d.type === 'qualitative' && 
 			d.show_valid_values === 'yes' && 
@@ -61,16 +67,14 @@ class FieldEditor extends React.Component {
 			</select>
 		} else if (d.type === 'quantitative') {
 			// Render number
-			input = <input type="text" />
+			input = <input type="text" placeholder={unlabeled ? d.label : ''} onChange={e => this.changeValueText(e)} />
 		} else {
 			// Render text
-			input = <input type="text" value={this.state.value} onChange={e => this.changeValueText(e)} />
+			input = <input type="text" placeholder={unlabeled ? d.label : ''} value={this.state.value} onChange={e => this.changeValueText(e)} />
 		}
 		
 		return <div className="field" onClick={e => console.log(d)}>
-			<div className="label">
-				{d.label} ({d.type})
-			</div>
+			{label}
 			{input}
 			<div className="description">{d.description}</div>
 			<div className="coding_description">{d.coding_description}</div>

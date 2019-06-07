@@ -50,9 +50,7 @@ a {
 }
 
 
-
-
-.field {
+.field_group {
   display: inline-block;
   width: 200px;
   vertical-align: top;
@@ -81,13 +79,10 @@ button:hover {
   border-bottom: 1px solid #ddd;
 }
 
-.field > div {
-  margin: 3px;
+.field_group > div {
+  margin: 1px;
 }
 
-.field .label {
-  font-weight: bold;
-}
 
 .field .description, .field .coding_description {
   display: none;
@@ -102,3 +97,24 @@ button:hover {
   border-top: solid 1px lightblue;
   border-bottom: solid 1px lightblue;
 }
+
+.field input::placeholder {
+  color: rgba(0,0,0, 0.2);
+  font-size: 0.7em;
+  padding: 5px;
+}
+
+.label {
+  padding: 3px;
+}
+
+
+.record_group {
+  margin-top: 2em;
+}
+
+.record_group_title {
+  font-weight: bold;
+  font-size: 1.5em;
+}
+
