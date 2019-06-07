@@ -19,38 +19,67 @@ class FieldEditor extends React.Component {
 		this.state = { 
 			record: this.props.record,
 			value: this.props.record[this.props.data.name],
+			showDescriptions: false,
 		}
 	}
 	
 	async changeValueText(e) {
 		if (this.props.onChange)
 			this.props.onChange(this.props.data, e.target.value)
-
+		
 		this.setState({
 			record: this.state.record,
 			value: e.target.value,
+			showDescriptions: this.state.showDescriptions,
 		})
 	}
 	
 	async changeValueSelect(e) {
 		if (this.props.onChange)
 			this.props.onChange(this.props.data, e.target.value)
-
+		
 		this.setState({
 			record: this.state.record,
 			value: e.target.value,
+			showDescriptions: this.state.showDescriptions,
 		})
+	}
+
+ 	toggleDescriptions(e) {
+		this.setState({
+			record: this.state.record,
+			value: this.state.value,
+			showDescriptions: !this.state.showDescriptions,
+		})
+	}
+
+	getFieldClass() {
+		if (this.state.value === this.props.data.unknown)
+			return "default_value"
+
+		return "valid"
+	}
+
+	onFocus() {
+		if (this.props.onFocus)
+			this.props.onFocus(this)
+	}
+
+	onBlur() {
+		if (this.props.onBlur)
+			this.props.onBlur(this)
 	}
 
 	render() {
 		let d = this.props.data
 		let input = null
-
 		let unlabeled = this.props.unlabeled === true
 		
-		let label = unlabeled ? null : (<div className="label">
-			{d.label} ({d.type})
-		</div>)
+		let label = unlabeled ? null : (
+			<label className="label">
+				{d.label}
+			</label>
+		)
 
 		if (
 			d.type === 'qualitative' && 
@@ -61,23 +90,53 @@ class FieldEditor extends React.Component {
 			// Render drop-down/select
 			let values = getList(d.valid_values)
 			let labels = getList(d.value_labels)
-			input = <select defaultValue={this.state.value} onChange={e => this.changeValueSelect(e)}>
-				<option key='default' value={d.unknown}></option>
-				{values.map((d, i) => <option key={d}value={d}>{d}. {labels[i]}</option>)}
-			</select>
+			input = <div className="select is-small is-light">
+				<select 
+					defaultValue={this.state.value} 
+					onChange={e => this.changeValueSelect(e)}
+					onFocus={e => this.onFocus()}
+					onBlur={e => this.onBlur()}
+				>
+					<option key='default' value={d.unknown}></option>
+					{values.map((d, i) => <option key={d}value={d}>{d}. {labels[i]}</option>)}
+				</select>
+			</div>
 		} else if (d.type === 'quantitative') {
 			// Render number
-			input = <input type="text" placeholder={unlabeled ? d.label : ''} onChange={e => this.changeValueText(e)} />
+			input = <input 
+				className="input is-small"
+				type="text" 
+				placeholder={unlabeled ? d.label : ''} 
+				onChange={e => this.changeValueText(e)} 
+				onFocus={e => this.onFocus()}
+				onBlur={e => this.onBlur()}
+			/>
 		} else {
 			// Render text
-			input = <input type="text" placeholder={unlabeled ? d.label : ''} value={this.state.value} onChange={e => this.changeValueText(e)} />
+			input = <input
+				className="input is-small"
+				type="text"
+				placeholder={unlabeled ? d.label : ''}
+				value={this.state.value}
+				onChange={e => this.changeValueText(e)} 
+				onFocus={e => this.onFocus()}
+				onBlur={e => this.onBlur()}				
+			/>
 		}
+
+		let helpButton = this.props.showHelp === true ? <button className="button is-small" onClick={() => this.toggleDescriptions()}><span className="fa fa-question" /></button> : null 
 		
-		return <div className="field" onClick={e => console.log(d)}>
+		return <div className={'record_field ' + this.getFieldClass() } onClick={e => console.log(d)}>
 			{label}
-			{input}
-			<div className="description">{d.description}</div>
-			<div className="coding_description">{d.coding_description}</div>
+			<div className="field has-addons">
+				<div className="control">{input}</div>
+				{helpButton}		
+			</div>
+
+			<div className={this.state.showDescriptions ? 'descriptions show' : 'descriptions' }>
+				<div className="description">{d.description}</div>
+				<div className="coding_description">{d.coding_description}</div>
+			</div>
 		</div>
 	}
 }

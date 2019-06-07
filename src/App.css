@@ -1,120 +1,140 @@
 body, html {
-  margin: 0px;
+  color: #555;
 }
 
-.App {
+* {
+  outline-color: #00d1b2;
 }
 
-a {
+a.list-item {
   text-decoration: none;
-  font-weight: bold;
   color: #333;
 }
 
-.content {
-  margin: 20px;
+a:hover {
+  color: #111;
 }
-
-.toolbar {
-  background: #eee;
-  padding: 10px;
-}
-
-.record_list {
-  margin-bottom: 20px;
-  width: 350px;
-}
-
-.record_list a {
-  display: block;
-  position: relative;
-  padding: 5px;
-  border-radius: 5px;
-  border-bottom: solid 1px #ddd;
-}
-
-.record_list a:hover {
-  background: #eee;
-}
-
-.record_list a button {
-  position: absolute;
-  right: -5px;
-  padding: 2px;
-  background: none;
-}
-
-.record_list a button:hover {
-  background: red;
-  color: white;
-}
-
-
-.field_group {
-  display: inline-block;
-  width: 200px;
-  vertical-align: top;
-  border: solid 1px lightblue;
-  margin: 3px;
-  font-size: 11px;
-  background-color: lightblue;
-}
-
-button {
-  background: #ddd;
-  color: #333;
-  border: none;
-  border-radius: 5px;
-  padding: 9px;
-  margin-right: 10px;
-  margin-bottom: 5px;
-  min-width: 20px;
-  cursor: pointer;
+/* HACK: since react routers Link tag is incompatible with Bulmas list */
+.list a.list-item:hover {
+  background: rgba(0,0,0, 0.04) !important;
   font-weight: bold;
-  border-bottom: 1px solid #ccc;
 }
 
-button:hover {
-  background: #eee;
-  border-bottom: 1px solid #ddd;
-}
-
-.field_group > div {
-  margin: 1px;
-}
-
-
-.field .description, .field .coding_description {
-  display: none;
-}
-
-.field input, .field select {
-  margin: 0px;
-  width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  border: none;
-  border-top: solid 1px lightblue;
-  border-bottom: solid 1px lightblue;
-}
-
-.field input::placeholder {
-  color: rgba(0,0,0, 0.2);
-  font-size: 0.7em;
-  padding: 5px;
-}
-
-.label {
-  padding: 3px;
-}
-
-
-.record_group {
+h2 {
+  font-weight: bold;
+  font-size: 1.5em;
   margin-top: 2em;
 }
 
-.record_group_title {
+.hide-until-parent-hovered {
+  display: none;
+}
+
+a:hover .hide-until-parent-hovered { 
+  display: inline;
+}
+
+#root > .container {
+  /* HACK: Was hard to make distance to top navbar */
+  margin-top: 6em;
+}
+
+
+
+.record_group {
+  border-bottom: solid 1px #eee;
+}
+
+.field_group {
+  display: inline-block;
+  width: 300px; 
+  margin-bottom: 20px;
+  margin-right: 20px;
+  background: #eee;
+  padding: 2px;
+  border-radius: 3px;
+}
+
+.field_group.focused {
+  background: #00d1b2;
+}
+.field_group.focused .label {
+  color: white;
   font-weight: bold;
-  font-size: 1.5em;
+}
+
+.field_group .label {
+  font-size: 0.8em;
+  font-weight: normal;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+
+.record_field .field {
+  margin: 0 !important;
+}
+
+
+.record_field .field .control, .record_field  .field .select {
+  width: 100%;
+}
+
+.record_field  .field .select select {
+  width: 100%;
+}
+
+/* .record_field input, .record_field select {
+  width: 100%;
+  font-size: 1.0em;
+  border: solid 1px #ddd;
+  font-weight: bold;
+  padding: 5px;
+  border-radius: 4px;
+} */
+
+input.input, .select select {
+  outline-style:none;
+  box-shadow:none;
+  border-color: transparent;
+}
+input.input:focus, .select select:focus {
+  border-color: #00d1b2;
+}
+
+.field input::placeholder {
+  padding: 3px;
+}
+
+.descriptions {
+  display: none;
+  padding: 5px;
+  font-size: 0.7em;
+  font-style: italic;
+}
+
+.descriptions.show {
+  display: inline-block;
+}
+
+
+.field_help {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 999;
+  padding: 20px;
+  background: #00d1b2;
+  color: white;
+  font-weight: bold;
+  border-top: solid 1px;
+  opacity: 0;
+
+  transition: opacity 0.125s;
+}
+
+.field_help.visible {
+  opacity: 1;
 }
 

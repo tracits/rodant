@@ -50,6 +50,22 @@ class RecordEditor extends React.Component {
 			.modify(modify)
 	}
 
+	onFocusFieldEditor(fe) {
+		this.setState({
+			state: this.state.state,
+			record: this.state.record,
+			focusedField: fe,
+		})
+	}
+
+	onBlurFieldEditor(fe) {
+		this.setState({
+			state: this.state.state,
+			record: this.state.record,
+			focusedField: null,
+		})
+	}
+
 	render() {
 		// Handle loading and errors
 		if (this.state.state === RecordEditorState.LOADING)
@@ -70,11 +86,11 @@ class RecordEditor extends React.Component {
 					let i = 0
 					// Group fields in group using 'group2'
 					// This level is to group things like connected Dates and Times, or Free Text and ICD-10 codes
-					let fieldGroups = _.groupBy(groups[k], d => d.group2 == '' ? '_' + ++i : d.group2) // HACK: Create unique id(_#) for fields with empty group2 so they are not all grouped together
+					let fieldGroups = _.groupBy(groups[k], d => d.group2 === '' ? '_' + ++i : d.group2) // HACK: Create unique id(_#) for fields with empty group2 so they are not all grouped together
 
 					let fieldGroupElements = Object.keys(fieldGroups)
 						.map(d => {
-							let label = d[0] == '_' ? null : <div className="label">{d}</div>
+							let label = d[0] === '_' ? null : <div className="label">{d}</div>
 							let fields = fieldGroups[d]
 								.map(d =>
 									<FieldEditor
@@ -83,10 +99,19 @@ class RecordEditor extends React.Component {
 										record={this.state.record}
 										unlabeled={d.group2 !== ''}
 										onChange={(f, v) => this.onChange(f, v)}
+										onFocus={fe => this.onFocusFieldEditor(fe)}
+										onBlur={fe => this.onBlurFieldEditor(fe)}
 									/>
 								)
 							
-							return <div className="field_group" key={d}>
+							let isFocused = this.state.focusedField != null && 
+								fieldGroups[d].find(d => d.name === this.state.focusedField.props.data.name) != null
+
+							return <div 
+								className={isFocused ? 'field_group focused' : 'field_group' }
+								key={d}
+
+							>
 								{label}
 								{fields}
 							</div>
@@ -94,20 +119,28 @@ class RecordEditor extends React.Component {
 
 
 					return <div className="record_group" key={k}>
-						<div className="record_group_title">
+						<h2 className="title">
 							{k}
-						</div>
+						</h2>
 						<div className="fields">
 							{fieldGroupElements}
 						</div>
 					</div>
 				})
 			
+		let fieldHelp = !this.state.focusedField ? <div className='field_help'></div> : (
+			<div className='field_help visible'>
+				<div className="label">{this.state.focusedField.props.data.label}</div>
+				<div className="description">{this.state.focusedField.props.data.description}</div>
+				<div className="coding_description">{this.state.focusedField.props.data.coding_description}</div>
+			</div>
+		)
 
 		return (
 			<div className='content'>
-				<h2>Editing record: {this.state.record.uid}</h2>
+				<h1 className="title">Editing record: {this.state.record.uid}</h1>
 				<div className='record_fields'>{fieldGroups}</div>
+				{fieldHelp}
 			</div>
 		)
 	}

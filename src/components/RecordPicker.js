@@ -45,19 +45,21 @@ class RecordPicker extends React.Component {
 
 	render() {
 		var records = this.state.records.map(d => 
-			<Link key={d.uid} to={'/record/' + d.uid}>
-				{d.uid}. {d.name}
-				<button onClick={e => { e.preventDefault(); this.deleteRecord(d.uid); }}>x</button>
+			<Link key={d.uid} to={'/record/' + d.uid} className="list-item has-background-white">
+				<span className="is-left">{d.uid}. {d.name}</span>
+				<button onClick={e => { e.preventDefault(); this.deleteRecord(d.uid); }} class="button is-danger is-small is-outlined is-pulled-right is-rounded hide-until-parent-hovered">
+					<span class="fa fa-remove" />
+				</button>
 			</Link>
 		)
 
 		return (
-			<div className='content record_picker'>
-				<h2>Pick record ({records.length})</h2>
-				<div className='record_list'>
+			<div className=''>
+				<h2 className="title">Pick record ({records.length})</h2>
+				<div className='list is-hoverable'>
 					{records}
 				</div>
-				<button onClick={() => { this.createRecord() }}>Create Record</button>
+				<button className="button is-primary is-rounded" onClick={() => { this.createRecord() }}>Create Record</button>
 			</div>
 		)
 	}
