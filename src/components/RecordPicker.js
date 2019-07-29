@@ -46,7 +46,7 @@ class RecordPicker extends React.Component {
 	}
 	
 	exportAndDownloadCSV() {
-		var csv = exportCSV(this.state.record)
+		var csv = exportCSV(this.props.codebook, this.state.records)
 		download(csv, 'database.csv')
 	}
 
@@ -71,8 +71,6 @@ class RecordPicker extends React.Component {
 			</div>
 		)
 	}
-
-
 }
 
 export default RecordPicker
