@@ -107,6 +107,7 @@ class FieldEditor extends React.Component {
 				className="input is-small"
 				type="text" 
 				placeholder={unlabeled ? d.label : ''} 
+				value={this.state.value}
 				onChange={e => this.changeValueText(e)} 
 				onFocus={e => this.onFocus()}
 				onBlur={e => this.onBlur()}
