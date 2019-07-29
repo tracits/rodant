@@ -1,5 +1,7 @@
 import React from 'react'
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router-dom'
+import { exportCSV } from '../functions/csv'
+import download from '../functions/download'
 
 /**
  * Renders a list of the available records.
@@ -42,13 +44,18 @@ class RecordPicker extends React.Component {
 			this.updateRecords()
 		}
 	}
+	
+	exportAndDownloadCSV() {
+		var csv = exportCSV(this.state.record)
+		download(csv, 'database.csv')
+	}
 
 	render() {
 		var records = this.state.records.map(d => 
 			<Link key={d.uid} to={'/record/' + d.uid} className="list-item has-background-white">
 				<span className="is-left">{d.uid}. {d.name}</span>
-				<button onClick={e => { e.preventDefault(); this.deleteRecord(d.uid); }} class="button is-danger is-small is-outlined is-pulled-right is-rounded hide-until-parent-hovered">
-					<span class="fa fa-remove" />
+				<button onClick={e => { e.preventDefault(); this.deleteRecord(d.uid); }} className="button is-danger is-small is-outlined is-pulled-right is-rounded hide-until-parent-hovered">
+					<span className="fa fa-remove" />
 				</button>
 			</Link>
 		)
@@ -60,9 +67,12 @@ class RecordPicker extends React.Component {
 					{records}
 				</div>
 				<button className="button is-primary is-rounded" onClick={() => { this.createRecord() }}>Create Record</button>
+				<button className="button is-rounded" onClick={() => { this.exportAndDownloadCSV() }}>Export as CSV</button>
 			</div>
 		)
 	}
+
+
 }
 
 export default RecordPicker

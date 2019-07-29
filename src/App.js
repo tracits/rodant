@@ -15,7 +15,7 @@ import RecordPicker from './components/RecordPicker'
 class App extends React.Component {
   render() {
     // Create component factories for the routes below
-    var recordPicker = () => <RecordPicker db={this.props.db} />
+    var recordPicker = () => <RecordPicker db={this.props.db} codebook={this.props.codebook} />
     var recordEditor = match => <RecordEditor db={this.props.db} codebook={this.props.codebook} uid={match.match.params.uid} />
 
     // Use React Router to select which page to show from the url
