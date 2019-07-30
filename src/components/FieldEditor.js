@@ -117,7 +117,7 @@ class FieldEditor extends React.Component {
 			input = <input 
 				className="input is-small"
 				type="text" 
-				placeholder={unlabeled ? d.label : ''} 
+				placeholder={unlabeled ? d.label : ''}
 				value={this.state.value}
 				onChange={e => this.changeValueText(e)} 
 				onFocus={e => this.onFocus()}
@@ -132,13 +132,13 @@ class FieldEditor extends React.Component {
 				value={this.state.value}
 				onChange={e => this.changeValueText(e)} 
 				onFocus={e => this.onFocus()}
-				onBlur={e => this.onBlur()}				
+				onBlur={e => this.onBlur()}
 			/>
 		}
 
 		let helpButton = this.props.showHelp === true ? <button className="button is-small" onClick={() => this.toggleDescriptions()}><span className="fa fa-question" /></button> : null 
 		
-		return <div className={'record_field ' + this.getFieldClass() } onClick={e => console.log(d)}>
+		return <div className={'record_field ' + this.getFieldClass()} onClick={e => console.log(d)}>
 			{label}
 			<div className="field has-addons">
 				<div className="control">{input}</div>
