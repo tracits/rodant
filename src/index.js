@@ -6,6 +6,9 @@ import * as serviceWorker from './serviceWorker'
 import csv from 'async-csv'
 import dexie from 'dexie'
 
+// Start service worker
+serviceWorker.register()
+
 const DB_VERSION = 1
 async function bootstrap() {
 	// Parse codebook into javascript object
@@ -31,7 +34,9 @@ async function bootstrap() {
 	
 	// Bootstrap the 'App'
 	ReactDOM.render(<App codebook={items} db={db} />, document.getElementById('root'))
+
+	// For prefetch of ICD data
+	await import('./data/icd10.json')
 }
 
 bootstrap()
-serviceWorker.register()
