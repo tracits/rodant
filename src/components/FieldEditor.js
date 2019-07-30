@@ -18,19 +18,30 @@ class FieldEditor extends React.Component {
 
 		this.state = { 
 			record: this.props.record,
-			value: this.props.record[this.props.data.name],
+			value: (this.props.record[this.props.data.name] || '').toString(),
 			showDescriptions: false,
 		}
 	}
-	
+
+	componentDidUpdate(prevProps) {
+		// Update 
+		let desiredValue = (this.props.record[this.props.data.name] || '').toString()
+
+		if (
+			this.state.value !== desiredValue &&
+			this.state.value === ''
+		)
+			this.setState({
+				value: desiredValue,
+			})
+	}
+
 	async changeValueText(e) {
 		if (this.props.onChange)
 			this.props.onChange(this.props.data, e.target.value)
 		
 		this.setState({
-			record: this.state.record,
 			value: e.target.value,
-			showDescriptions: this.state.showDescriptions,
 		})
 	}
 	
@@ -39,16 +50,12 @@ class FieldEditor extends React.Component {
 			this.props.onChange(this.props.data, e.target.value)
 		
 		this.setState({
-			record: this.state.record,
 			value: e.target.value,
-			showDescriptions: this.state.showDescriptions,
 		})
 	}
 
  	toggleDescriptions(e) {
 		this.setState({
-			record: this.state.record,
-			value: this.state.value,
 			showDescriptions: !this.state.showDescriptions,
 		})
 	}
@@ -92,13 +99,17 @@ class FieldEditor extends React.Component {
 			let labels = getList(d.value_labels)
 			input = <div className="select is-small is-light">
 				<select 
-					defaultValue={this.state.value} 
+					value={this.state.value} 
 					onChange={e => this.changeValueSelect(e)}
 					onFocus={e => this.onFocus()}
 					onBlur={e => this.onBlur()}
 				>
-					<option key='default' value={d.unknown}></option>
-					{values.map((d, i) => <option key={d}value={d}>{d}. {labels[i]}</option>)}
+					<option key='unset'></option>
+					{values.map((d, i) => <option key={d} value={d}>{d}. {labels[i]}</option>)}
+					{
+						d.unknown !== '' &&
+							<option key='unknown' value={d.unknown}>{d.unknown}. Unknown</option>
+					}
 				</select>
 			</div>
 		} else if (d.type === 'quantitative') {

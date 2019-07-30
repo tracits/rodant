@@ -70,6 +70,20 @@ a:hover .hide-until-parent-hovered {
   padding-right: 5px;
 }
 
+.field_group.unknown {
+  opacity: 0.5;
+}
+
+.field_group.incomplete {
+  background: #ffbe68;
+}
+
+.field_group.incomplete input:focus,
+.field_group.incomplete select:focus {
+  border-color: #ffbe68;
+  outline-color: #ffbe68;
+}
+
 
 .record_field .field {
   margin: 0 !important;
