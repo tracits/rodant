@@ -93,14 +93,13 @@ class Autocomplete extends React.Component {
 	}
 
 	async onClickRow(e, code, index) {
+		e.preventDefault()
 		this.setState({ 
 			selected: index,
 		})
 
 		if (this.props.onChange)
 			this.props.onChange(null, code)
-
-		this.inputRef.current.focus()
 	}
 
 	render() {
@@ -113,7 +112,7 @@ class Autocomplete extends React.Component {
 						'row',
 						i === this.state.selected ? 'selected' : ''
 					].filter(Boolean).join(' ')} key={d[0]}
-					onClick={ (e) => this.onClickRow(e, d[0], i) }
+					onMouseDown={ (e) => this.onClickRow(e, d[0], i) }
 			>
 				<div className="code">{d[0]}</div>
 				<div className="description">{d[1]}</div>
