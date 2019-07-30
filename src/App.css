@@ -70,7 +70,7 @@ a:hover .hide-until-parent-hovered {
   padding-right: 5px;
 }
 
-.field_group.unknown {
+.field_group.unknown:not(.focused) {
   opacity: 0.5;
 }
 

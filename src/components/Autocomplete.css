@@ -1,0 +1,50 @@
+.autocomplete {
+	position: relative;
+}
+
+.autocomplete .results {
+	background: white;
+	position: absolute;
+	width: 100%;
+	max-height: 300px;
+	overflow-y: scroll;
+	
+	z-index: 999;
+
+	font-size: 0.8em;
+
+	border: solid 2px #00d1b2;
+	border-radius: 2px;
+	
+	cursor: pointer;
+}
+
+.autocomplete .results .row {
+	padding: 5px;
+	border-bottom: solid 1px #eee;
+}
+
+.autocomplete .results .row .code {
+	font-weight: bold;
+	display: inline;
+	margin-right: 6px;
+}
+
+.autocomplete .results .row .description {
+	display: inline;
+
+}
+
+.autocomplete .results .row.selected {
+	background: #00d1b2;
+	border-bottom: solid 1px #00d1b2;
+	color: white;
+}
+
+.autocomplete .results .row:hover:not(.selected) {
+	background: rgba(0, 209, 178, 0.5);
+}
+
+.autocomplete .results .count {
+	text-align: center;
+}
