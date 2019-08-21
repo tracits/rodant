@@ -64,9 +64,12 @@ class FieldEditor extends React.Component {
 
 	getFieldClass() {
 		if (this.state.value === this.props.data.unknown)
-			return "default_value"
+			return 'default_value'
 
-		return "valid"
+		if (this.props.validation.valid)
+			return 'valid'
+		
+		return 'invalid'
 	}
 
 	onFocus() {

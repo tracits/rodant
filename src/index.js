@@ -15,19 +15,20 @@ async function bootstrap() {
 	var response = await fetch('/codebook.csv')
 	var codebook = await response.text()
 	var csvString = await csv.parse(codebook)
-	let columns = csvString[0]
-	let items = []
-	for (let i = 1; i < csvString.length; i++) {
-		let o = {}
-		for (let j = 0; j < columns.length; j++)
+	var columns = csvString[0]
+	var items = []
+	for (var i = 1; i < csvString.length; i++) {
+		var o = {}
+		for (var j = 0; j < columns.length; j++)
 			o[columns[j]] = csvString[i][j]
 		items.push(o)
 	}
 	
 	// Initialize Dexie database
-	let db = new dexie('TAFT')
-	let store = {
-		records: '++uid,' + items.map(d => d.name).join(',')
+	var db = new dexie('TAFT')
+	var desc = '++uid, ' + items.map(d => d.name).join(', ')
+	var store = {
+		records: desc
 	}
 	
 	db.version(DB_VERSION).stores(store)

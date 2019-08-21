@@ -59,8 +59,11 @@ a:hover .hide-until-parent-hovered {
   background: #00d1b2;
 }
 .field_group.focused .label {
-  color: white;
+  /* color: white; */
   font-weight: bold;
+}
+.field_group.focused.valid .label {
+  color: white;
 }
 
 .field_group .label {
@@ -169,3 +172,22 @@ input.input:focus, .select select:focus {
   opacity: 1;
 }
 
+
+
+.errors .error,
+.warnings .warning {
+  display: block;
+  padding: 5px;
+  border-radius: 5px;
+  font-weight: normal;
+  margin-bottom: 1px;
+}
+
+.errors .error {
+  background: #ff0000;
+  color: #ffffff;
+}
+.warnings .warning {
+  background: #ffbe68;
+  color: #ffffff;
+}

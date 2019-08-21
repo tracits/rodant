@@ -2,6 +2,7 @@ import React from 'react'
 import _ from 'lodash'
 import FieldEditor from './FieldEditor'
 import validate from '../functions/validation'
+import { validateRecord } from '../functions/validation'
 
 const RecordEditorState = {
 	NONE: 0,
@@ -95,32 +96,17 @@ class RecordEditor extends React.Component {
 		})
 	}
 
-	validateField(field) {
-		var value = this.state.record[field.name] || ''
-		if (value === '')
-			return 'incomplete'
-
-		if (value === field.unknown)
+	validateFieldGroup(group, validation) {
+		if (group.some(d => validation[d.name].unknown))
 			return 'unknown'
 		
-		// TODO: Implement actual validation
-		return validate(value, field) ? 'valid' : 'invalid'
-	}
-
-	validateFieldGroup(group) {
-		let fields = group.map(field => this.validateField(field))
-		
-		if (fields.every(d => d === 'valid'))
-			return 'valid'
-
-		if (fields.some(d => d === 'incomplete'))
+		if (group.some(d => validation[d.name].incomplete))
 			return 'incomplete'
 
-		if (fields.some(d => d === 'unknown'))
-			return 'unknown'
-		
-		if (fields.some(d => d === 'invalid'))
+		if (group.some(d => !validation[d.name].valid))
 			return 'invalid'
+
+		return 'valid'
 	}
 
 	render() {
@@ -131,7 +117,39 @@ class RecordEditor extends React.Component {
 			return <div className='content'>Couldn't find record with id: {this.props.uid}</div>
 		else if (this.state.state === RecordEditorState.NONE)
 			return <div className='content'>Idle</div>
-			
+		
+		// Populate fields from codebook
+		var fields = {}
+		for (let field of this.props.codebook)
+			fields[field.name] = field
+	
+		// Do validation
+		var validation = validateRecord(this.state.record, this.props.codebook)
+
+		// Issues
+		var issues = Object.keys(validation)
+			.map(d => {
+				if (
+					validation[d].valid || 
+					fields[d].type === 'datetime' || 
+					!validation[d].value || 
+					validation[d].value.toString() === fields[d].unknown.toString()
+				)
+					return null;
+
+				var errors = validation[d].errors.map((d, i) => <div className="error" key={i}>{d}</div>)
+				var warnings = validation[d].warnings.map((d, i) => <div className="warning" key={i}>{d}</div>)
+				
+				return (
+					<div key={d} className="record_issues">
+						<div className='label'>{ fields[d].label }({ d }) = { validation[d].value }</div>
+						<div className='errors'>{ errors }</div>
+						<div className='warnings'>{ warnings }</div>
+					</div>
+				)
+			})
+
+
 		// Group fields using 'group1' 
 		var groups = _.groupBy(this.props.codebook.filter(d => d.visible === 'yes'), 'group1')
 	
@@ -152,6 +170,7 @@ class RecordEditor extends React.Component {
 										key={d.name}
 										data={d}
 										record={this.state.record}
+										validation={validation[d.name]}
 										unlabeled={d.group2 !== ''}
 										onChange={(f, v) => this.onChange(f, v)}
 										onFocus={fe => this.onFocusFieldEditor(fe)}
@@ -167,13 +186,13 @@ class RecordEditor extends React.Component {
 									[
 										'field_group',
 										isFocused ? 'focused' : null,
-										this.validateFieldGroup(fieldGroups[d]),
+										this.validateFieldGroup(fieldGroups[d], validation),
 									]
 										.filter(Boolean).join(' ')
 								}
 								key={d}
 								onClick={() => {
-									this.validateFieldGroup(fieldGroups[d])
+									this.validateFieldGroup(fieldGroups[d], validation)
 								}}
 							>
 								{label}
@@ -194,6 +213,23 @@ class RecordEditor extends React.Component {
 		let fieldHelp = !this.state.focusedField ? <div className='field_help'></div> : (
 			<div className='field_help visible'>
 				<div className="label">{this.state.focusedField.props.data.label}</div>
+				
+				<div className="errors">
+					{
+						validation[this.state.focusedField.props.data.name].errors.map((d, i) => 
+							<div className="error" key={i}>{d}</div>
+						)
+					}
+				</div>
+				
+				<div className="warnings">
+					{
+						validation[this.state.focusedField.props.data.name].warnings.map((d, i) => 
+							<div className="warning" key={i}>{d}</div>
+						)
+					}
+				</div>
+				
 				<div className="description">
 					{this.state.focusedField.props.data.description}
 					{
@@ -212,6 +248,7 @@ class RecordEditor extends React.Component {
 				<div className='toolbar'>
 					<button className="button is-rounded" onClick={() => { this.markFieldsUnknown() }}>Mark empty fields as Not Known</button>
 				</div>
+				
 				<div className='record_fields'>{fieldGroups}</div>
 				{fieldHelp}
 			</div>
