@@ -78,6 +78,23 @@ a:hover .hide-until-parent-hovered {
   background: #ffbe68;
 }
 
+.field_group.invalid {
+  background: #ff9999;
+  color: #ff0000;
+}
+
+.field_group.focused.invalid {
+  background: #ff0000;
+}
+
+.field_group.focused.invalid .label {
+  color: #ffffff;
+}
+
+.field_group.focused.invalid input {
+  border: none;
+}
+
 .field_group.incomplete input:focus,
 .field_group.incomplete select:focus {
   border-color: #ffbe68;

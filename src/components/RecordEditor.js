@@ -1,6 +1,7 @@
 import React from 'react'
 import _ from 'lodash'
 import FieldEditor from './FieldEditor'
+import validate from '../functions/validation'
 
 const RecordEditorState = {
 	NONE: 0,
@@ -17,6 +18,13 @@ const RecordEditorState = {
 class RecordEditor extends React.Component {
 	constructor(props) {
 		super(props)
+		
+		let cbo = {}
+		for (let i = 0; i < props.codebook.length; i++)
+			cbo[props.codebook[i].name] = props.codebook[i]
+		
+		console.log(cbo)
+
 		this.state = {
 			state: RecordEditorState.NONE,
 			record: null,
@@ -74,9 +82,9 @@ class RecordEditor extends React.Component {
 	markFieldsUnknown() {
 		var record = { ...this.state.record }
 		for (let c of this.props.codebook) {
-			if (record[c.name] === undefined) {
-				record[c.name] = c.unknown
-				this.onChange(c, c.unknown)
+			if (record[c.name] === undefined || record[c.name] === '') {
+				record[c.name] = c.unknown || '999'
+				this.onChange(c, c.unknown || '999')
 			}
 		}
 
@@ -96,7 +104,7 @@ class RecordEditor extends React.Component {
 			return 'unknown'
 		
 		// TODO: Implement actual validation
-		return 'valid'
+		return validate(value, field) ? 'valid' : 'invalid'
 	}
 
 	validateFieldGroup(group) {
@@ -186,7 +194,14 @@ class RecordEditor extends React.Component {
 		let fieldHelp = !this.state.focusedField ? <div className='field_help'></div> : (
 			<div className='field_help visible'>
 				<div className="label">{this.state.focusedField.props.data.label}</div>
-				<div className="description">{this.state.focusedField.props.data.description}</div>
+				<div className="description">
+					{this.state.focusedField.props.data.description}
+					{
+						this.state.focusedField.props.data.show_valid_values === 'yes' ? 
+							<div className="valid_values">{this.formatValid(this.state.focusedField.props.data)}</div> :
+							null
+					}
+				</div>
 				<div className="coding_description">{this.state.focusedField.props.data.coding_description}</div>
 			</div>
 		)
@@ -201,6 +216,13 @@ class RecordEditor extends React.Component {
 				{fieldHelp}
 			</div>
 		)
+	}
+
+	formatValid(data) {
+		if (data.type === 'quantitative')
+			return 'Range: ' + data.valid_values.split(',').join(' .. ')
+
+		return ''
 	}
 }
 
