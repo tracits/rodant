@@ -19,7 +19,7 @@ function serializeField(v) {
  */
 function exportCSV(codebook, records) {
 	let data = []
-	let headers = data[0] = []
+	let headers = data[0] = ['uid']
 	
 	// Add headers
 	for (let c of codebook)
@@ -27,11 +27,12 @@ function exportCSV(codebook, records) {
 	
 	// Add data
 	for (let r of records) {
-		let row = []
+		let row = [r.uid]
 		
 		for (let c of codebook)
 			row.push(serializeField(r[c.name] || unset))
-
+		
+		
 		data.push(row)
 	}
 
