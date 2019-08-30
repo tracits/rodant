@@ -209,7 +209,7 @@ input.input:focus, .select select:focus {
 
 .list .hits span {
   display: inline-block;
-  margin-right: 1em;
+  margin-right: 0.5em;
   background: #aaa;
   color: white;
   padding-left: 10px;
@@ -219,10 +219,20 @@ input.input:focus, .select select:focus {
 }
 
 .search {
+  position: relative;
   display: flex;
   margin-bottom: 5px;
 }
 
 .search input {
   margin-right: 5px;
+  padding-left: 2em;
+}
+
+.search > .fa.fa-search {
+  position: absolute;
+  left: 10px;
+  top: 8px;
+  z-index: 99;
+
 }

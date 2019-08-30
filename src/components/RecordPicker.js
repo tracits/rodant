@@ -76,11 +76,13 @@ class RecordPicker extends React.Component {
 	}
 
 	render() {
-		var searchHits = {}
-		var records = this.state.records
+		let searchHits = {}
+		let search = this.state.search.toLowerCase()
+		let records = this.state.records
 			// Filter on search term	
 			.filter(d => {
 				
+				// Search is empty show all records
 				if (this.state.search === '')
 					return true
 
@@ -89,9 +91,9 @@ class RecordPicker extends React.Component {
 				let hits = []
 
 				for (var k of keys) {
-					if (d[k].toString().indexOf(this.state.search) !== -1) {
+					if (d[k].toString().toLowerCase().indexOf(this.state.search) !== -1) {
 						hit = true
-						hits.push(k)
+						hits.push([this.props.codebook.find(d => d.name === k).label, d[k].toString()])
 					}
 				}
 
@@ -105,7 +107,7 @@ class RecordPicker extends React.Component {
 			.map(d => 
 				<Link key={d.uid} to={'/record/' + d.uid} className="list-item has-background-white">
 					<span className="is-left">{d.uid}. {d.name}</span>
-					<span className="hits">{searchHits[d.uid] && searchHits[d.uid].map(e => <span>{e}</span>) }</span>
+					<span className="hits">{searchHits[d.uid] && searchHits[d.uid].slice(0, 10).map((e, i) => <span key={i}>{e[0]}: {e[1]}</span>) }</span>
 					<button onClick={e => { e.preventDefault(); this.deleteRecord(d.uid); }} className="button is-danger is-small is-outlined is-pulled-right is-rounded hide-until-parent-hovered">
 						<span className="fa fa-remove" />
 					</button>
@@ -116,6 +118,7 @@ class RecordPicker extends React.Component {
 			<div className=''>
 				<h2 className="title">Pick record ({records.length})</h2>
 				<div className='search'>
+					<span className='fa fa-search'></span>
 					<input className='input is-primary' type='text' value={this.state.search} onChange={(e) => this.changeSearchText(e)}/>
 					<button className='button is-rounded' onClick={() => this.clearSearchText()}><span className="fa fa-remove"></span></button>
 				</div>
