@@ -1,7 +1,8 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import { exportCSV } from '../functions/csv'
+import { exportCSV, importCSV } from '../functions/csv'
 import download from '../functions/download'
+import { FilePicker } from 'react-file-picker'
 
 /**
  * Renders a list of the available records.
@@ -50,6 +51,18 @@ class RecordPicker extends React.Component {
 		download(csv, 'database.csv')
 	}
 
+	async importCSV(fo) {
+		let text = await fo.text()
+		try {
+			let res = await importCSV(text, this.props.db)
+			this.updateRecords()
+		} catch (err) {
+			console.log("error", err)
+			alert("Error when importing database: " + err)
+		}
+		
+	}
+
 	render() {
 		var records = this.state.records.map(d => 
 			<Link key={d.uid} to={'/record/' + d.uid} className="list-item has-background-white">
@@ -66,8 +79,21 @@ class RecordPicker extends React.Component {
 				<div className='list is-hoverable'>
 					{records}
 				</div>
-				<button className="button is-primary is-rounded" onClick={() => { this.createRecord() }}>Create Record</button>
-				<button className="button is-rounded" onClick={() => { this.exportAndDownloadCSV() }}>Export as CSV</button>
+
+				<div className='buttons'>
+					<button className="button is-primary is-rounded" onClick={() => { this.createRecord() }}>Create Record</button>
+					<button className="button is-rounded" onClick={() => { this.exportAndDownloadCSV() }}>Export as CSV</button>
+
+					<div className="fileUploader">
+						<FilePicker	
+							extensions={['csv']}
+							onChange={ fo => this.importCSV(fo )}
+							onError={ err => console.log('Upload error', err) }
+						>
+							<button className="button is-rounded">Import from CSV</button>
+						</FilePicker>
+					</div>
+				</div>
 			</div>
 		)
 	}

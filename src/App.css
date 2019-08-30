@@ -39,8 +39,6 @@ a:hover .hide-until-parent-hovered {
   margin-top: 6em;
 }
 
-
-
 .record_group {
   border-bottom: solid 1px #eee;
 }
@@ -187,7 +185,12 @@ input.input:focus, .select select:focus {
   background: #ff0000;
   color: #ffffff;
 }
+
 .warnings .warning {
   background: #ffbe68;
   color: #ffffff;
+}
+
+.fileUploader {
+  display: inline-block;
 }

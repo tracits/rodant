@@ -1,3 +1,6 @@
+import csvParse from 'csv-parse'
+
+
 const unset = '<unset>' // The value to use when a value is not defined in the record
 const csv_separator = ',' // Between fields
 const csv_encloser = '"' // Enclosing fields
@@ -45,7 +48,48 @@ function exportCSV(codebook, records) {
 	return result
 }
 
+async function importCSV(text, db) {
+	var promise = new Promise((resolve, reject) => {
+		const array = csvParse(text, {
+			delimiter: csv_separator,
+		}, async (err, rs) => {
+			if (err) {
+				// Something went wrong
+				reject(err)
+			} else {
+				// Parsed ok
+				let headers = rs.splice(0, 1)[0]
+				let records = []
+				for (let r of rs) {
+					let record = {}
+					for (let i = 0; i < headers.length; i++) {
+						let k = headers[i]
+						let v = r[i]
+						
+						if (v !== '<unset>')
+							record[k] = v
+					}
+	
+					records.push(record)
+				}
+	
+				// Clear database
+				await db.records.clear()
+
+				// Insert into database
+				let put = await db.records.bulkPut(records)
+
+				// Return result
+				resolve(put)
+			}
+		})
+
+	})
+
+	return promise
+}
 
 export {
 	exportCSV,
+	importCSV,
 }
