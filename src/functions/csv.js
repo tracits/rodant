@@ -67,7 +67,7 @@ async function importCSV(text, db) {
 						let v = r[i]
 						
 						if (v !== '<unset>')
-							record[k] = v
+							record[k] = k === 'uid' ? parseInt(v) : v
 					}
 	
 					records.push(record)
