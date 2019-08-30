@@ -15,6 +15,7 @@ class RecordPicker extends React.Component {
 		
 		this.state = {
 			records: [],
+			search: '',
 		}
 	}
 
@@ -60,22 +61,64 @@ class RecordPicker extends React.Component {
 			console.log("error", err)
 			alert("Error when importing database: " + err)
 		}
-		
+	}
+
+	changeSearchText(e) {
+		this.setState({
+			search: e.target.value
+		})
+	}
+	
+	clearSearchText() {
+		this.setState({
+			search: ''
+		})
 	}
 
 	render() {
-		var records = this.state.records.map(d => 
-			<Link key={d.uid} to={'/record/' + d.uid} className="list-item has-background-white">
-				<span className="is-left">{d.uid}. {d.name}</span>
-				<button onClick={e => { e.preventDefault(); this.deleteRecord(d.uid); }} className="button is-danger is-small is-outlined is-pulled-right is-rounded hide-until-parent-hovered">
-					<span className="fa fa-remove" />
-				</button>
-			</Link>
-		)
+		var searchHits = {}
+		var records = this.state.records
+			// Filter on search term	
+			.filter(d => {
+				
+				if (this.state.search === '')
+					return true
+
+				const keys = Object.keys(d)
+				let hit = false
+				let hits = []
+
+				for (var k of keys) {
+					if (d[k].toString().indexOf(this.state.search) !== -1) {
+						hit = true
+						hits.push(k)
+					}
+				}
+
+				if (hit) {
+					searchHits[d.uid] = hits
+					return true
+				}
+
+				return false;
+			})
+			.map(d => 
+				<Link key={d.uid} to={'/record/' + d.uid} className="list-item has-background-white">
+					<span className="is-left">{d.uid}. {d.name}</span>
+					<span className="hits">{searchHits[d.uid] && searchHits[d.uid].map(e => <span>{e}</span>) }</span>
+					<button onClick={e => { e.preventDefault(); this.deleteRecord(d.uid); }} className="button is-danger is-small is-outlined is-pulled-right is-rounded hide-until-parent-hovered">
+						<span className="fa fa-remove" />
+					</button>
+				</Link>
+			)
 
 		return (
 			<div className=''>
 				<h2 className="title">Pick record ({records.length})</h2>
+				<div className='search'>
+					<input className='input is-primary' type='text' value={this.state.search} onChange={(e) => this.changeSearchText(e)}/>
+					<button className='button is-rounded' onClick={() => this.clearSearchText()}><span className="fa fa-remove"></span></button>
+				</div>
 				<div className='list is-hoverable'>
 					{records}
 				</div>

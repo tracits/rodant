@@ -194,3 +194,35 @@ input.input:focus, .select select:focus {
 .fileUploader {
   display: inline-block;
 }
+
+
+
+.list .hits {
+  margin-left: 10px;
+  color: #aaa;
+}
+
+.list .hits::before {
+  /* font-style: italic; */
+  /* content: 'Matches: '; */
+}
+
+.list .hits span {
+  display: inline-block;
+  margin-right: 1em;
+  background: #aaa;
+  color: white;
+  padding-left: 10px;
+  padding-right: 10px;
+  margin-bottom: 2px;
+  border-radius: 1em;
+}
+
+.search {
+  display: flex;
+  margin-bottom: 5px;
+}
+
+.search input {
+  margin-right: 5px;
+}
