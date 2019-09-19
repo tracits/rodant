@@ -12,6 +12,7 @@ function validate(value, field) {
 		case 'datetime': return validateDateTime(value, field)
 		case 'time': return validateTime(value, field)
 		case 'text': return validateText(value, field)
+		case 'icd10': return validateICD10(value, field)
 		default: // none
 			return []
 	}
@@ -116,7 +117,17 @@ function validateText(value, field) {
 	if (value === field.unknown)
 		return [];
 
-	return value !== undefined && value.length <= 1000 ? [] : ['Text too long (&gt; 1000 characters)']
+	return value !== undefined && value.length <= 1000 ? [] : ['Text too long (< 1000 characters)']
+}
+/** 
+ * Validates an icd10 code to be one of the valid values
+ * @returns empty array if no errors, or array with text describing each issue
+ */
+function validateICD10(value, field) {
+	if (value === field.unknown)
+		return [];
+
+	return value !== undefined && field.valid_values.split(',').indexOf(value) !== -1 ? [] : ['Unknown ICD10 code']
 }
 
 /** 
@@ -135,6 +146,9 @@ function validateRecord(record, fields) {
 				case 'qualitative':
 				case 'quantitative':
 					context[field.name] = parseInt(record[field.name])
+					break;
+				case 'icd10':
+					context[field.name] = (record[field.name] || '').toString()
 					break;
 				default:
 					context[field.name] = record[field.name]
@@ -161,7 +175,7 @@ function validateRecord(record, fields) {
 		var logicErrors = validate(context[field.name], field) || []
 		var logicWarnings = []
 		
-		if (field.logic_checks)  {
+		if (field.logic_checks) {
 			var checks = check_logic(field, context)
 			var logicPrompts = JSON.parse('[' + field.logic_prompts + ']')
 			var mustBeTrue = field.logic_must_be_true.split(',').map(d => d.trim() === 'yes')
@@ -209,5 +223,6 @@ export {
 	validateDate,
 	validateDateTime,
 	validateText,
+	validateICD10,
 	validateRecord,
 }

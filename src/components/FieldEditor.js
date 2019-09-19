@@ -129,28 +129,28 @@ class FieldEditor extends React.Component {
 				onFocus={e => this.onFocus()}
 				onBlur={e => this.onBlur()}
 				/>
-		} else { // Qualitative
-			if (d.name.substr(-3) === 'icd') {
-				// TODO: Decide if just reading the last three letters suffice as ICD-field identification
-				
-				// Render ICD10 Autocomplete
-				input = <Autocomplete
-					value={this.state.value}
-					placeholder={unlabeled ? d.label : ''}
-					search={searchICD10}
-					onChange={(e, v) => {
-						if (v) {
-							if (this.props.onChange)
-								this.props.onChange(this.props.data, v)
+		} else if (d.type === 'icd10') {
+			// Render ICD10 Autocomplete
+			input = <Autocomplete
+				value={this.state.value}
+				placeholder={unlabeled ? d.label : ''}
+				search={searchICD10}
+				onChange={(e, v) => {
+					if (v) {
+						if (this.props.onChange)
+							this.props.onChange(this.props.data, v)
 
-							this.setState({value: v})
-						} else {
-							this.changeValueText(e)}
-						}
-					} 
-					onFocus={e => this.onFocus()}
-					onBlur={e => this.onBlur()}
-				/>
+						this.setState({value: v})
+					} else {
+						this.changeValueText(e)}
+					}
+				} 
+				onFocus={e => this.onFocus()}
+				onBlur={e => this.onBlur()}
+			/>
+		} else {
+			// Qualitative
+			if (d.name.substr(-3) === 'icd') {
 			} else {
 				// Render text
 				input = <input

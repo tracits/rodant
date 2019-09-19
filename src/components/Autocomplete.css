@@ -4,6 +4,7 @@
 
 .autocomplete .results {
 	background: white;
+	color: #333333;
 	position: absolute;
 	width: 100%;
 	max-height: 300px;
@@ -32,7 +33,6 @@
 
 .autocomplete .results .row .description {
 	display: inline;
-
 }
 
 .autocomplete .results .row.selected {

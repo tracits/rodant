@@ -42,6 +42,8 @@ class Autocomplete extends React.Component {
 			this.setState({ selected: Math.min(Math.min(this.maxResults, this.state.matches.length) - 1, this.state.selected + 1) })
 			e.preventDefault()
 		}
+
+		// Close
 		if (e.key === 'Escape') {
 			this.setState({ matches: [] })
 			e.preventDefault()
@@ -49,7 +51,11 @@ class Autocomplete extends React.Component {
 		
 		// Apply
 		if (e.key === 'Enter') {
-			let code = this.state.matches[this.state.selected][0]
+			let selected = this.state.matches[this.state.selected]
+			if (!selected)
+				return
+				
+			let code = selected[0]
 			if (!code)
 				return
 
