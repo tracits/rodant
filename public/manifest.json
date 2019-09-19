@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "Cockroach",
+  "name": "Cockroach Data Collection Tool",
   "icons": [
     {
       "src": "favicon.ico",
