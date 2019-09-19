@@ -43,6 +43,10 @@ a:hover .hide-until-parent-hovered {
   border-bottom: solid 1px #eee;
 }
 
+.record_group:last-child {
+  margin-bottom: 100px;
+}
+
 .field_group {
   display: inline-block;
   width: 300px; 
@@ -234,5 +238,84 @@ input.input:focus, .select select:focus {
   left: 10px;
   top: 8px;
   z-index: 99;
+}
 
+@media print {
+  body {
+    font-size: 0.6em;
+  }
+
+  input, select, .select, .input {
+    border: none !important;
+  }
+
+  input.input, 
+  .select > select {
+    padding-top: 0;
+    padding-bottom: 0;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    height: auto;
+  }
+
+  .select select {
+    font-size: 0.8em !important;
+  }
+
+  input.input {
+    font-size: 64% !important;
+  }
+
+  .navbar, .button, button, h1.title {
+    display: none;
+  }
+  #root > .container {
+    margin-top: 0;
+  }
+
+  .record_group {
+    border-bottom: none;
+    page-break-inside: avoid;
+  }
+
+  .record_group .title {
+    font-size: 1em;
+    margin: 2em 0 1em 0;
+  }
+
+  .record_group .fields {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+
+  .fields .field_group {
+    flex: 0 1 33%;
+    width: auto;
+    border: solid 1px black;
+    color: black;
+    line-height: 1.2;
+    padding-top: 2px;
+    padding-bottom: 2px;
+  }
+
+  .field_group,
+  .field_group.incomplete, 
+  .field_group.field_group.focused, 
+  .field_group.invalid, 
+  .field_group.unknown,
+  .field_group.unknown:not(.focused) {
+    background: white;
+    margin: 0px;
+    margin-right: -1px;
+    margin-bottom: -1px;
+    border-radius: 0;
+    opacity: 1.0;
+  }
+
+  .field_group .label {
+    font-weight: bold;
+    margin-bottom: 0;
+  }
 }
