@@ -176,12 +176,14 @@ function validateRecord(record, fields) {
 		var logicWarnings = []
 		
 		if (field.logic_checks) {
-			var checks = check_logic(field, context)
+			var checks = checkLogic(field, context)
 			var logicPrompts = JSON.parse('[' + field.logic_prompts + ']')
 			var mustBeTrue = field.logic_must_be_true.split(',').map(d => d.trim() === 'yes')
 			
 			for (let i in checks) {
-				if (checks[i] && mustBeTrue[i])
+				if (typeof checks[i] === 'string')
+					logicErrors.push('"' + (fields.find(d => d.name == checks[i]) || {}).label + '" can not be empty')
+				else if (checks[i] && mustBeTrue[i] === true)
 					logicErrors.push(logicPrompts[i])
 				else if (checks[i] && !mustBeTrue[i])
 					logicWarnings.push(logicPrompts[i])
@@ -202,17 +204,36 @@ function validateRecord(record, fields) {
 	return result
 }
 
+var findVarRegex = /([a-z_]+)/g
 function thisVars(text) {
-	var regex = /([a-z_]+)/g
-	return text.replace(regex, 'this.$1')
+	return text.replace(findVarRegex, 'this.$1')
 }
 
-function check_logic(field, context) {
+/**
+ * Checks field logic against context
+ * Returns an array of results from logic checks
+ * Elements can be true(an error), false(no error) or a string with a field name
+ * signaling that a dependent value were undefined (an error).
+ */
+function checkLogic(field, context) {
 	return field.logic_checks.split(',')
-		.map(c => 
-			new Function('return ' + thisVars(c.trim()))
+		.map(c => {
+			// If any of the dependent values are _undefined_ test failure
+			// If any of the dependent values are _unknown_ test succeeds 
+			var vars = c.trim().match(findVarRegex)
+			
+			for (let v of vars)
+				// Check if a field dependency 
+				if (context[v] === undefined || context[v] === '')
+					return v // Dependent value is _undefined_ so return the undefined field id for error message
+				else if (context[v] == field.unknown)
+					return false // Dependent value is _unknown_ pass test
+
+			// Run the test
+			var func = new Function('return ' + thisVars(c.trim()))
 				.bind(context)()
-		)
+			return func
+		})
 }
 
 
