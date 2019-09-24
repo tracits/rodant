@@ -240,6 +240,11 @@ input.input:focus, .select select:focus {
   z-index: 99;
 }
 
+.search > .search-field {
+  max-width: 200px;
+  margin-right: 6px;
+}
+
 @media print {
   body {
     font-size: 0.6em;

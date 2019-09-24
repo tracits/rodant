@@ -16,6 +16,7 @@ class RecordPicker extends React.Component {
 		this.state = {
 			records: [],
 			search: '',
+			searchField: '',
 		}
 	}
 
@@ -75,25 +76,34 @@ class RecordPicker extends React.Component {
 		})
 	}
 
+	onSearchFieldChanged(e) {
+		this.setState({
+			searchField: e.target.value
+		})
+	}
+
 	render() {
 		let searchHits = {}
 		let search = this.state.search.toLowerCase()
 		let records = this.state.records
 			// Filter on search term	
 			.filter(d => {
-				
 				// Search is empty show all records
 				if (this.state.search === '')
 					return true
 
 				const keys = Object.keys(d)
+					// If there is a searchField selected, use only keys matching it
+					.filter(d => this.state.searchField === '' || d === this.state.searchField)
 				let hit = false
 				let hits = []
 
 				for (var k of keys) {
 					if (d[k].toString().toLowerCase().indexOf(this.state.search) !== -1) {
 						hit = true
-						hits.push([this.props.codebook.find(d => d.name === k).label, d[k].toString()])
+						const field = this.props.codebook.find(d => d.name === k)
+						if (field) // Sometimes fields do not exist in codebook
+							hits.push([field.label, d[k].toString()])
 					}
 				}
 
@@ -104,15 +114,15 @@ class RecordPicker extends React.Component {
 
 				return false;
 			})
-			.map(d => 
-				<Link key={d.uid} to={'/record/' + d.uid} className="list-item has-background-white">
+			.map(d => {
+				return <Link key={d.uid} to={'/record/' + d.uid} className="list-item has-background-white">
 					<span className="is-left">{d.uid}. {d.name}</span>
 					<span className="hits">{searchHits[d.uid] && searchHits[d.uid].slice(0, 10).map((e, i) => <span key={i}>{e[0]}: {e[1]}</span>) }</span>
 					<button onClick={e => { e.preventDefault(); this.deleteRecord(d.uid); }} className="button is-danger is-small is-outlined is-pulled-right is-rounded hide-until-parent-hovered">
 						<span className="fa fa-remove" />
 					</button>
 				</Link>
-			)
+			})
 
 		return (
 			<div className=''>
@@ -120,6 +130,15 @@ class RecordPicker extends React.Component {
 				<div className='search'>
 					<span className='fa fa-search'></span>
 					<input className='input is-primary' type='text' value={this.state.search} onChange={(e) => this.changeSearchText(e)}/>
+					<div className='select is-primary search-field'>
+						<select 
+							value={this.state.searchField}
+							onChange={e => this.onSearchFieldChanged(e)}
+						>
+							<option default value='' key='default'>All fields</option>
+							{ this.props.codebook.map(d => <option value={d.name} key={d.name}>{d.label}</option>) }
+						</select>
+					</div>
 					<button className='button is-rounded' onClick={() => this.clearSearchText()}><span className="fa fa-remove"></span></button>
 				</div>
 				<div className='list is-hoverable'>
