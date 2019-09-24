@@ -106,7 +106,7 @@ function validateTime(value, field) {
 	let h = parseInt(tok[0])
 	let m = parseInt(tok[1])
 
-	return h > 0 && h < 24 && m > 0 && m < 60 ? [] : [`'${value}' is not a valid time`]
+	return h >= 0 && h < 24 && m >= 0 && m < 60 ? [] : [`'${value}' is not a valid time`]
 }
 
 /** 
