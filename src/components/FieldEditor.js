@@ -134,7 +134,7 @@ class FieldEditor extends React.Component {
 			input = <Autocomplete
 				value={this.state.value}
 				placeholder={unlabeled ? d.label : ''}
-				search={searchICD10}
+				search={(v) => searchICD10(v, d.valid_values.split(','))}
 				onChange={(e, v) => {
 					if (v) {
 						if (this.props.onChange)
