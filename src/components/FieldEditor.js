@@ -55,6 +55,15 @@ class FieldEditor extends React.Component {
 			value: e.target.value,
 		})
 	}
+	
+	async changeValueRadio(i) {
+		if (this.props.onChange)
+			this.props.onChange(this.props.data, i)
+		
+		this.setState({
+			value: i,
+		})
+	}
 
  	toggleDescriptions(e) {
 		this.setState({
@@ -99,25 +108,46 @@ class FieldEditor extends React.Component {
 			d.valid_values !== '' && 
 			d.value_labels !== ''
 		) {
-			// Render drop-down/select
 			let values = getList(d.valid_values)
 			let labels = getList(d.value_labels)
-			input = <div className="select is-small is-light">
-				<select 
-					placeholder={unlabeled ? d.label : ''}
-					value={this.state.value} 
-					onChange={e => this.changeValueSelect(e)}
-					onFocus={e => this.onFocus()}
-					onBlur={e => this.onBlur()}
-				>
-					<option key='unset'></option>
-					{values.map((d, i) => <option key={d} value={d}>{d}. {labels[i]}</option>)}
-					{
-						d.unknown !== '' &&
-							<option key='unknown' value={d.unknown}>{d.unknown}. Unknown</option>
-					}
-				</select>
-			</div>
+			
+			if (this.props.allowRadios && values.length <= 6) {
+				// Render radio buttons
+				input = <div className="control radios">
+				{	
+					labels.map((l, i) => 
+						<label className={"radio" + (this.state.value == values[i].toString() ? ' selected' : '')} key={values[i]}>
+							<input 
+								type="radio" 
+								onFocus={e => this.onFocus()}
+								onBlur={e => this.onBlur()}
+								checked={this.state.value == values[i].toString()} 
+								onChange={e => this.changeValueRadio(values[i].toString())}
+							/>{l}
+						</label>
+					)
+				}
+				</div>
+			} else {
+				// Render drop-down/select
+				input = <div className="select is-small is-light">
+					<select 
+						placeholder={unlabeled ? d.label : ''}
+						value={this.state.value} 
+						onChange={e => this.changeValueSelect(e)}
+						onFocus={e => this.onFocus()}
+						onBlur={e => this.onBlur()}
+					>
+						<option key='unset'></option>
+						{values.map((d, i) => <option key={d} value={d}>{d}. {labels[i]}</option>)}
+						{
+							d.unknown !== '' &&
+								<option key='unknown' value={d.unknown}>{d.unknown}. Unknown</option>
+						}
+					</select>
+				</div>
+			}
+
 		} else if (d.type === 'quantitative') {
 			// Render number
 			input = <input 

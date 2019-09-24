@@ -29,6 +29,7 @@ class RecordEditor extends React.Component {
 		this.state = {
 			state: RecordEditorState.NONE,
 			record: null,
+			allowRadios: false,
 		}
 	}
 
@@ -170,6 +171,7 @@ class RecordEditor extends React.Component {
 										key={d.name}
 										data={d}
 										record={this.state.record}
+										allowRadios={this.state.allowRadios}
 										validation={validation[d.name]}
 										unlabeled={d.group2 !== ''}
 										onChange={(f, v) => this.onChange(f, v)}
@@ -247,12 +249,27 @@ class RecordEditor extends React.Component {
 				<h1 className='title'>Editing record: {this.state.record.uid}</h1>
 				<div className='toolbar'>
 					<button className="button is-rounded" onClick={() => { this.markFieldsUnknown() }}>Mark empty fields as Not Known</button>
+					<div className="control">
+						<label className="checkbox">
+							<input 
+								type="checkbox" 
+								value={this.props.allowRadios} 
+								onChange={e => this.changeRadios(e)}
+							/> [debug] Enable radio buttons
+						</label>
+					</div>
 				</div>
 				
 				<div className='record_fields'>{fieldGroups}</div>
 				{fieldHelp}
 			</div>
 		)
+	}
+
+	changeRadios(e) {
+		this.setState({
+			allowRadios: !this.state.allowRadios,
+		})
 	}
 
 	formatValid(data) {
