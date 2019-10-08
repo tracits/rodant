@@ -99,7 +99,7 @@ function validateTime(value, field) {
 
 	// Check format
 	if (!(/^[0-9][0-9]:[0-9][0-9]$/.test(value)))
-		return [`'${value}' is in correct format HH:mm`]
+		return [`'${value}' is not in correct format HH:mm`]
 
 	// Check ranges
 	let tok = value.split(':')
