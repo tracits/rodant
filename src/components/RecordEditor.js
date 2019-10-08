@@ -98,6 +98,9 @@ class RecordEditor extends React.Component {
 	}
 
 	validateFieldGroup(group, validation) {
+		if (group.some(d => d.input !== 'yes'))
+			return 'valid'
+
 		if (group.some(d => validation[d.name].unknown))
 			return 'unknown'
 		

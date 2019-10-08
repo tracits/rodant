@@ -116,12 +116,12 @@ class FieldEditor extends React.Component {
 				input = <div className="control radios">
 				{	
 					labels.map((l, i) => 
-						<label className={"radio" + (this.state.value == values[i].toString() ? ' selected' : '')} key={values[i]}>
+						<label className={"radio" + (this.state.value === values[i].toString() ? ' selected' : '')} key={values[i]}>
 							<input 
 								type="radio" 
 								onFocus={e => this.onFocus()}
 								onBlur={e => this.onBlur()}
-								checked={this.state.value == values[i].toString()} 
+								checked={this.state.value === values[i].toString()} 
 								onChange={e => this.changeValueRadio(values[i].toString())}
 							/>{l}
 						</label>
@@ -153,6 +153,7 @@ class FieldEditor extends React.Component {
 			input = <input 
 				className="input is-small"
 				type="text" 
+				disabled={d.input !== 'yes'}
 				placeholder={unlabeled ? d.label : ''}
 				value={this.state.value}
 				onChange={e => this.changeValueText(e)} 
@@ -185,6 +186,7 @@ class FieldEditor extends React.Component {
 				// Render text
 				input = <input
 					className="input is-small"
+					disabled={d.input !== 'yes'}
 					type="text"
 					placeholder={unlabeled ? d.label : ''}
 					value={this.state.value}
