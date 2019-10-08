@@ -204,7 +204,7 @@ function validateRecord(record, fields) {
 	return result
 }
 
-var findVarRegex = /([a-z_]+)/g
+var findVarRegex = /([a-z_]+[0-9]*)/g
 function thisVars(text) {
 	return text.replace(findVarRegex, 'this.$1')
 }
