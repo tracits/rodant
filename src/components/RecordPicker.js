@@ -210,13 +210,11 @@ class RecordPicker extends React.Component {
 				let issueDisplay = null;
 					
 				if (issues.length > 0) {
-					console.log(issues)
 					issueDisplay = <span className='issues'>
 						<span className='fa fa-warning issues'/>
 						<span>{issues.length}</span>
 					</span>
 				}
-
 					
 				return <Link key={d.uid} to={'/record/' + d.uid} className="list-item has-background-white">
 					<span className="pid">{d.pid} {issueDisplay}</span>
