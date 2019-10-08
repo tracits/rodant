@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { exportCSV, importCSV } from '../functions/csv'
 import download from '../functions/download'
 import { FilePicker } from 'react-file-picker'
+import { validateRecord } from '../functions/validation'
 
 /**
  * Renders a list of the available records.
@@ -17,6 +18,11 @@ class RecordPicker extends React.Component {
 			records: [],
 			search: '',
 			searchField: '',
+			sortField: 'doar',
+			sortOrder: 1,
+			pageSize: 10,
+			page: 0,
+			includeUnknown: false,
 		}
 	}
 
@@ -66,31 +72,94 @@ class RecordPicker extends React.Component {
 
 	changeSearchText(e) {
 		this.setState({
-			search: e.target.value
+			search: e.target.value,
+			page: 0,
 		})
 	}
 	
 	clearSearchText() {
 		this.setState({
-			search: ''
+			search: '',
+			page: 0,
 		})
 	}
 
 	onSearchFieldChanged(e) {
 		this.setState({
-			searchField: e.target.value
+			searchField: e.target.value,
+			page: 0,
 		})
+	}
+
+	onSortFieldChanged(e) {
+		this.setState({
+			sortField: e.target.value,
+			page: 0,
+		})
+	}
+
+	onSortOrderChanged(e) {
+		this.setState({
+			sortOrder: e.target.checked ? -1 : 1,
+			page: 0,
+		})
+	}
+
+	onIncludeUnknownChanged(e) {
+		this.setState({
+			includeUnknown: e.target.checked,
+			page: 0,
+		})
+	}
+
+	getList(str) {
+		return str
+			.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g)
+			.map(d => d.replace(/"/g, ''))
+	}
+
+	getFieldText(codebook, record, fieldName) {
+		let field = codebook.find(d => d.name == fieldName)
+		if (
+			field.type === 'qualitative' && 
+			field.valid_values && 
+			field.value_labels
+		) {
+			var values = this.getList(field.valid_values).map(d => parseInt(d))
+			var labels = this.getList(field.value_labels)
+			let value = parseInt(record[fieldName])
+			return labels[values.find(d => d == value)]
+		}
+
+		if ((record[fieldName] || '').toString() === '999')
+			return 'unknown'
+
+		return record[fieldName]
+	}
+
+	onPageChange(page) {
+		this.setState({
+			page: parseInt(page)
+		});
 	}
 
 	render() {
 		let searchHits = {}
 		let search = this.state.search.toLowerCase()
-		let records = this.state.records
+		let filteredRecords = this.state.records
 			// Filter on search term	
 			.filter(d => {
+				// If not checked, do not include records with sortField unknown
+				if (!this.state.includeUnknown) {
+					var value = (d[this.state.sortField] || '')
+					if (value.toString() === '999' || value === '')
+						return false
+				}
+
 				// Search is empty show all records
 				if (this.state.search === '')
 					return true
+
 
 				const keys = Object.keys(d)
 					// If there is a searchField selected, use only keys matching it
@@ -114,11 +183,46 @@ class RecordPicker extends React.Component {
 
 				return false;
 			})
+			.sort((a, b) => {
+				if (a[this.state.sortField] > b[this.state.sortField])
+					return -this.state.sortOrder
+				else if (a[this.state.sortField] === b[this.state.sortField])
+					return 0
+				
+				return this.state.sortOrder
+			})
+
+		let pageCount = Math.ceil(filteredRecords.length / this.state.pageSize)
+		let page = Math.min(this.state.page, pageCount-1)
+		
+		var records = filteredRecords
+			// Paging
+			.slice(
+				this.state.page * this.state.pageSize, 
+				(this.state.page + 1) * this.state.pageSize
+			)
 			.map(d => {
+				let validation = validateRecord(d, this.props.codebook)
+				let issues = Object.keys(validation)
+					.filter(d => !validation[d].valid)
+					.map(d => [d, validation[d]])
+
+				let issueDisplay = null;
+					
+				if (issues.length > 0) {
+					console.log(issues)
+					issueDisplay = <span className='issues'>
+						<span className='fa fa-warning issues'/>
+						<span>{issues.length}</span>
+					</span>
+				}
+
+					
 				return <Link key={d.uid} to={'/record/' + d.uid} className="list-item has-background-white">
-					<span className="is-left">{d.uid}. {d.name}</span>
+					<span className="pid">{d.pid} {issueDisplay}</span>
 					<span className="hits">{searchHits[d.uid] && searchHits[d.uid].slice(0, 10).map((e, i) => <span key={i}>{e[0]}: {e[1]}</span>) }</span>
-					<button onClick={e => { e.preventDefault(); this.deleteRecord(d.uid); }} className="button is-danger is-small is-outlined is-pulled-right is-rounded hide-until-parent-hovered">
+					<span className="sort-field">{this.getFieldText(this.props.codebook, d, this.state.sortField)}</span>
+					<button onClick={e => { e.preventDefault(); this.deleteRecord(d.uid); }} className="button is-danger is-small is-outlined is-rounded remove">
 						<span className="fa fa-remove" />
 					</button>
 				</Link>
@@ -136,10 +240,51 @@ class RecordPicker extends React.Component {
 							onChange={e => this.onSearchFieldChanged(e)}
 						>
 							<option default value='' key='default'>All fields</option>
-							{ this.props.codebook.map(d => <option value={d.name} key={d.name}>{d.label}</option>) }
+							{this.props.codebook
+								.filter(d => d.input === 'yes' && d.calculated === 'no')
+								.map(d => <option value={d.name} key={d.name}>{d.label}</option>)}
 						</select>
 					</div>
 					<button className='button is-rounded' onClick={() => this.clearSearchText()}><span className="fa fa-remove"></span></button>
+				</div>
+				<div className='sort'>
+					<div className='paging'>
+						<button 
+							className='button is-primary is-small'
+							disabled={page === 0}
+							onClick={e => this.onPageChange(Math.max(0, page-1))}
+						>&lt;</button>
+						<input 
+							className='input is-small is-primary'
+							type='text'
+							value={this.state.page + 1}
+							onChange={e => this.onPageChange(e.target.value) }
+						></input>
+						<span>/</span>
+						<span>{pageCount}</span>
+						<button 
+							className='button is-primary is-small'
+							disabled={page === pageCount-1}
+							onClick={e => this.onPageChange(Math.min(pageCount, page + 1))}
+						>&gt;</button>
+					</div>
+					<div className='select is-primary sortField'>
+						<select
+							className='select'
+							value={this.state.sortField}
+							onChange={e => this.onSortFieldChanged(e)}
+						>
+							{this.props.codebook.map(d => <option value={d.name} key={d.name}>{d.label}</option>)}
+						</select>
+					</div>
+					<div className='control'>
+						<input type='checkbox' className='checkbox' checked={this.state.sortOrder !== 1} onChange={e => this.onSortOrderChanged(e)}/>
+						<label> Ascending</label>
+					</div>
+					<div className='control'>
+						<input type='checkbox' className='checkbox' checked={this.state.includeUnknown} onChange={e => this.onIncludeUnknownChanged(e)}/>
+						<label> Include unknown</label>
+					</div>
 				</div>
 				<div className='list is-hoverable'>
 					{records}
