@@ -1,5 +1,5 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
+import { Link, withRouter } from 'react-router-dom'
 import { exportCSV, importCSV } from '../functions/csv'
 import download from '../functions/download'
 import { FilePicker } from 'react-file-picker'
@@ -37,10 +37,11 @@ class RecordPicker extends React.Component {
 	}
 
 	async createRecord() {
-		await this.props.db.records.add({
+		let recordId = await this.props.db.records.add({
 			name: "Unnamed", 
 		})
-
+		
+		this.props.history.push('/record/' + recordId)
 		this.updateRecords()
 	}
 
@@ -306,4 +307,4 @@ class RecordPicker extends React.Component {
 	}
 }
 
-export default RecordPicker
+export default withRouter(RecordPicker)
