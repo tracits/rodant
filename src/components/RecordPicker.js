@@ -56,7 +56,11 @@ class RecordPicker extends React.Component {
 	}
 	
 	exportAndDownloadCSV() {
-		let csv = exportCSV(this.props.codebook, this.state.records)
+		let csv = exportCSV(
+			this.props.codebook,
+			this.state.records
+				.filter(d => isValid(validateRecord(d, this.props.codebook)))
+		)
 		download(csv, 'database.csv')
 	}
 
