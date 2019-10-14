@@ -49,8 +49,8 @@ function exportCSV(codebook, records) {
 }
 
 async function importCSV(text, db) {
-	var promise = new Promise((resolve, reject) => {
-		const array = csvParse(text, {
+	let promise = new Promise((resolve, reject) => {
+		csvParse(text, {
 			delimiter: csv_separator,
 		}, async (err, rs) => {
 			if (err) {

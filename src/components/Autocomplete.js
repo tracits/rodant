@@ -76,7 +76,7 @@ class Autocomplete extends React.Component {
 			this.props.onChange(e)
 
 		// Do search
-		var matches = await this.props.search(code)
+		let matches = await this.props.search(code)
 		this.setState({
 			matches: matches,
 			selected: Math.min(this.state.selected, Math.min(matches.length-1, this.maxResults)),
@@ -87,7 +87,7 @@ class Autocomplete extends React.Component {
 		if (this.props.onFocus)
 			this.props.onFocus(e)
 
-		var matches = await this.props.search(this.props.value)
+		let matches = await this.props.search(this.props.value)
 		this.setState({ matches: matches })
 	}
 	

@@ -8,14 +8,14 @@
     "csv": "^5.1.1",
     "dexie": "^2.0.4",
     "font-awesome": "^4.7.0",
-    "lodash": "^4.17.11",
+    "lodash": "^4.17.15",
     "moment": "^2.24.0",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "react-file-picker": "^0.0.6",
     "react-router": "^5.0.0",
     "react-router-dom": "^5.0.0",
-    "react-scripts": "3.0.0"
+    "react-scripts": "3.2.0"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -24,7 +24,16 @@
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
-    "extends": "react-app"
+    "extends": [
+      "react-app"
+    ],
+    "rules": {
+      "no-new-func": "off",
+      "no-loop-func": "off"
+    },
+    "parserOptions": {
+      "sourceType": "module"
+    }
   },
   "browserslist": {
     "production": [

@@ -1,7 +1,6 @@
 import React from 'react'
 import _ from 'lodash'
 import FieldEditor from './FieldEditor'
-import validate from '../functions/validation'
 import { validateRecord } from '../functions/validation'
 
 const RecordEditorState = {
@@ -39,7 +38,7 @@ class RecordEditor extends React.Component {
 			record: null,
 		})
 
-		var record = await this.props.db.records
+		let record = await this.props.db.records
 			.where('uid').equals(Number(this.props.uid))
 			.first()
 
@@ -51,13 +50,13 @@ class RecordEditor extends React.Component {
 	
 	// Persists changes to databases
 	async onChange(field, value) {
-		var record = { ...this.state.record }
+		let record = { ...this.state.record }
 		record[field.name] = value
 		this.setState({
 			record: record
 		})
 		
-		var modify = {}
+		let modify = {}
 		modify[field.name] = value
 		
 		await this.props.db.records
@@ -82,7 +81,7 @@ class RecordEditor extends React.Component {
 	}
 
 	markFieldsUnknown() {
-		var record = { ...this.state.record }
+		let record = { ...this.state.record }
 		for (let c of this.props.codebook) {
 			if (record[c.name] === undefined || record[c.name] === '') {
 				record[c.name] = c.unknown || '999'
@@ -123,42 +122,18 @@ class RecordEditor extends React.Component {
 			return <div className='content'>Idle</div>
 		
 		// Populate fields from codebook
-		var fields = {}
+		let fields = {}
 		for (let field of this.props.codebook)
 			fields[field.name] = field
 	
 		// Do validation
-		var validation = validateRecord(this.state.record, this.props.codebook)
-
-		// Issues
-		var issues = Object.keys(validation)
-			.map(d => {
-				if (
-					validation[d].valid || 
-					fields[d].type === 'datetime' || 
-					!validation[d].value || 
-					validation[d].value.toString() === fields[d].unknown.toString()
-				)
-					return null;
-
-				var errors = validation[d].errors.map((d, i) => <div className="error" key={i}>{d}</div>)
-				var warnings = validation[d].warnings.map((d, i) => <div className="warning" key={i}>{d}</div>)
-				
-				return (
-					<div key={d} className="record_issues">
-						<div className='label'>{ fields[d].label }({ d }) = { validation[d].value }</div>
-						<div className='errors'>{ errors }</div>
-						<div className='warnings'>{ warnings }</div>
-					</div>
-				)
-			})
-
+		let validation = validateRecord(this.state.record, this.props.codebook)
 
 		// Group fields using 'group1' 
-		var groups = _.groupBy(this.props.codebook.filter(d => d.visible === 'yes'), 'group1')
+		let groups = _.groupBy(this.props.codebook.filter(d => d.visible === 'yes'), 'group1')
 	
 		// Create field groups
-		var fieldGroups = Object.keys(groups)
+		let fieldGroups = Object.keys(groups)
 			.map(
 				k => {
 					let i = 0

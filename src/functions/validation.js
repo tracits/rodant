@@ -136,8 +136,8 @@ function validateICD10(value, field) {
  * @returns array of validation result for each field
  */
 function validateRecord(record, fields) {
-	var result = {}
-	var context = {}
+	let result = {}
+	let context = {}
 
 	// Apply non calculated fields to context
 	for (let field of fields) {
@@ -172,17 +172,17 @@ function validateRecord(record, fields) {
 
 	// Apply calculated context to result and do logic checks
 	for (let field of fields) {
-		var logicErrors = validate(context[field.name], field) || []
-		var logicWarnings = []
+		let logicErrors = validate(context[field.name], field) || []
+		let logicWarnings = []
 		
 		if (field.logic_checks) {
-			var checks = checkLogic(field, context)
-			var logicPrompts = JSON.parse('[' + field.logic_prompts + ']')
-			var mustBeTrue = field.logic_must_be_true.split(',').map(d => d.trim() === 'yes')
+			let checks = checkLogic(field, context)
+			let logicPrompts = JSON.parse('[' + field.logic_prompts + ']')
+			let mustBeTrue = field.logic_must_be_true.split(',').map(d => d.trim() === 'yes')
 			
 			for (let i in checks) {
 				if (typeof checks[i] === 'string')
-					logicErrors.push('"' + (fields.find(d => d.name == checks[i]) || {}).label + '" can not be empty')
+					logicErrors.push('"' + (fields.find(d => d.name === checks[i]) || {}).label + '" can not be empty')
 				else if (checks[i] && mustBeTrue[i] === true)
 					logicErrors.push(logicPrompts[i])
 				else if (checks[i] && !mustBeTrue[i])
@@ -204,7 +204,7 @@ function validateRecord(record, fields) {
 	return result
 }
 
-var findVarRegex = /([a-z_]+[0-9]*)/g
+let findVarRegex = /([a-z_]+[0-9]*)/g
 function thisVars(text) {
 	return text.replace(findVarRegex, 'this.$1')
 }
@@ -220,17 +220,17 @@ function checkLogic(field, context) {
 		.map(c => {
 			// If any of the dependent values are _undefined_ test failure
 			// If any of the dependent values are _unknown_ test succeeds 
-			var vars = c.trim().match(findVarRegex)
+			let vars = c.trim().match(findVarRegex)
 			
 			for (let v of vars)
 				// Check if a field dependency 
 				if (context[v] === undefined || context[v] === '')
 					return v // Dependent value is _undefined_ so return the undefined field id for error message
-				else if (context[v] == field.unknown)
+				else if (context[v].toString() === (field.unknown || 999).toString())
 					return false // Dependent value is _unknown_ pass test
 
 			// Run the test
-			var func = new Function('return ' + thisVars(c.trim()))
+			let func = new Function('return ' + thisVars(c.trim()))
 				.bind(context)()
 			return func
 		})

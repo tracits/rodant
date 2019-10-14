@@ -31,7 +31,7 @@ class RecordPicker extends React.Component {
 	}
 
 	async updateRecords() {
-		var records = await this.props.db.records
+		let records = await this.props.db.records
 			.toArray();
 		this.setState({ records: records })
 	}
@@ -55,14 +55,14 @@ class RecordPicker extends React.Component {
 	}
 	
 	exportAndDownloadCSV() {
-		var csv = exportCSV(this.props.codebook, this.state.records)
+		let csv = exportCSV(this.props.codebook, this.state.records)
 		download(csv, 'database.csv')
 	}
 
 	async importCSV(fo) {
 		let text = await fo.text()
 		try {
-			let res = await importCSV(text, this.props.db)
+			await importCSV(text, this.props.db)
 			this.updateRecords()
 		} catch (err) {
 			console.log("error", err)
@@ -119,16 +119,16 @@ class RecordPicker extends React.Component {
 	}
 
 	getFieldText(codebook, record, fieldName) {
-		let field = codebook.find(d => d.name == fieldName)
+		let field = codebook.find(d => d.name === fieldName)
 		if (
 			field.type === 'qualitative' && 
 			field.valid_values && 
 			field.value_labels
 		) {
-			var values = this.getList(field.valid_values).map(d => parseInt(d))
-			var labels = this.getList(field.value_labels)
+			let values = this.getList(field.valid_values).map(d => parseInt(d))
+			let labels = this.getList(field.value_labels)
 			let value = parseInt(record[fieldName])
-			return labels[values.find(d => d == value)]
+			return labels[values.find(d => d.toString() === value.toString())]
 		}
 
 		if ((record[fieldName] || '').toString() === '999')
@@ -145,13 +145,12 @@ class RecordPicker extends React.Component {
 
 	render() {
 		let searchHits = {}
-		let search = this.state.search.toLowerCase()
 		let filteredRecords = this.state.records
 			// Filter on search term	
 			.filter(d => {
 				// If not checked, do not include records with sortField unknown
 				if (!this.state.includeUnknown) {
-					var value = (d[this.state.sortField] || '')
+					let value = (d[this.state.sortField] || '')
 					if (value.toString() === '999' || value === '')
 						return false
 				}
@@ -167,7 +166,7 @@ class RecordPicker extends React.Component {
 				let hit = false
 				let hits = []
 
-				for (var k of keys) {
+				for (let k of keys) {
 					if (d[k].toString().toLowerCase().indexOf(this.state.search) !== -1) {
 						hit = true
 						const field = this.props.codebook.find(d => d.name === k)
@@ -195,7 +194,7 @@ class RecordPicker extends React.Component {
 		let pageCount = Math.ceil(filteredRecords.length / this.state.pageSize)
 		let page = Math.min(this.state.page, pageCount-1)
 		
-		var records = filteredRecords
+		let records = filteredRecords
 			// Paging
 			.slice(
 				this.state.page * this.state.pageSize, 

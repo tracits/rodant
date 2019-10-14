@@ -12,22 +12,22 @@ serviceWorker.register()
 const DB_VERSION = 1
 async function bootstrap() {
 	// Parse codebook into javascript object
-	var response = await fetch('/codebook.csv')
-	var codebook = await response.text()
-	var csvString = await csv.parse(codebook)
-	var columns = csvString[0]
-	var items = []
-	for (var i = 1; i < csvString.length; i++) {
-		var o = {}
-		for (var j = 0; j < columns.length; j++)
+	let response = await fetch('/codebook.csv')
+	let codebook = await response.text()
+	let csvString = await csv.parse(codebook)
+	let columns = csvString[0]
+	let items = []
+	for (let i = 1; i < csvString.length; i++) {
+		let o = {}
+		for (let j = 0; j < columns.length; j++)
 			o[columns[j]] = csvString[i][j]
 		items.push(o)
 	}
 	
 	// Initialize Dexie database
-	var db = new dexie('TAFT')
-	var desc = '++uid, ' + items.map(d => d.name).join(', ')
-	var store = {
+	let db = new dexie('TAFT')
+	let desc = '++uid, ' + items.map(d => d.name).join(', ')
+	let store = {
 		records: desc
 	}
 	

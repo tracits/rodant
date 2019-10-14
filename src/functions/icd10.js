@@ -8,7 +8,7 @@ async function search(code, allowed = []) {
 	
 	// Try codes first...
 	let codes = Object.keys(database)
-		.filter(d => d.startsWith(code) && (allowed.length == 0 || allowed.some(d => d.startsWith(code))))
+		.filter(d => d.startsWith(code) && (allowed.length === 0 || allowed.some(d => d.startsWith(code))))
 		.map(d => [d, database[d]])
 		
 	if (codes.length > 0)
