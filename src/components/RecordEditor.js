@@ -128,6 +128,12 @@ class RecordEditor extends React.Component {
 		return 'valid'
 	}
 
+	async discard(db, uid) {
+		db.records
+			.where('uid').equals(uid)
+			.delete()
+	}
+
 	render() {
 		// Handle loading and errors
 		if (this.state.state === RecordEditorState.LOADING)
@@ -155,15 +161,12 @@ class RecordEditor extends React.Component {
 		let prompt = !isValid(validation) ? 
 			<Prompt 
 				message={
-					async (nextLocation) => {
+					nextLocation => {
 						// Show confirmation
 						let discard = window.confirm("Can not save incomplete or invalid record. Discard record?")
 						if (discard) {
 							// Discard record
-							await this.props.db.records
-								.where('uid')
-									.equals(this.state.record.uid)
-								.delete()
+							this.discard(this.props.db, this.state.record.uid)
 
 							// Continue to new location
 							return true
