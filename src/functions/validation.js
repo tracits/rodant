@@ -237,6 +237,16 @@ function checkLogic(field, context) {
 }
 
 
+/**
+ * Returns true if all fields in supplied validation result are marked valid
+ * @param validationResult 
+ */
+function isValid(validationResult) {
+	return Object.keys(validationResult)
+		.every(d => validationResult[d].valid)
+}
+
+
 export default validate
 export {
 	validateQualitative,
@@ -246,4 +256,5 @@ export {
 	validateText,
 	validateICD10,
 	validateRecord,
+	isValid,
 }

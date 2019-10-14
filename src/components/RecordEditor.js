@@ -2,7 +2,7 @@ import React from 'react'
 import { Prompt } from 'react-router-dom'
 import _ from 'lodash'
 import FieldEditor from './FieldEditor'
-import { validateRecord } from '../functions/validation'
+import { validateRecord, isValid } from '../functions/validation'
 
 const RecordEditorState = {
 	NONE: 0,
@@ -129,10 +129,9 @@ class RecordEditor extends React.Component {
 	
 		// Do validation
 		let validation = validateRecord(this.state.record, this.props.codebook)
-		let isValid = Object.keys(validation).some(d => !validation[d].valid)
 
 		// Handle leaving page with invalid record
-		let prompt = isValid ? 
+		let prompt = !isValid(validation) ? 
 			<Prompt 
 				message={
 					async (nextLocation) => {

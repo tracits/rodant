@@ -3,7 +3,7 @@ import { Link, withRouter } from 'react-router-dom'
 import { exportCSV, importCSV } from '../functions/csv'
 import download from '../functions/download'
 import { FilePicker } from 'react-file-picker'
-import { validateRecord } from '../functions/validation'
+import { validateRecord, isValid } from '../functions/validation'
 
 /**
  * Renders a list of the available records.
@@ -152,8 +152,7 @@ class RecordPicker extends React.Component {
 
 		for (let record of records) {
 			let validation = validateRecord(record, this.props.codebook)
-			let isInvalid = Object.keys(validation).some(d => !validation[d].valid)
-			if (isInvalid)
+			if (!isValid(validation))
 				toDelete.push(record.uid)
 		}
 
