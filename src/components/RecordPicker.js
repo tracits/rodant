@@ -144,6 +144,38 @@ class RecordPicker extends React.Component {
 		});
 	}
 
+	async cleanUpInvalidRecords(silent = false) {
+		// Removes records that are not valid from database
+		// Find invalid records
+		let records = await this.props.db.records.toArray()
+		let toDelete = []
+
+		for (let record of records) {
+			let validation = validateRecord(record, this.props.codebook)
+			let isInvalid = Object.keys(validation).some(d => !validation[d].valid)
+			if (isInvalid)
+				toDelete.push(record.uid)
+		}
+
+		if (toDelete.length === 0) {
+			// No invalid records were found
+			if (!silent)
+				alert('No invalid records to delete.')
+		} else {
+			// Found invalid records, if not in silent mode ask to delete them
+			if (silent || window.confirm('Really delete ' + toDelete.length + ' records?')) {
+				// Delete from db
+				await this.props.db.records
+					.where('uid')
+						.anyOf(...toDelete)
+					.delete()
+
+				// Update view of records
+				this.updateRecords()
+			}
+		}
+	}
+
 	render() {
 		let searchHits = {}
 		let filteredRecords = this.state.records
@@ -290,6 +322,7 @@ class RecordPicker extends React.Component {
 
 				<div className='buttons'>
 					<button className="button is-primary is-rounded" onClick={() => { this.createRecord() }}>Create Record</button>
+					<button className="button is-rounded" onClick={() => { this.cleanUpInvalidRecords() }}>Delete invalid records</button>
 					<button className="button is-rounded" onClick={() => { this.exportAndDownloadCSV() }}>Export as CSV</button>
 
 					<div className="fileUploader">
