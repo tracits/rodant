@@ -1,4 +1,5 @@
 import React from 'react'
+import { Prompt } from 'react-router-dom'
 import _ from 'lodash'
 import FieldEditor from './FieldEditor'
 import { validateRecord } from '../functions/validation'
@@ -128,7 +129,32 @@ class RecordEditor extends React.Component {
 	
 		// Do validation
 		let validation = validateRecord(this.state.record, this.props.codebook)
+		let isValid = Object.keys(validation).some(d => !validation[d].valid)
 
+		// Handle leaving page with invalid record
+		let prompt = isValid ? 
+			<Prompt 
+				message={
+					async (nextLocation) => {
+						// Show confirmation
+						let discard = window.confirm("Can not save incomplete or invalid record. Discard record?")
+						if (discard) {
+							// Discard record
+							await this.props.db.records
+								.where('uid')
+									.equals(this.state.record.uid)
+								.delete()
+
+							// Continue to new location
+							return true
+						} else {
+							// Stay
+							return false
+						}
+					}
+				}
+			></Prompt> : null
+			
 		// Group fields using 'group1' 
 		let groups = _.groupBy(this.props.codebook.filter(d => d.visible === 'yes'), 'group1')
 	
@@ -224,6 +250,7 @@ class RecordEditor extends React.Component {
 
 		return (
 			<div className='content'>
+				{prompt}
 				<h1 className='title'>Editing record: {this.state.record.uid}</h1>
 				<div className='toolbar'>
 					<button className="button is-rounded" onClick={() => { this.markFieldsUnknown() }}>Mark empty fields as Not Known</button>
