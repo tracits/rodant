@@ -43,9 +43,20 @@ class RecordEditor extends React.Component {
 			.where('uid').equals(Number(this.props.uid))
 			.first()
 
+		let pids = await this.props.db.records.toArray()
+
 		this.setState({
 			state: !record ? RecordEditorState.NOTFOUND : RecordEditorState.READY,
 			record: record,
+			pids: pids.map(d => d.pid),
+		})
+	}
+
+	async updatePIDs() {
+		let pids = await this.props.db.records.toArray()
+
+		this.setState({
+			pids: pids.map(d => d.pid),
 		})
 	}
 	
@@ -56,13 +67,17 @@ class RecordEditor extends React.Component {
 		this.setState({
 			record: record
 		})
-		
+
 		let modify = {}
 		modify[field.name] = value
 		
 		await this.props.db.records
 			.where('uid').equals(Number(this.props.uid))
 			.modify(modify)
+			
+		// If the field that changed was 'pid', update the cached pid numbers
+		if (field.name === 'pid')
+			await this.updatePIDs()			
 	}
 
 	onFocusFieldEditor(fe) {
@@ -129,6 +144,12 @@ class RecordEditor extends React.Component {
 	
 		// Do validation
 		let validation = validateRecord(this.state.record, this.props.codebook)
+
+		// Check for duplicate PIDs
+		if (this.state.pids.filter(d => parseInt(d) === parseInt(validation.pid.value)).length > 1) {
+			validation.pid.errors.push('Duplicate Patient study ID')
+			validation.pid.valid = false
+		}
 
 		// Handle leaving page with invalid record
 		let prompt = !isValid(validation) ? 
