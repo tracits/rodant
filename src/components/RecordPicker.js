@@ -64,14 +64,28 @@ class RecordPicker extends React.Component {
 		download(csv, 'database.csv')
 	}
 
-	async importCSV(fo) {
-		let text = await fo.text()
+	async importCSVText(text) {
 		try {
 			await importCSV(text, this.props.db)
 			this.updateRecords()
 		} catch (err) {
 			console.log("error", err)
 			alert("Error when importing database: " + err)
+		}
+	}
+
+	async importCSV(fo) {
+		if (fo.text) {
+			let text = await fo.text()
+			this.importCSVText(text)
+		} else {
+			// For safari that lacks the .text() call
+			var fileReader = new FileReader()
+			fileReader.addEventListener('loadend', e => {
+				var text = e.srcElement.result
+				this.importCSVText(text)
+			})
+			fileReader.readAsText(fo)
 		}
 	}
 
@@ -331,7 +345,7 @@ class RecordPicker extends React.Component {
 					<div className="fileUploader">
 						<FilePicker	
 							extensions={['csv']}
-							onChange={ fo => this.importCSV(fo )}
+							onChange={ fo => this.importCSV(fo)}
 							onError={ err => console.log('Upload error', err) }
 						>
 							<button className="button is-rounded">Import from CSV</button>
