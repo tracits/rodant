@@ -119,6 +119,7 @@ class FieldEditor extends React.Component {
 						<label className={"radio" + (this.state.value === values[i].toString() ? ' selected' : '')} key={values[i]}>
 							<input 
 								type="radio" 
+								disabled={this.props.disabled}
 								onFocus={e => this.onFocus()}
 								onBlur={e => this.onBlur()}
 								checked={this.state.value === values[i].toString()} 
@@ -134,6 +135,7 @@ class FieldEditor extends React.Component {
 					<select 
 						placeholder={unlabeled ? d.label : ''}
 						value={this.state.value} 
+						disabled={this.props.disabled || d.input !== 'yes'}
 						onChange={e => this.changeValueSelect(e)}
 						onFocus={e => this.onFocus()}
 						onBlur={e => this.onBlur()}
@@ -156,6 +158,7 @@ class FieldEditor extends React.Component {
 				disabled={d.input !== 'yes'}
 				placeholder={unlabeled ? d.label : ''}
 				value={this.state.value}
+				disabled={this.props.disabled}
 				onChange={e => this.changeValueText(e)} 
 				onFocus={e => this.onFocus()}
 				onBlur={e => this.onBlur()}
@@ -164,6 +167,7 @@ class FieldEditor extends React.Component {
 			// Render ICD10 Autocomplete
 			input = <Autocomplete
 				value={this.state.value}
+				disabled={this.props.disabled}
 				placeholder={unlabeled ? d.label : ''}
 				search={(v) => searchICD10(v, d.valid_values.split(','))}
 				onChange={(e, v) => {
@@ -186,7 +190,7 @@ class FieldEditor extends React.Component {
 				// Render text
 				input = <input
 					className="input is-small"
-					disabled={d.input !== 'yes'}
+					disabled={d.input !== 'yes' || this.props.disabled}
 					type="text"
 					placeholder={unlabeled ? d.label : ''}
 					value={this.state.value}

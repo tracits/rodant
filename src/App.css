@@ -39,6 +39,11 @@ a:hover .hide-until-parent-hovered {
   margin-top: 6em;
 }
 
+nav.navbar.has-background-light {
+  background: #00a78e !important;
+  color: white !important;
+}
+
 .toolbar {
   display: flex;
   justify-content: left;
@@ -54,7 +59,7 @@ a:hover .hide-until-parent-hovered {
 }
 
 .record_group:last-child {
-  margin-bottom: 100px;
+  margin-bottom: 300px;
 }
 
 .record_group .fields {
@@ -82,6 +87,14 @@ a:hover .hide-until-parent-hovered {
   font-weight: bold;
 }
 .field_group.focused.valid .label {
+  color: white;
+}
+
+.field_group.double-entry-error {
+  background: #ff0000;
+}
+
+.field_group.double-entry-error .label {
   color: white;
 }
 
@@ -220,6 +233,21 @@ input.input:focus, .select select:focus {
   opacity: 1;
 }
 
+.field_help.valid-record {
+  bottom: 75px !important;
+  
+}
+
+.finalize-entry {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 999;
+  background: #00a78e;
+  padding: 20px;
+
+}
 
 
 .errors .error,

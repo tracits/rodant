@@ -1,5 +1,5 @@
 import React from 'react'
-import { Prompt } from 'react-router-dom'
+import { Prompt, Link, withRouter } from 'react-router-dom'
 import _ from 'lodash'
 import FieldEditor from './FieldEditor'
 import { validateRecord, isValid } from '../functions/validation'
@@ -30,6 +30,7 @@ class RecordEditor extends React.Component {
 			state: RecordEditorState.NONE,
 			record: null,
 			allowRadios: false,
+			doubleEntry: !!props['double-entry'],
 		}
 	}
 
@@ -45,11 +46,24 @@ class RecordEditor extends React.Component {
 
 		let pids = await this.props.db.records.toArray()
 
-		this.setState({
+		let state = {
 			state: !record ? RecordEditorState.NOTFOUND : RecordEditorState.READY,
-			record: record,
 			pids: pids.map(d => d.pid),
-		})
+		}
+
+		if (this.state.doubleEntry) {
+			state.referenceRecord = { ...record }
+			state.record = { uid: this.props.uid }
+			this.props.codebook
+				.filter(d => d.double_enter !== 'yes')
+				.forEach(d => state.record[d.name] = record[d.name])
+
+			console.log(state.record)
+		} else {
+			state.record = record
+		}
+
+		this.setState(state)
 	}
 
 	async updatePIDs() {
@@ -67,6 +81,9 @@ class RecordEditor extends React.Component {
 		this.setState({
 			record: record
 		})
+
+		if (this.state.doubleEntry)
+			return
 
 		let modify = {}
 		modify[field.name] = value
@@ -113,6 +130,12 @@ class RecordEditor extends React.Component {
 	}
 
 	validateFieldGroup(group, validation) {
+		if (
+			this.state.doubleEntryErrors && 
+			group.some(d => this.state.doubleEntryErrors.indexOf(d.name) !== -1)
+		)
+			return 'double-entry-error'
+
 		if (group.some(d => d.input !== 'yes'))
 			return 'valid'
 
@@ -134,6 +157,31 @@ class RecordEditor extends React.Component {
 			.delete()
 	}
 
+	checkDoubleEntry() {
+		let errors = this.props.codebook
+			.filter(d => 
+				d.double_enter === 'yes' &&
+				d.input === 'yes' &&
+				d.calculated !== 'yes' &&
+				this.state.referenceRecord[d.name] !== this.state.record[d.name]
+			).map(d => d.name)
+
+		console.log(errors)
+		this.setState({
+			doubleEntryErrors: errors,
+		})
+	}
+
+	async finalizeDoubleEntry() {
+		await this.props.db.records
+			.where('uid').equals(Number(this.props.uid))
+			.modify({
+				locked: true,
+			})
+		
+		this.props.history.push('/')
+	}
+
 	render() {
 		// Handle loading and errors
 		if (this.state.state === RecordEditorState.LOADING)
@@ -150,6 +198,7 @@ class RecordEditor extends React.Component {
 	
 		// Do validation
 		let validation = validateRecord(this.state.record, this.props.codebook)
+		let valid = isValid(validation)
 
 		// Check for duplicate PIDs
 		if (this.state.pids.filter(d => parseInt(d) === parseInt(validation.pid.value)).length > 1) {
@@ -158,21 +207,26 @@ class RecordEditor extends React.Component {
 		}
 
 		// Handle leaving page with invalid record
-		let prompt = !isValid(validation) ? 
+		let prompt = !valid || (this.state.doubleEntry && this.state.record.locked)? 
 			<Prompt 
 				message={
 					nextLocation => {
-						// Show confirmation
-						let discard = window.confirm("Can not save incomplete or invalid record. Discard record?")
-						if (discard) {
-							// Discard record
-							this.discard(this.props.db, this.state.record.uid)
 
-							// Continue to new location
-							return true
+						if (this.state.doubleEntry) {
+							return "You have not yet completed this Double Entry. Discard changes?"
 						} else {
-							// Stay
-							return false
+							// Show confirmation
+							let discard = window.confirm("Can not save incomplete or invalid record. Discard record?")
+							if (discard) {
+								// Discard record
+								this.discard(this.props.db, this.state.record.uid)
+	
+								// Continue to new location
+								return true
+							} else {
+								// Stay
+								return false
+							}
 						}
 					}
 				}
@@ -197,6 +251,7 @@ class RecordEditor extends React.Component {
 									<FieldEditor
 										key={d.name}
 										data={d}
+										disabled={(this.state.doubleEntry && d.double_enter !== 'yes') || this.state.record.locked === true}
 										record={this.state.record}
 										allowRadios={this.state.allowRadios}
 										validation={validation[d.name]}
@@ -238,9 +293,11 @@ class RecordEditor extends React.Component {
 						</div>
 					</div>
 				})
-			
+
+		
+		let showFinalize = valid && this.state.record.cr === '1' && !this.state.doubleEntry && this.state.record.locked !== true
 		let fieldHelp = !this.state.focusedField ? <div className='field_help'></div> : (
-			<div className='field_help visible'>
+			<div className={'field_help visible' + (showFinalize || this.state.doubleEntry ? ' valid-record' : '')}>
 				<div className="label">{this.state.focusedField.props.data.label}</div>
 				
 				<div className="errors">
@@ -271,12 +328,33 @@ class RecordEditor extends React.Component {
 			</div>
 		)
 
+		let finalizeEntry = showFinalize ? (
+			<div className='finalize-entry'>
+				<Link to={'/complete/' + this.state.record.uid}>
+					<button className="button is-primary is-rounded">Begin double entry</button>
+				</Link>
+			</div>	
+		) : null
+
+		let checkEntry = this.state.doubleEntry && this.state.record.locked !== true ? (
+			<div className='finalize-entry'>
+				<button className="button is-primary is-rounded" onClick={() => this.checkDoubleEntry()}>Check</button>
+				{
+					this.state.doubleEntryErrors && this.state.doubleEntryErrors.length === 0 &&
+					<button className="button is-primary is-rounded" onClick={() => this.finalizeDoubleEntry()}>Finalize</button>
+
+				}
+			</div>	
+		) : null
+
 		return (
 			<div className='content'>
 				{prompt}
-				<h1 className='title'>Editing record: {this.state.record.uid}</h1>
+				<h1 className='title'>{this.state.doubleEntry ? 'Double enter: ' : 'Editing record:'} {this.state.record.uid}</h1>
 				<div className='toolbar'>
-					<button className="button is-rounded" onClick={() => { this.markFieldsUnknown() }}>Mark empty fields as Not Known</button>
+					{
+						(!this.state.doubleEntry ||true) && <button className="button is-rounded" onClick={() => { this.markFieldsUnknown() }}>Mark empty fields as Not Known</button>
+					}
 					<div className="control">
 						<label className="checkbox">
 							<input 
@@ -290,6 +368,8 @@ class RecordEditor extends React.Component {
 				
 				<div className='record_fields'>{fieldGroups}</div>
 				{fieldHelp}
+				{finalizeEntry}
+				{checkEntry}
 			</div>
 		)
 	}
@@ -308,4 +388,4 @@ class RecordEditor extends React.Component {
 	}
 }
 
-export default RecordEditor
+export default withRouter(RecordEditor)

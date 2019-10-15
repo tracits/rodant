@@ -266,7 +266,9 @@ class RecordPicker extends React.Component {
 				}
 					
 				return <Link key={d.uid} to={'/record/' + d.uid} className="list-item has-background-white">
-					<span className="pid">{d.pid} {issueDisplay}</span>
+					<span className="pid">
+						{ d.locked === true && <span className="fa fa-lock"> </span> } {d.pid} {issueDisplay}
+					</span>
 					<span className="hits">{searchHits[d.uid] && searchHits[d.uid].slice(0, 10).map((e, i) => <span key={i}>{e[0]}: {e[1]}</span>) }</span>
 					<span className="sort-field">{this.getFieldText(this.props.codebook, d, this.state.sortField)}</span>
 					<button onClick={e => { e.preventDefault(); this.deleteRecord(d.uid); }} className="button is-danger is-small is-outlined is-rounded remove">

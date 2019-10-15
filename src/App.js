@@ -17,6 +17,7 @@ class App extends React.Component {
     // Create component factories for the routes below
     let recordPicker = () => <RecordPicker db={this.props.db} codebook={this.props.codebook} />
     let recordEditor = match => <RecordEditor db={this.props.db} codebook={this.props.codebook} uid={match.match.params.uid} />
+    let doubleEntry = match => <RecordEditor db={this.props.db} codebook={this.props.codebook} uid={match.match.params.uid} double-entry='true' />
 
     // Use React Router to select which page to show from the url
     return (
@@ -29,7 +30,7 @@ class App extends React.Component {
               <span aria-hidden="true"></span>
               <span aria-hidden="true"></span>
             </a>
-          </div>   
+          </div>
 
           <div className="navbar-menu">
             <div className="navbar-start">
@@ -42,6 +43,7 @@ class App extends React.Component {
         <div className="container">
           <Route path="/" exact component={recordPicker} />
           <Route path="/record/:uid" component={recordEditor} />
+          <Route path="/complete/:uid" component={doubleEntry} />
         </div>
       </Router>
     );
