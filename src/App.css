@@ -349,6 +349,27 @@ input.input:focus, .select select:focus {
   width: 2em;
 }
 
+.paging button {
+  width: 10px !important;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+.paging input {
+  text-align: right;
+  margin-right: 5px;
+  padding-top: 4px;
+  border: none;
+  font-size: 16px !important;
+  font-family: Roboto, sans-serif;
+}
+
+.paging span {
+  font-size: 16px !important;
+  font-family: Roboto, sans-serif;
+  margin-right: 8px;
+}
+
 span.issues {
   color: #ff0000;
   font-size: 0.75em;
