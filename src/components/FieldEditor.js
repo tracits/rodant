@@ -110,6 +110,15 @@ class FieldEditor extends React.Component {
 		) {
 			let values = getList(d.valid_values)
 			let labels = getList(d.value_labels)
+
+			// Add unknown to values and labels if missing and not empty
+			if (
+				d.unknown !== '' &&
+				values.indexOf(d.unknown.toString()) === -1
+			) {
+				values.push(d.unknown)
+				labels.push('Unknown')
+			}
 			
 			if (this.props.allowRadios && values.length <= 6) {
 				// Render radio buttons
@@ -142,10 +151,6 @@ class FieldEditor extends React.Component {
 					>
 						<option key='unset'></option>
 						{values.map((d, i) => <option key={d} value={d}>{d}. {labels[i]}</option>)}
-						{
-							d.unknown !== '' &&
-								<option key='unknown' value={d.unknown}>{d.unknown}. Unknown</option>
-						}
 					</select>
 				</div>
 			}
