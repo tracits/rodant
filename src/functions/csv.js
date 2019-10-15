@@ -26,7 +26,8 @@ function exportCSV(codebook, records) {
 	
 	// Add headers
 	for (let c of codebook)
-		headers.push(serializeField(c.name))
+		if (c.input === 'yes')
+			headers.push(serializeField(c.name))
 	
 	// Add data
 	for (let r of records) {
