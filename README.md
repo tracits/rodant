@@ -34,6 +34,13 @@ Your app is ready to be deployed!
 
 See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
+
+#### Build for when hosting in subdirectory
+Set the environment variable PUBLIC_URL before building<br>
+Unix-like: PUBLIC_URL=/THE_URL_TO_HOST_AT/ npm run build
+Windows: cmd /V /C "set PUBLIC_URL=/THE_URL_TO_HOST_AT/&& npm run build"
+
+
 ### `npm run eject`
 
 **Note: this is a one-way operation. Once you `eject`, you can’t go back!**

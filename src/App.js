@@ -21,7 +21,7 @@ class App extends React.Component {
 
     // Use React Router to select which page to show from the url
     return (
-      <Router>
+      <Router basename={process.env.PUBLIC_URL}>
         <nav className="navbar has-background-light is-fixed-top" role="navigation" aria-label="main navigation">
           <div className="navbar-brand">
             <Link to="/" className="navbar-item has-background-primary has-text-weight-bold is-primary">DCT</Link>

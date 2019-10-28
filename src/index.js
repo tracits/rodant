@@ -12,7 +12,7 @@ serviceWorker.register()
 const DB_VERSION = 1
 async function bootstrap() {
 	// Parse codebook into javascript object
-	let response = await fetch('/codebook.csv')
+	let response = await fetch(process.env.PUBLIC_URL + '/codebook.csv')
 	let codebook = await response.text()
 	let csvString = await csv.parse(codebook)
 	let columns = csvString[0]
