@@ -116,7 +116,11 @@ class RecordEditor extends React.Component {
 	markFieldsUnknown() {
 		let record = { ...this.state.record }
 		for (let c of this.props.codebook) {
-			if (record[c.name] === undefined || record[c.name] === '') {
+			if (
+				c.input === 'yes' &&
+				(record[c.name] === undefined || 
+				record[c.name] === '')
+			) {
 				record[c.name] = c.unknown || '999'
 				this.onChange(c, c.unknown || '999')
 			}
