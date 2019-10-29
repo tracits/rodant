@@ -206,7 +206,8 @@ function validateRecord(record, fields) {
 	for (let field of fields) {
 		let logicErrors = validate(context[field.name], field) || []
 		let logicWarnings = []
-
+		
+		let hasUnknownDependency = false
 		if (field.logic_checks) {
 			let checks = checkLogic(field, context)
 			let logicPrompts = JSON.parse('[' + field.logic_prompts + ']')
@@ -215,6 +216,8 @@ function validateRecord(record, fields) {
 				.map(d => d.trim() === 'yes')
 
 			for (let i in checks) {
+				if (checks[i] === false)
+					hasUnknownDependency = true;
 				if (typeof checks[i] === 'string')
 					logicErrors.push(
 						'"' +
@@ -223,19 +226,20 @@ function validateRecord(record, fields) {
 					)
 				else if (checks[i] && mustBeTrue[i] === true)
 					logicErrors.push(logicPrompts[i])
-				else if (checks[i] && !mustBeTrue[i])
+				else if (checks[i] && (mustBeTrue[i] === false || mustBeTrue[i] === undefined))
 					logicWarnings.push(logicPrompts[i])
 			}
 		}
 
+		if (field.calculated === 'yes') 
+			hasUnknownDependency |= checkUnknownDependencies(field, context, fieldsByName)
+
 		result[field.name] = {
 			value: context[field.name],
-			valid: logicErrors.length === 0,
+			valid: logicErrors.length === 0 || hasUnknownDependency,
 			errors: logicErrors,
 			warnings: logicWarnings,
-			unknown:
-				(context[field.name] || '').toString() === field.unknown &&
-				field.unknown !== '',
+			unknown: hasUnknownDependency || ((context[field.name] || '').toString() === field.unknown && field.unknown !== ''),
 			incomplete: !context[field.name] && context[field.name] !== 0,
 			type: field.type,
 		}
@@ -248,6 +252,17 @@ let findVarRegex = /([a-z_]+[0-9]*)/g
 function thisVars(text) {
 	if (text[0] === '$') return text.substr(1)
 	return text.replace(findVarRegex, 'this.$1')
+}
+
+/**
+ * Checks if a field has any unknown dependency vars
+ */
+function checkUnknownDependencies(field, context, fieldsByName) {
+	return field.equation
+		.trim()
+		.match(findVarRegex) // Find vars
+		.map(d => context[d] === fieldsByName[d].unknown) // Check if they are marked unknown
+		.some(d => d === true) // If any are unknown, return true
 }
 
 /**
