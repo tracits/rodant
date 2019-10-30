@@ -61,7 +61,7 @@ function validateQuantitative(value, field) {
 function validateQualitative(value, field) {
 	if (!field.valid_values) return []
 
-	if (value.toString() === field.unknown || value.toString() === 'NaN')
+	if (field.unknown !== '' && value.toString() === field.unknown)
 		return []
 
 	return field.valid_values.split(',').indexOf(value.toString()) !== -1
@@ -207,7 +207,6 @@ function validateRecord(record, fields) {
 		let logicErrors = validate(context[field.name], field) || []
 		let logicWarnings = []
 		
-		let hasUnknownDependency = false
 		if (field.logic_checks) {
 			let checks = checkLogic(field, context)
 			let logicPrompts = JSON.parse('[' + field.logic_prompts + ']')
@@ -216,8 +215,6 @@ function validateRecord(record, fields) {
 				.map(d => d.trim() === 'yes')
 
 			for (let i in checks) {
-				if (checks[i] === false)
-					hasUnknownDependency = true;
 				if (typeof checks[i] === 'string')
 					logicErrors.push(
 						'"' +
@@ -230,16 +227,22 @@ function validateRecord(record, fields) {
 					logicWarnings.push(logicPrompts[i])
 			}
 		}
+		
+		let hasUnknownDependency = false
+		if (field.logic_checks !== '') 
+			hasUnknownDependency |= checkUnknownDependencies(field, 'logic_checks', context, fieldsByName)
 
 		if (field.calculated === 'yes') 
-			hasUnknownDependency |= checkUnknownDependencies(field, context, fieldsByName)
+			hasUnknownDependency |= checkUnknownDependencies(field, 'equation', context, fieldsByName)
 
 		result[field.name] = {
 			value: context[field.name],
-			valid: logicErrors.length === 0 || hasUnknownDependency,
+			valid: hasUnknownDependency || logicErrors.length === 0,
 			errors: logicErrors,
 			warnings: logicWarnings,
-			unknown: hasUnknownDependency || ((context[field.name] || '').toString() === field.unknown && field.unknown !== ''),
+			unknown:
+				field.unknown !== '' &&
+				(context[field.name] || '').toString() === field.unknown,
 			incomplete: !context[field.name] && context[field.name] !== 0,
 			type: field.type,
 		}
@@ -257,10 +260,15 @@ function thisVars(text) {
 /**
  * Checks if a field has any unknown dependency vars
  */
-function checkUnknownDependencies(field, context, fieldsByName) {
-	return field.equation
+function checkUnknownDependencies(field, member, context, fieldsByName) {
+	var text = field[member]
+	if (text === null)
+		return false
+
+	return text
 		.trim()
 		.match(findVarRegex) // Find vars
+		.filter(d => fieldsByName[d].unknown !== '') // Ignore self and fields where unknown is empty
 		.map(d => context[d] === fieldsByName[d].unknown) // Check if they are marked unknown
 		.some(d => d === true) // If any are unknown, return true
 }
