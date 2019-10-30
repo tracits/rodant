@@ -30,7 +30,7 @@ function validateQuantitative(value, field) {
 	if (!field.valid_values)
 		return []
 
-	if (value.toString() === field.unknown || parseInt(value) >= parseInt(field.unknown))
+	if (field.unknown !== '' && value.toString() === field.unknown || parseInt(value) >= parseInt(field.unknown))
 		return []
 
 	let v = parseInt(value)
@@ -51,8 +51,11 @@ function validateQualitative(value, field) {
 	if (!field.valid_values)
 		return []
 
-	if (value.toString() === field.unknown || value.toString() === 'NaN')
+	if (field.unknown !== '' && value.toString() === field.unknown)
 		return []
+
+	if (value.toString() === 'NaN') 
+		return [`Not a number`]
 
 	return field.valid_values.split(',').indexOf(value.toString()) !== -1 ? [] : [`'${value}' is not a valid value`]
 }
@@ -62,8 +65,8 @@ function validateQualitative(value, field) {
  * @returns empty array if no errors, or array with text describing each issue
  */
 function validateDate(value, field) {
-	if (value === field.unknown)
-		return [];
+	if (field.unknown !== '' && value === field.unknown) 
+		return []
 
 	// Check format
 	if (!(/^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]$/.test(value)))
@@ -78,8 +81,8 @@ function validateDate(value, field) {
  * @returns empty array if no errors, or array with text describing each issue
  */
 function validateDateTime(value, field) {
-	if (value === field.unknown)
-		return [];
+	if (field.unknown !== '' && value === field.unknown) 
+		return []
 
 	// Check format
 	if (!(/^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9] [0-9][0-9]:[0-9][0-9]$/.test(value)))
@@ -94,8 +97,8 @@ function validateDateTime(value, field) {
  * @returns empty array if no errors, or array with text describing each issue
  */
 function validateTime(value, field) {
-	if (value === field.unknown)
-		return [];
+	if (field.unknown !== '' && value === field.unknown) 
+		return []
 
 	// Check format
 	if (!(/^[0-9][0-9]:[0-9][0-9]$/.test(value)))
@@ -114,18 +117,19 @@ function validateTime(value, field) {
  * @returns empty array if no errors, or array with text describing each issue
  */
 function validateText(value, field) {
-	if (value === field.unknown)
-		return [];
+	if (field.unknown !== '' && value === field.unknown) 
+		return []
 
 	return value !== undefined && value.length <= 1000 ? [] : ['Text too long (< 1000 characters)']
 }
+
 /** 
  * Validates an icd10 code to be one of the valid values
  * @returns empty array if no errors, or array with text describing each issue
  */
 function validateICD10(value, field) {
-	if (value === field.unknown)
-		return [];
+	if (field.unknown !== '' && value === field.unknown) 
+		return []
 
 	return value !== undefined && field.valid_values.split(',').indexOf(value) !== -1 ? [] : ['Unknown ICD10 code']
 }
@@ -176,15 +180,12 @@ function validateRecord(record, fields) {
 		let logicErrors = validate(context[field.name], field) || []
 		let logicWarnings = []
 		
-		let hasUnknownDependency = false
 		if (field.logic_checks) {
 			let checks = checkLogic(field, context)
 			let logicPrompts = JSON.parse('[' + field.logic_prompts + ']')
 			let mustBeTrue = field.logic_must_be_true.split(',').map(d => d.trim() === 'yes')
-
+			
 			for (let i in checks) {
-				if (checks[i] === false)
-					hasUnknownDependency = true;
 				if (typeof checks[i] === 'string')
 					logicErrors.push('"' + (fields.find(d => d.name === checks[i]) || {}).label + '" can not be empty')
 				else if (checks[i] && mustBeTrue[i] === true)
@@ -193,18 +194,24 @@ function validateRecord(record, fields) {
 					logicWarnings.push(logicPrompts[i])
 			}
 		}
+		
+		let hasUnknownDependency = false
+		if (field.logic_checks !== '') 
+			hasUnknownDependency |= checkUnknownDependencies(field, 'logic_checks', context, fieldsByName)
 
 		if (field.calculated === 'yes') 
-			hasUnknownDependency |= checkUnknownDependencies(field, context, fieldsByName)
+			hasUnknownDependency |= checkUnknownDependencies(field, 'equation', context, fieldsByName)
 
 		result[field.name] = {
 			value: context[field.name],
-			valid: logicErrors.length === 0 || hasUnknownDependency,
+			valid: hasUnknownDependency || logicErrors.length === 0,
 			errors: logicErrors,
 			warnings: logicWarnings,
-			unknown: hasUnknownDependency || ((context[field.name] || '').toString() === field.unknown && field.unknown !== ''),
+			unknown:
+				field.unknown !== '' &&
+				(context[field.name] || '').toString() === field.unknown,
 			incomplete: !context[field.name] && context[field.name] !== 0,
-			type: field.type
+			type: field.type,
 		}
 	}
 
@@ -219,10 +226,15 @@ function thisVars(text) {
 /**
  * Checks if a field has any unknown dependency vars
  */
-function checkUnknownDependencies(field, context, fieldsByName) {
-	return field.equation
+function checkUnknownDependencies(field, member, context, fieldsByName) {
+	var text = field[member]
+	if (text === null)
+		return false
+
+	return text
 		.trim()
 		.match(findVarRegex) // Find vars
+		.filter(d => fieldsByName[d].unknown !== '') // Ignore self and fields where unknown is empty
 		.map(d => context[d] === fieldsByName[d].unknown) // Check if they are marked unknown
 		.some(d => d === true) // If any are unknown, return true
 }
@@ -244,7 +256,7 @@ function checkLogic(field, context) {
 				// Check if a field dependency 
 				if (context[v] === undefined || context[v] === '')
 					return v // Dependent value is _undefined_ so return the undefined field id for error message
-				else if (context[v].toString() === (field.unknown || 999).toString())
+				else if (field.unknown !== '' && context[v].toString() === field.unknown.toString())
 					return false // Dependent value is _unknown_ pass test
 
 			// Run the test
