@@ -118,11 +118,11 @@ class RecordEditor extends React.Component {
 		for (let c of this.props.codebook) {
 			if (
 				c.input === 'yes' &&
-				(record[c.name] === undefined || 
-				record[c.name] === '')
+				c.unknown !== '' &&
+				(record[c.name] === undefined || record[c.name] === '')
 			) {
-				record[c.name] = c.unknown || '999'
-				this.onChange(c, c.unknown || '999')
+				record[c.name] = c.unknown
+				this.onChange(c, c.unknown)
 			}
 		}
 
