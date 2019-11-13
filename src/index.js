@@ -39,7 +39,7 @@ async function bootstrap() {
 	// Bootstrap the 'App'
 	ReactDOM.render(
 		<App codebook={items} db={db} config={config} />,
-		document.getElementById('root'),
+		document.getElementById('root')
 	)
 
 	// For prefetch of ICD data

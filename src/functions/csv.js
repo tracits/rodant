@@ -1,17 +1,19 @@
 import csvParse from 'csv-parse'
 
-
 const unset = '<unset>' // The value to use when a value is not defined in the record
 const csv_separator = ',' // Between fields
 const csv_encloser = '"' // Enclosing fields
 const csv_row_break = '\n' // Line break
 
 function serializeField(v) {
-	return csv_encloser +
-		v.toString()
+	return (
+		csv_encloser +
+		v
+			.toString()
 			.replace(/"/gi, '""') // Double up double quotes
-			.replace(/'/gi, "''") // Double up single quotes
-		+ csv_encloser
+			.replace(/'/gi, "''") + // Double up single quotes
+		csv_encloser
+	)
 }
 
 /**
@@ -22,28 +24,24 @@ function serializeField(v) {
  */
 function exportCSV(codebook, records) {
 	let data = []
-	let headers = data[0] = ['uid']
-	
+	let headers = (data[0] = ['uid'])
+
 	// Add headers
 	for (let c of codebook)
-		if (c.input === 'yes')
-			headers.push(serializeField(c.name))
-	
+		if (c.input === 'yes') headers.push(serializeField(c.name))
+
 	// Add data
 	for (let r of records) {
 		let row = [r.uid]
-		
-		for (let c of codebook)
-			row.push(serializeField(r[c.name] || unset))
-		
-		
+
+		for (let c of codebook) row.push(serializeField(r[c.name] || unset))
+
 		data.push(row)
 	}
 
 	// Create string
 	let result = ''
-	for (let r of data)
-		result += r.join(csv_separator) + csv_row_break
+	for (let r of data) result += r.join(csv_separator) + csv_row_break
 
 	// Return the result
 	return result
@@ -51,46 +49,45 @@ function exportCSV(codebook, records) {
 
 async function importCSV(text, db) {
 	let promise = new Promise((resolve, reject) => {
-		csvParse(text, {
-			delimiter: csv_separator,
-		}, async (err, rs) => {
-			if (err) {
-				// Something went wrong
-				reject(err)
-			} else {
-				// Parsed ok
-				let headers = rs.splice(0, 1)[0]
-				let records = []
-				for (let r of rs) {
-					let record = {}
-					for (let i = 0; i < headers.length; i++) {
-						let k = headers[i]
-						let v = r[i]
-						
-						if (v !== '<unset>')
-							record[k] = k === 'uid' ? parseInt(v) : v
+		csvParse(
+			text,
+			{
+				delimiter: csv_separator,
+			},
+			async (err, rs) => {
+				if (err) {
+					// Something went wrong
+					reject(err)
+				} else {
+					// Parsed ok
+					let headers = rs.splice(0, 1)[0]
+					let records = []
+					for (let r of rs) {
+						let record = {}
+						for (let i = 0; i < headers.length; i++) {
+							let k = headers[i]
+							let v = r[i]
+
+							if (v !== '<unset>') record[k] = k === 'uid' ? parseInt(v) : v
+						}
+
+						records.push(record)
 					}
-	
-					records.push(record)
+
+					// Clear database
+					await db.records.clear()
+
+					// Insert into database
+					let put = await db.records.bulkPut(records)
+
+					// Return result
+					resolve(put)
 				}
-	
-				// Clear database
-				await db.records.clear()
-
-				// Insert into database
-				let put = await db.records.bulkPut(records)
-
-				// Return result
-				resolve(put)
 			}
-		})
-
+		)
 	})
 
 	return promise
 }
 
-export {
-	exportCSV,
-	importCSV,
-}
+export { exportCSV, importCSV }

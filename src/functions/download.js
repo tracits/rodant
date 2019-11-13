@@ -1,8 +1,13 @@
 /**
  * Download a string as a text file
  * Defaults to 'application/octet-stream'
- */  
-export default function(data, filename, prefix = 'data:application/octet-stream,') {
+ */
+
+export default function(
+	data,
+	filename,
+	prefix = 'data:application/octet-stream,'
+) {
 	// Encode data
 	let encoded = encodeURIComponent(data)
 
