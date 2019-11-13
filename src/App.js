@@ -15,16 +15,16 @@ import RecordPicker from './components/RecordPicker'
 class App extends React.Component {
   render() {
     // Create component factories for the routes below
-    let recordPicker = () => <RecordPicker db={this.props.db} codebook={this.props.codebook} />
-    let recordEditor = match => <RecordEditor db={this.props.db} codebook={this.props.codebook} uid={match.match.params.uid} />
-    let doubleEntry = match => <RecordEditor db={this.props.db} codebook={this.props.codebook} uid={match.match.params.uid} double-entry='true' />
+    let recordPicker = () => <RecordPicker db={this.props.db} codebook={this.props.codebook} config={this.props.config} />
+    let recordEditor = match => <RecordEditor db={this.props.db} codebook={this.props.codebook} uid={match.match.params.uid} config={this.props.config} />
+    let doubleEntry = match => <RecordEditor db={this.props.db} codebook={this.props.codebook} uid={match.match.params.uid} double-entry='true' config={this.props.config} />
 
     // Use React Router to select which page to show from the url
     return (
       <Router basename={process.env.PUBLIC_URL}>
         <nav className="navbar has-background-light is-fixed-top" role="navigation" aria-label="main navigation">
           <div className="navbar-brand">
-            <Link to="/" className="navbar-item has-background-primary has-text-weight-bold is-primary">DCT</Link>
+            <Link to="/" className="navbar-item has-background-primary has-text-weight-bold is-primary">{this.props.config.name}</Link>
             <a role="button" className="navbar-burger burger" href="/">
               <span aria-hidden="true"></span>
               <span aria-hidden="true"></span>

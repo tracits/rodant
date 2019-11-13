@@ -18,7 +18,7 @@ class RecordPicker extends React.Component {
 			records: [],
 			search: '',
 			searchField: '',
-			sortField: 'doar',
+			sortField: this.props.config.id_field,
 			sortOrder: 1,
 			pageSize: 10,
 			page: 0,
