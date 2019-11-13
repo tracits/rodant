@@ -3,6 +3,7 @@ import { Prompt, Link, withRouter } from 'react-router-dom'
 import _ from 'lodash'
 import FieldEditor from './FieldEditor'
 import { validateRecord, isValid } from '../functions/validation'
+import Helmet from 'react-helmet'
 
 const RecordEditorState = {
 	NONE: 0,
@@ -394,6 +395,11 @@ class RecordEditor extends React.Component {
 
 		return (
 			<div className="content">
+				<Helmet>
+					<title>{`${this.props.config.name} - ${
+						this.state.doubleEntry ? 'Double enter: ' : 'Editing record:'
+					} ${this.state.record.uid}`}</title>
+				</Helmet>
 				{prompt}
 				<h1 className="title">
 					{this.state.doubleEntry ? 'Double enter: ' : 'Editing record:'}{' '}
