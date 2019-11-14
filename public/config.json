@@ -1,0 +1,5 @@
+{
+	"name": "Example",
+	"id_field": "pid",
+	"codebook": "codebook.csv"
+}
