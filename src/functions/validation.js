@@ -151,12 +151,11 @@ function validateICD10(value, field) {
 }
 
 /**
- * Generates a validation result for a whole record,
- * using calculated fields and logic_checks.
- * @returns array of validation result for each field
+ * Creates a context object containing properties for calculated fields
+ * @param {*} record
+ * @param {*} fields
  */
-function validateRecord(record, fields) {
-	let result = {}
+function interpolateRecord(record, fields) {
 	let context = {}
 
 	// Apply non calculated fields to context
@@ -189,6 +188,18 @@ function validateRecord(record, fields) {
 			})
 		}
 	}
+
+	return context
+}
+
+/**
+ * Generates a validation result for a whole record,
+ * using calculated fields and logic_checks.
+ * @returns array of validation result for each field
+ */
+function validateRecord(record, fields) {
+	let result = {}
+	let context = interpolateRecord(record, fields)
 
 	// Apply calculated context to result and do logic checks
 	for (let field of fields) {
@@ -280,4 +291,5 @@ export {
 	validateICD10,
 	validateRecord,
 	isValid,
+	interpolateRecord,
 }
