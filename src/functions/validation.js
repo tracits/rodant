@@ -180,9 +180,8 @@ function interpolateRecord(record, fields) {
 	// Setup calculated context
 	for (let field of fields) {
 		if (field.calculated === 'yes') {
-			let func = new Function('return ' + thisVars(field.equation)).bind(
-				context
-			)
+			let expr = 'return ' + thisVars(field.equation)
+			let func = new Function(expr).bind(context)
 			Object.defineProperty(context, field.name, {
 				get() {
 					return func()
@@ -247,6 +246,7 @@ function validateRecord(record, fields) {
 
 let findVarRegex = /([a-z_]+[0-9]*)/g
 function thisVars(text) {
+	if (text[0] === '$') return text.substr(1)
 	return text.replace(findVarRegex, 'this.$1')
 }
 
