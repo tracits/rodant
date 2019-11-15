@@ -151,14 +151,14 @@ function validateICD10(value, field) {
 }
 
 /**
- * Generates a validation result for a whole record,
- * using calculated fields and logic_checks.
- * @returns array of validation result for each field
+ * Creates a context object containing properties for calculated fields
+ * @param {*} record
+ * @param {*} fields
  */
-function validateRecord(record, fields) {
-	let result = {}
-	let context = {}
-	let fieldsByName = Object.assign({},...[...fields.entries()].map(([k, v]) => ({ [v.name]: v })))
+function interpolateRecord(record, fields) {
+	let context = {
+		moment: moment,
+	}
 
 	// Apply non calculated fields to context
 	for (let field of fields) {
@@ -180,9 +180,8 @@ function validateRecord(record, fields) {
 	// Setup calculated context
 	for (let field of fields) {
 		if (field.calculated === 'yes') {
-			let func = new Function('return ' + thisVars(field.equation)).bind(
-				context
-			)
+			let expr = 'return ' + thisVars(field.equation)
+			let func = new Function(expr).bind(context)
 			Object.defineProperty(context, field.name, {
 				get() {
 					return func()
@@ -190,6 +189,18 @@ function validateRecord(record, fields) {
 			})
 		}
 	}
+
+	return context
+}
+
+/**
+ * Generates a validation result for a whole record,
+ * using calculated fields and logic_checks.
+ * @returns array of validation result for each field
+ */
+function validateRecord(record, fields) {
+	let result = {}
+	let context = interpolateRecord(record, fields)
 
 	// Apply calculated context to result and do logic checks
 	for (let field of fields) {
@@ -242,6 +253,7 @@ function validateRecord(record, fields) {
 
 let findVarRegex = /([a-z_]+[0-9]*)/g
 function thisVars(text) {
+	if (text[0] === '$') return text.substr(1)
 	return text.replace(findVarRegex, 'this.$1')
 }
 
@@ -304,4 +316,5 @@ export {
 	validateICD10,
 	validateRecord,
 	isValid,
+	interpolateRecord,
 }

@@ -3,7 +3,11 @@ import { Link, withRouter } from 'react-router-dom'
 import { exportCSV, importCSV } from '../functions/csv'
 import download from '../functions/download'
 import { FilePicker } from 'react-file-picker'
-import { validateRecord, isValid } from '../functions/validation'
+import {
+	validateRecord,
+	isValid,
+	interpolateRecord,
+} from '../functions/validation'
 import Helmet from 'react-helmet'
 
 /**
@@ -209,7 +213,13 @@ class RecordPicker extends React.Component {
 				// Search is empty show all records
 				if (this.state.search === '') return true
 
-				const keys = Object.keys(d)
+				let interpolatedRaw = interpolateRecord(d, this.props.codebook)
+				let interpolated = {}
+				for (let f of this.props.codebook)
+					interpolated[f.name] = (interpolatedRaw[f.name] || '').toString()
+
+				const keys = this.props.codebook
+					.map(d => d.name)
 					// If there is a searchField selected, use only keys matching it
 					.filter(
 						d => this.state.searchField === '' || d === this.state.searchField
@@ -219,7 +229,9 @@ class RecordPicker extends React.Component {
 
 				for (let k of keys) {
 					if (
-						d[k]
+						interpolated.hasOwnProperty(k) &&
+						interpolated[k] != null &&
+						interpolated[k]
 							.toString()
 							.toLowerCase()
 							.indexOf(this.state.search) !== -1
@@ -228,7 +240,7 @@ class RecordPicker extends React.Component {
 						const field = this.props.codebook.find(d => d.name === k)
 						if (field)
 							// Sometimes fields do not exist in codebook
-							hits.push([field.label, d[k].toString()])
+							hits.push([field.label, interpolatedRaw[k]])
 					}
 				}
 
@@ -329,13 +341,11 @@ class RecordPicker extends React.Component {
 							<option default value="" key="default">
 								All fields
 							</option>
-							{this.props.codebook
-								.filter(d => d.input === 'yes' && d.calculated === 'no')
-								.map(d => (
-									<option value={d.name} key={d.name}>
-										{d.label}
-									</option>
-								))}
+							{this.props.codebook.map(d => (
+								<option value={d.name} key={d.name}>
+									{d.label}
+								</option>
+							))}
 						</select>
 					</div>
 					<button

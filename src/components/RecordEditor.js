@@ -72,7 +72,7 @@ class RecordEditor extends React.Component {
 		let pids = await this.props.db.records.toArray()
 
 		this.setState({
-			pids: pids.map(d => d.pid),
+			pids: pids.map(d => d[this.props.config.id_field]),
 		})
 	}
 
@@ -94,8 +94,8 @@ class RecordEditor extends React.Component {
 			.equals(Number(this.props.uid))
 			.modify(modify)
 
-		// If the field that changed was 'pid', update the cached pid numbers
-		if (field.name === 'pid') await this.updatePIDs()
+		// If the field that changed was idField, update the cached id numbers
+		if (field.name === this.props.config.id_field) await this.updatePIDs()
 	}
 
 	onFocusFieldEditor(fe) {
