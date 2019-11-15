@@ -213,13 +213,16 @@ class RecordPicker extends React.Component {
 				// Search is empty show all records
 				if (this.state.search === '') return true
 
-				var interpolated = interpolateRecord(d, this.props.codebook)
-				const keys = Object.keys(d)
+				let interpolatedRaw = interpolateRecord(d, this.props.codebook)
+				let interpolated = {}
+				for (let f of this.props.codebook)
+					interpolated[f.name] = (interpolatedRaw[f.name] || '').toString()
+
+				const keys = this.props.codebook
+					.map(d => d.name)
 					// If there is a searchField selected, use only keys matching it
 					.filter(
-						d =>
-							interpolated.hasOwnProperty(d) &&
-							(this.state.searchField === '' || d === this.state.searchField)
+						d => this.state.searchField === '' || d === this.state.searchField
 					)
 				let hit = false
 				let hits = []
@@ -237,7 +240,7 @@ class RecordPicker extends React.Component {
 						const field = this.props.codebook.find(d => d.name === k)
 						if (field)
 							// Sometimes fields do not exist in codebook
-							hits.push([field.label, d[k].toString()])
+							hits.push([field.label, interpolatedRaw[k]])
 					}
 				}
 
@@ -338,13 +341,11 @@ class RecordPicker extends React.Component {
 							<option default value="" key="default">
 								All fields
 							</option>
-							{this.props.codebook
-								.filter(d => d.input === 'yes')
-								.map(d => (
-									<option value={d.name} key={d.name}>
-										{d.label}
-									</option>
-								))}
+							{this.props.codebook.map(d => (
+								<option value={d.name} key={d.name}>
+									{d.label}
+								</option>
+							))}
 						</select>
 					</div>
 					<button
