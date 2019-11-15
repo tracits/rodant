@@ -31,8 +31,7 @@ class RecordEditor extends React.Component {
 			state: RecordEditorState.NONE,
 			record: null,
 			allowRadios: false,
-		        doubleEntry: !!props['double-entry'],
-		        idField: props.config.id_field,
+			doubleEntry: !!props['double-entry'],
 		}
 	}
 
@@ -73,7 +72,7 @@ class RecordEditor extends React.Component {
 		let pids = await this.props.db.records.toArray()
 
 		this.setState({
-			pids: pids.map(d => d.pid),
+			pids: pids.map(d => d[this.props.config.id_field]),
 		})
 	}
 
@@ -96,7 +95,7 @@ class RecordEditor extends React.Component {
 			.modify(modify)
 
 		// If the field that changed was idField, update the cached id numbers
-		if (field.name === this.state.idField) await this.updatePIDs()
+		if (field.name === this.props.config.id_field) await this.updatePIDs()
 	}
 
 	onFocusFieldEditor(fe) {
