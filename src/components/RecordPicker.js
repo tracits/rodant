@@ -3,7 +3,11 @@ import { Link, withRouter } from 'react-router-dom'
 import { exportCSV, importCSV } from '../functions/csv'
 import download from '../functions/download'
 import { FilePicker } from 'react-file-picker'
-import { validateRecord, isValid } from '../functions/validation'
+import {
+	validateRecord,
+	isValid,
+	interpolateRecord,
+} from '../functions/validation'
 import Helmet from 'react-helmet'
 
 /**
@@ -209,17 +213,23 @@ class RecordPicker extends React.Component {
 				// Search is empty show all records
 				if (this.state.search === '') return true
 
+				var interpolated = interpolateRecord(d, this.props.codebook)
 				const keys = Object.keys(d)
 					// If there is a searchField selected, use only keys matching it
 					.filter(
-						d => this.state.searchField === '' || d === this.state.searchField
+						d =>
+							interpolated.hasOwnProperty(d) &&
+							(this.state.searchField === '' || d === this.state.searchField)
 					)
 				let hit = false
 				let hits = []
 
 				for (let k of keys) {
+					console.log(k, interpolated[k])
 					if (
-						d[k]
+						interpolated.hasOwnProperty(k) &&
+						interpolated[k] != null &&
+						interpolated[k]
 							.toString()
 							.toLowerCase()
 							.indexOf(this.state.search) !== -1
@@ -330,7 +340,7 @@ class RecordPicker extends React.Component {
 								All fields
 							</option>
 							{this.props.codebook
-								.filter(d => d.input === 'yes' && d.calculated === 'no')
+								.filter(d => d.input === 'yes')
 								.map(d => (
 									<option value={d.name} key={d.name}>
 										{d.label}
