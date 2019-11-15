@@ -156,7 +156,9 @@ function validateICD10(value, field) {
  * @param {*} fields
  */
 function interpolateRecord(record, fields) {
-	let context = {}
+	let context = {
+		moment: moment,
+	}
 
 	// Apply non calculated fields to context
 	for (let field of fields) {
