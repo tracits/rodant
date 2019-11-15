@@ -225,7 +225,6 @@ class RecordPicker extends React.Component {
 				let hits = []
 
 				for (let k of keys) {
-					console.log(k, interpolated[k])
 					if (
 						interpolated.hasOwnProperty(k) &&
 						interpolated[k] != null &&
