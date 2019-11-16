@@ -61,7 +61,7 @@ function validateQuantitative(value, field) {
 function validateQualitative(value, field) {
 	if (!field.valid_values) return []
 
-	if (field.unknown !== '' && value.toString() === field.unknown)
+	if (value.toString() === field.unknown || value.toString() === 'NaN')
 		return []
 
 	return field.valid_values.split(',').indexOf(value.toString()) !== -1
@@ -223,21 +223,14 @@ function validateRecord(record, fields) {
 					)
 				else if (checks[i] && mustBeTrue[i] === true)
 					logicErrors.push(logicPrompts[i])
-				else if (checks[i] && (mustBeTrue[i] === false || mustBeTrue[i] === undefined))
+				else if (checks[i] && !mustBeTrue[i])
 					logicWarnings.push(logicPrompts[i])
 			}
 		}
-		
-		let hasUnknownDependency = false
-		if (field.logic_checks !== '') 
-			hasUnknownDependency |= checkUnknownDependencies(field, 'logic_checks', context, fieldsByName)
-
-		if (field.calculated === 'yes') 
-			hasUnknownDependency |= checkUnknownDependencies(field, 'equation', context, fieldsByName)
 
 		result[field.name] = {
 			value: context[field.name],
-			valid: hasUnknownDependency || logicErrors.length === 0,
+			valid: logicErrors.length === 0,
 			errors: logicErrors,
 			warnings: logicWarnings,
 			unknown:
@@ -255,22 +248,6 @@ let findVarRegex = /([a-z_]+[0-9]*)/g
 function thisVars(text) {
 	if (text[0] === '$') return text.substr(1)
 	return text.replace(findVarRegex, 'this.$1')
-}
-
-/**
- * Checks if a field has any unknown dependency vars
- */
-function checkUnknownDependencies(field, member, context, fieldsByName) {
-	var text = field[member]
-	if (text === null)
-		return false
-
-	return text
-		.trim()
-		.match(findVarRegex) // Find vars
-		.filter(d => fieldsByName[d].unknown !== '') // Ignore self and fields where unknown is empty
-		.map(d => context[d] === fieldsByName[d].unknown) // Check if they are marked unknown
-		.some(d => d === true) // If any are unknown, return true
 }
 
 /**
