@@ -75,6 +75,10 @@ function validateQualitative(value, field) {
 function validateDate(value, field) {
 	if (value === field.unknown) return []
 
+	// Check valid_values
+	for (let validValue of field.valid_values.split(','))
+		if (value === validValue.trim()) return []
+
 	// Check format
 	if (!/^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]$/.test(value))
 		return [`'${value}' is not in correct format YYYY-MM-DD`]
