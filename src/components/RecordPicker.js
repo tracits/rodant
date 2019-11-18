@@ -7,6 +7,7 @@ import {
 	validateRecord,
 	isValid,
 	interpolateRecord,
+	isUnknown,
 } from '../functions/validation'
 import Helmet from 'react-helmet'
 
@@ -201,13 +202,16 @@ class RecordPicker extends React.Component {
 
 	render() {
 		let searchHits = {}
+		const sortField = this.props.codebook.find(
+			d => d.name === this.state.sortField
+		)
 		let filteredRecords = this.state.records
 			// Filter on search term
 			.filter(d => {
 				// If not checked, do not include records with sortField unknown
 				if (!this.state.includeUnknown) {
 					let value = d[this.state.sortField] || ''
-					if (value.toString() === '999' || value === '') return false
+					if (isUnknown(value, sortField)) return false
 				}
 
 				// Search is empty show all records

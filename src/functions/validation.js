@@ -283,6 +283,14 @@ function isValid(validationResult) {
 	return Object.keys(validationResult).every(d => validationResult[d].valid)
 }
 
+/** Returns true if the value is the same as field.unknown given that field.unknown is not empty */
+function isUnknown(value, field) {
+	if (!field.unknown) return false
+	if (value === field.unknown) return true
+
+	return false
+}
+
 export default validate
 export {
 	validateQualitative,
@@ -293,5 +301,6 @@ export {
 	validateICD10,
 	validateRecord,
 	isValid,
+	isUnknown,
 	interpolateRecord,
 }
