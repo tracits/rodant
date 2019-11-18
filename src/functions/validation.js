@@ -61,8 +61,7 @@ function validateQuantitative(value, field) {
 function validateQualitative(value, field) {
 	if (!field.valid_values) return []
 
-	if (field.unknown !== '' && value.toString() === field.unknown)
-		return []
+	if (field.unknown !== '' && value.toString() === field.unknown) return []
 
 	return field.valid_values.split(',').indexOf(value.toString()) !== -1
 		? []
@@ -206,7 +205,7 @@ function validateRecord(record, fields) {
 	for (let field of fields) {
 		let logicErrors = validate(context[field.name], field) || []
 		let logicWarnings = []
-		
+
 		if (field.logic_checks) {
 			let checks = checkLogic(field, context)
 			let logicPrompts = JSON.parse('[' + field.logic_prompts + ']')
@@ -223,17 +222,30 @@ function validateRecord(record, fields) {
 					)
 				else if (checks[i] && mustBeTrue[i] === true)
 					logicErrors.push(logicPrompts[i])
-				else if (checks[i] && (mustBeTrue[i] === false || mustBeTrue[i] === undefined))
+				else if (
+					checks[i] &&
+					(mustBeTrue[i] === false || mustBeTrue[i] === undefined)
+				)
 					logicWarnings.push(logicPrompts[i])
 			}
 		}
-		
-		let hasUnknownDependency = false
-		if (field.logic_checks !== '') 
-			hasUnknownDependency |= checkUnknownDependencies(field, 'logic_checks', context, fieldsByName)
 
-		if (field.calculated === 'yes') 
-			hasUnknownDependency |= checkUnknownDependencies(field, 'equation', context, fieldsByName)
+		let hasUnknownDependency = false
+		if (field.logic_checks !== '')
+			hasUnknownDependency |= checkUnknownDependencies(
+				field,
+				'logic_checks',
+				context,
+				fieldsByName,
+			)
+
+		if (field.calculated === 'yes')
+			hasUnknownDependency |= checkUnknownDependencies(
+				field,
+				'equation',
+				context,
+				fieldsByName,
+			)
 
 		result[field.name] = {
 			value: context[field.name],
@@ -262,8 +274,7 @@ function thisVars(text) {
  */
 function checkUnknownDependencies(field, member, context, fieldsByName) {
 	var text = field[member]
-	if (text === null)
-		return false
+	if (text === null) return false
 
 	return text
 		.trim()
