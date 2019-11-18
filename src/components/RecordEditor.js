@@ -393,18 +393,21 @@ class RecordEditor extends React.Component {
 				</div>
 			) : null
 
+		const idField = this.props.codebook.find(
+			d => d.name === this.props.config.id_field
+		)
+		const id = this.state.record[this.props.config.id_field]
+		const titleText = this.state.doubleEntry
+			? `Double enter ${idField.label}: ${id}`
+			: `Editing ${idField.label}: ${id}`
+
 		return (
 			<div className="content">
 				<Helmet>
-					<title>{`${this.props.config.name} - ${
-						this.state.doubleEntry ? 'Double enter: ' : 'Editing record:'
-					} ${this.state.record.uid}`}</title>
+					<title>{`${this.props.config.name} - ${titleText}`}</title>
 				</Helmet>
 				{prompt}
-				<h1 className="title">
-					{this.state.doubleEntry ? 'Double enter: ' : 'Editing record:'}{' '}
-					{this.state.record.uid}
-				</h1>
+				<h1 className="title">{titleText}</h1>
 				<div className="toolbar">
 					{(!this.state.doubleEntry || true) && (
 						<button
