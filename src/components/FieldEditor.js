@@ -159,7 +159,7 @@ class FieldEditor extends React.Component {
 			input = (
 				<input
 					className="input is-small"
-					type="text"
+					type="number"
 					disabled={d.input !== 'yes'}
 					placeholder={unlabeled ? d.label : ''}
 					value={this.state.value}
