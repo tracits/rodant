@@ -200,6 +200,10 @@ function interpolateRecord(record, fields) {
 function validateRecord(record, fields) {
 	let result = {}
 	let context = interpolateRecord(record, fields)
+	let fieldsByName = Object.assign(
+		{},
+		...[...fields.entries()].map(([k, v]) => ({ [v.name]: v }))
+	)
 
 	// Apply calculated context to result and do logic checks
 	for (let field of fields) {
@@ -236,7 +240,7 @@ function validateRecord(record, fields) {
 				field,
 				'logic_checks',
 				context,
-				fieldsByName,
+				fieldsByName
 			)
 
 		if (field.calculated === 'yes')
@@ -244,7 +248,7 @@ function validateRecord(record, fields) {
 				field,
 				'equation',
 				context,
-				fieldsByName,
+				fieldsByName
 			)
 
 		result[field.name] = {
