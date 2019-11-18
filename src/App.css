@@ -388,8 +388,13 @@ input.input:focus, .select select:focus {
   margin-right: 5px;
   padding-top: 4px;
   border: none;
+  width: 3em;
   font-size: 16px !important;
   font-family: Roboto, sans-serif;
+}
+
+.paging input:focus {
+  width: 3em;
 }
 
 .paging span {

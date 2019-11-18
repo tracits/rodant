@@ -61,8 +61,7 @@ function validateQuantitative(value, field) {
 function validateQualitative(value, field) {
 	if (!field.valid_values) return []
 
-	if (value.toString() === field.unknown || value.toString() === 'NaN')
-		return []
+	if (field.unknown !== '' && value.toString() === field.unknown) return []
 
 	return field.valid_values.split(',').indexOf(value.toString()) !== -1
 		? []
@@ -75,6 +74,10 @@ function validateQualitative(value, field) {
  */
 function validateDate(value, field) {
 	if (value === field.unknown) return []
+
+	// Check valid_values
+	for (let validValue of field.valid_values.split(','))
+		if (value === validValue.trim()) return []
 
 	// Check format
 	if (!/^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]$/.test(value))
@@ -201,6 +204,10 @@ function interpolateRecord(record, fields) {
 function validateRecord(record, fields) {
 	let result = {}
 	let context = interpolateRecord(record, fields)
+	let fieldsByName = Object.assign(
+		{},
+		...[...fields.entries()].map(([k, v]) => ({ [v.name]: v }))
+	)
 
 	// Apply calculated context to result and do logic checks
 	for (let field of fields) {
@@ -223,19 +230,39 @@ function validateRecord(record, fields) {
 					)
 				else if (checks[i] && mustBeTrue[i] === true)
 					logicErrors.push(logicPrompts[i])
-				else if (checks[i] && !mustBeTrue[i])
+				else if (
+					checks[i] &&
+					(mustBeTrue[i] === false || mustBeTrue[i] === undefined)
+				)
 					logicWarnings.push(logicPrompts[i])
 			}
 		}
 
+		let hasUnknownDependency = false
+		if (field.logic_checks !== '')
+			hasUnknownDependency |= checkUnknownDependencies(
+				field,
+				'logic_checks',
+				context,
+				fieldsByName
+			)
+
+		if (field.calculated === 'yes')
+			hasUnknownDependency |= checkUnknownDependencies(
+				field,
+				'equation',
+				context,
+				fieldsByName
+			)
+
 		result[field.name] = {
 			value: context[field.name],
-			valid: logicErrors.length === 0,
+			valid: hasUnknownDependency || logicErrors.length === 0,
 			errors: logicErrors,
 			warnings: logicWarnings,
 			unknown:
-				(context[field.name] || '').toString() === field.unknown &&
-				field.unknown !== '',
+				field.unknown !== '' &&
+				(context[field.name] || '').toString() === field.unknown,
 			incomplete: !context[field.name] && context[field.name] !== 0,
 			type: field.type,
 		}
@@ -248,6 +275,21 @@ let findVarRegex = /([a-z_]+[0-9]*)/g
 function thisVars(text) {
 	if (text[0] === '$') return text.substr(1)
 	return text.replace(findVarRegex, 'this.$1')
+}
+
+/**
+ * Checks if a field has any unknown dependency vars
+ */
+function checkUnknownDependencies(field, member, context, fieldsByName) {
+	var text = field[member]
+	if (text === null) return false
+
+	return text
+		.trim()
+		.match(findVarRegex) // Find vars
+		.filter(d => fieldsByName[d].unknown !== '') // Ignore self and fields where unknown is empty
+		.map(d => context[d] === fieldsByName[d].unknown) // Check if they are marked unknown
+		.some(d => d === true) // If any are unknown, return true
 }
 
 /**
@@ -283,6 +325,14 @@ function isValid(validationResult) {
 	return Object.keys(validationResult).every(d => validationResult[d].valid)
 }
 
+/** Returns true if the value is the same as field.unknown given that field.unknown is not empty */
+function isUnknown(value, field) {
+	if (!field.unknown) return false
+	if (value === field.unknown) return true
+
+	return false
+}
+
 export default validate
 export {
 	validateQualitative,
@@ -293,5 +343,6 @@ export {
 	validateICD10,
 	validateRecord,
 	isValid,
+	isUnknown,
 	interpolateRecord,
 }

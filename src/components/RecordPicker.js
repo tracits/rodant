@@ -7,8 +7,10 @@ import {
 	validateRecord,
 	isValid,
 	interpolateRecord,
+	isUnknown,
 } from '../functions/validation'
 import Helmet from 'react-helmet'
+import Pager from './Pager'
 
 /**
  * Renders a list of the available records.
@@ -201,13 +203,17 @@ class RecordPicker extends React.Component {
 
 	render() {
 		let searchHits = {}
+		const sortField = this.props.codebook.find(
+			d => d.name === this.state.sortField
+		)
+
 		let filteredRecords = this.state.records
 			// Filter on search term
 			.filter(d => {
 				// If not checked, do not include records with sortField unknown
 				if (!this.state.includeUnknown) {
 					let value = d[this.state.sortField] || ''
-					if (value.toString() === '999' || value === '') return false
+					if (isUnknown(value, sortField)) return false
 				}
 
 				// Search is empty show all records
@@ -260,7 +266,7 @@ class RecordPicker extends React.Component {
 			})
 
 		let pageCount = Math.ceil(filteredRecords.length / this.state.pageSize)
-		let page = Math.min(this.state.page, pageCount - 1)
+		let page = Math.max(0, Math.min(this.state.page, pageCount - 1))
 
 		let records = filteredRecords
 			// Paging
@@ -324,7 +330,9 @@ class RecordPicker extends React.Component {
 				<Helmet>
 					<title>{`${this.props.config.name} - Records`}</title>
 				</Helmet>
-				<h2 className="title">Pick record ({records.length})</h2>
+				<h2 className="title">
+					Pick record ({filteredRecords.length} / {this.state.records.length})
+				</h2>
 				<div className="search">
 					<span className="fa fa-search"></span>
 					<input
@@ -356,30 +364,11 @@ class RecordPicker extends React.Component {
 					</button>
 				</div>
 				<div className="sort">
-					<div className="paging">
-						<button
-							className="button is-primary is-small"
-							disabled={page === 0}
-							onClick={e => this.onPageChange(Math.max(0, page - 1))}
-						>
-							&lt;
-						</button>
-						<input
-							className="input is-small is-primary"
-							type="text"
-							value={this.state.page + 1}
-							onChange={e => this.onPageChange(e.target.value)}
-						></input>
-						<span>/</span>
-						<span>{pageCount}</span>
-						<button
-							className="button is-primary is-small"
-							disabled={page === pageCount - 1}
-							onClick={e => this.onPageChange(Math.min(pageCount, page + 1))}
-						>
-							&gt;
-						</button>
-					</div>
+					<Pager
+						page={page}
+						max={pageCount}
+						onPageChange={e => this.onPageChange(e)}
+					></Pager>
 					<div className="select is-primary sortField">
 						<select
 							className="select"
