@@ -28,7 +28,7 @@ async function bootstrap() {
 	}
 
 	// Initialize Dexie database
-	let db = new dexie('TAFT')
+	let db = new dexie(config.table)
 	let desc = '++uid, locked, ' + items.map(d => d.name).join(', ')
 	let store = {
 		records: desc,
