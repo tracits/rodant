@@ -30,7 +30,7 @@ function validate(value, field) {
  * Validates a qualitative value to be within the range
  * dictated by the fields valid_values first and second elements.
  *
- * Assumes 'unknown' if value is larger or equal to field.unknown
+ * Assumes 'unknown' if value is equal to field.unknown
  *
  * @returns empty array if no errors, or array with text describing each issue
  */
@@ -39,12 +39,13 @@ function validateQuantitative(value, field) {
 
 	if (
 		value.toString() === field.unknown ||
-		parseInt(value) >= parseInt(field.unknown)
+		parseInt(value) === parseInt(field.unknown)
 	)
 		return []
 
-	let v = parseInt(value)
+	if (value.toString() === 'NaN') return ['This field can not be empty']
 
+	let v = parseInt(value)
 	if (v.toString() === 'NaN') return [`Not a number`]
 
 	let range = field.valid_values.split(',').map(d => parseFloat(d))
@@ -63,6 +64,8 @@ function validateQualitative(value, field) {
 
 	if (field.unknown !== '' && value.toString() === field.unknown) return []
 
+	if (value.toString() === 'NaN') return ['This field can not be empty']
+
 	return field.valid_values.split(',').indexOf(value.toString()) !== -1
 		? []
 		: [`'${value}' is not a valid value`]
@@ -74,6 +77,9 @@ function validateQualitative(value, field) {
  */
 function validateDate(value, field) {
 	if (value === field.unknown) return []
+
+	if (value === undefined || value === '')
+		return [`'${field.label}' can not be empty`]
 
 	// Check valid_values
 	for (let validValue of field.valid_values.split(','))
@@ -93,6 +99,9 @@ function validateDate(value, field) {
  */
 function validateDateTime(value, field) {
 	if (value === field.unknown) return []
+
+	if (value === undefined || value === '')
+		return [`'${field.label}' can not be empty`]
 
 	// Check format
 	if (
@@ -114,6 +123,14 @@ function validateDateTime(value, field) {
  */
 function validateTime(value, field) {
 	if (value === field.unknown) return []
+
+	// Check valid_values
+	for (let validValue of field.valid_values.split(','))
+		if (value === validValue.trim()) return []
+
+	// Check empty
+	if (value === undefined || value === '')
+		return [`'${field.label}' can not be empty`]
 
 	// Check format
 	if (!/^[0-9][0-9]:[0-9][0-9]$/.test(value))
@@ -224,9 +241,9 @@ function validateRecord(record, fields) {
 			for (let i in checks) {
 				if (typeof checks[i] === 'string')
 					logicErrors.push(
-						'"' +
-							(fields.find(d => d.name === checks[i]) || {}).label +
-							'" can not be empty'
+						`'${
+							(fields.find(d => d.name === checks[i]) || {}).label
+						}' can not be empty`
 					)
 				else if (checks[i] && mustBeTrue[i] === true)
 					logicErrors.push(logicPrompts[i])
@@ -254,6 +271,9 @@ function validateRecord(record, fields) {
 				context,
 				fieldsByName
 			)
+
+		// Remove duplicate errors
+		logicErrors = [...new Set(logicErrors)]
 
 		result[field.name] = {
 			value: context[field.name],

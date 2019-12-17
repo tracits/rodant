@@ -34,7 +34,8 @@ function exportCSV(codebook, records) {
 	for (let r of records) {
 		let row = [r.uid]
 
-		for (let c of codebook) row.push(serializeField(r[c.name] || unset))
+		for (let c of codebook)
+			if (c.input === 'yes') row.push(serializeField(r[c.name] || unset))
 
 		data.push(row)
 	}
