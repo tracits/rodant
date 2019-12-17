@@ -43,8 +43,9 @@ function validateQuantitative(value, field) {
 	)
 		return []
 
-	let v = parseInt(value)
+	if (value.toString() === 'NaN') return ['This field can not be empty']
 
+	let v = parseInt(value)
 	if (v.toString() === 'NaN') return [`Not a number`]
 
 	let range = field.valid_values.split(',').map(d => parseFloat(d))
@@ -62,6 +63,8 @@ function validateQualitative(value, field) {
 	if (!field.valid_values) return []
 
 	if (field.unknown !== '' && value.toString() === field.unknown) return []
+
+	if (value.toString() === 'NaN') return ['This field can not be empty']
 
 	return field.valid_values.split(',').indexOf(value.toString()) !== -1
 		? []
@@ -118,7 +121,7 @@ function validateTime(value, field) {
 	// Check valid_values
 	for (let validValue of field.valid_values.split(','))
 		if (value === validValue.trim()) return []
-    
+
 	// Check format
 	if (!/^[0-9][0-9]:[0-9][0-9]$/.test(value))
 		return [`'${value}' is not in correct format HH:mm`]
