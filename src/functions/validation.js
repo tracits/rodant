@@ -78,6 +78,9 @@ function validateQualitative(value, field) {
 function validateDate(value, field) {
 	if (value === field.unknown) return []
 
+	if (value === undefined || value === '')
+		return [`'${field.label}' can not be empty`]
+
 	// Check valid_values
 	for (let validValue of field.valid_values.split(','))
 		if (value === validValue.trim()) return []
@@ -96,6 +99,9 @@ function validateDate(value, field) {
  */
 function validateDateTime(value, field) {
 	if (value === field.unknown) return []
+
+	if (value === undefined || value === '')
+		return [`'${field.label}' can not be empty`]
 
 	// Check format
 	if (
@@ -121,6 +127,10 @@ function validateTime(value, field) {
 	// Check valid_values
 	for (let validValue of field.valid_values.split(','))
 		if (value === validValue.trim()) return []
+
+	// Check empty
+	if (value === undefined || value === '')
+		return [`'${field.label}' can not be empty`]
 
 	// Check format
 	if (!/^[0-9][0-9]:[0-9][0-9]$/.test(value))
@@ -231,9 +241,9 @@ function validateRecord(record, fields) {
 			for (let i in checks) {
 				if (typeof checks[i] === 'string')
 					logicErrors.push(
-						'"' +
-							(fields.find(d => d.name === checks[i]) || {}).label +
-							'" can not be empty'
+						`'${
+							(fields.find(d => d.name === checks[i]) || {}).label
+						}' can not be empty`
 					)
 				else if (checks[i] && mustBeTrue[i] === true)
 					logicErrors.push(logicPrompts[i])
@@ -261,6 +271,9 @@ function validateRecord(record, fields) {
 				context,
 				fieldsByName
 			)
+
+		// Remove duplicate errors
+		logicErrors = [...new Set(logicErrors)]
 
 		result[field.name] = {
 			value: context[field.name],
