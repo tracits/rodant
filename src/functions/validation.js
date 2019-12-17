@@ -30,7 +30,7 @@ function validate(value, field) {
  * Validates a qualitative value to be within the range
  * dictated by the fields valid_values first and second elements.
  *
- * Assumes 'unknown' if value is larger or equal to field.unknown
+ * Assumes 'unknown' if value is equal to field.unknown
  *
  * @returns empty array if no errors, or array with text describing each issue
  */
@@ -39,7 +39,7 @@ function validateQuantitative(value, field) {
 
 	if (
 		value.toString() === field.unknown ||
-		parseInt(value) >= parseInt(field.unknown)
+		parseInt(value) === parseInt(field.unknown)
 	)
 		return []
 
