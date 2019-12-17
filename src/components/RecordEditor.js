@@ -327,7 +327,6 @@ class RecordEditor extends React.Component {
 				}
 			>
 				<div className="label">{this.state.focusedField.props.data.label}</div>
-
 				<div className="errors">
 					{validation[this.state.focusedField.props.data.name].errors.map(
 						(d, i) => (
@@ -337,7 +336,6 @@ class RecordEditor extends React.Component {
 						)
 					)}
 				</div>
-
 				<div className="warnings">
 					{validation[this.state.focusedField.props.data.name].warnings.map(
 						(d, i) => (
@@ -347,7 +345,6 @@ class RecordEditor extends React.Component {
 						)
 					)}
 				</div>
-
 				<div className="description">
 					{this.state.focusedField.props.data.description}
 					{this.state.focusedField.props.data.show_valid_values === 'yes' ? (
@@ -356,9 +353,12 @@ class RecordEditor extends React.Component {
 						</div>
 					) : null}
 				</div>
-				<div className="coding_description">
-					{this.state.focusedField.props.data.coding_description}
-				</div>
+				<div
+					className="coding_description"
+					dangerouslySetInnerHTML={{
+						__html: this.state.focusedField.props.data.coding_instructions,
+					}}
+				/>
 			</div>
 		)
 
