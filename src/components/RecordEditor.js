@@ -4,6 +4,7 @@ import _ from 'lodash'
 import FieldEditor from './FieldEditor'
 import { validateRecord, isValid } from '../functions/validation'
 import Helmet from 'react-helmet'
+import ValidationViewer from './ValidationViewer'
 
 const RecordEditorState = {
 	NONE: 0,
@@ -402,39 +403,49 @@ class RecordEditor extends React.Component {
 			: `Editing ${idField.label}: ${id}`
 
 		return (
-			<div className="content">
+			<div className="editor">
 				<Helmet>
 					<title>{`${this.props.config.name} - ${titleText}`}</title>
 				</Helmet>
-				{prompt}
-				<h1 className="title">{titleText}</h1>
-				<div className="toolbar">
-					{(!this.state.doubleEntry || true) && (
-						<button
-							className="button is-rounded"
-							onClick={() => {
-								this.markFieldsUnknown()
-							}}
-						>
-							Mark empty fields as Not Known
-						</button>
-					)}
-					<div className="control">
-						<label className="checkbox">
-							<input
-								type="checkbox"
-								value={this.props.allowRadios}
-								onChange={e => this.changeRadios(e)}
-							/>{' '}
-							[debug] Enable radio buttons
-						</label>
-					</div>
-				</div>
 
-				<div className="record_fields">{fieldGroups}</div>
-				{fieldHelp}
-				{finalizeEntry}
-				{checkEntry}
+				<div className="content">
+					{prompt}
+					<h1 className="title">{titleText}</h1>
+					<div className="toolbar">
+						{(!this.state.doubleEntry || true) && (
+							<button
+								className="button is-rounded"
+								onClick={() => {
+									this.markFieldsUnknown()
+								}}
+							>
+								Mark empty fields as Not Known
+							</button>
+						)}
+						<div className="control">
+							<label className="checkbox">
+								<input
+									type="checkbox"
+									value={this.props.allowRadios}
+									onChange={e => this.changeRadios(e)}
+								/>{' '}
+								[debug] Enable radio buttons
+							</label>
+						</div>
+					</div>
+
+					<div className="record_fields">{fieldGroups}</div>
+					{fieldHelp}
+					{finalizeEntry}
+					{checkEntry}
+				</div>
+				<div className="validation">
+					<ValidationViewer
+						record={this.state.record}
+						codebook={this.props.codebook}
+						validation={validation}
+					/>
+				</div>
 			</div>
 		)
 	}
