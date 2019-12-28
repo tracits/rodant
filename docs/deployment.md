@@ -8,25 +8,41 @@ Clone the repo.
 In the repo, install the node environment
 
     nodeenv env
-    
-Now follow the readme's instruction on build and deploy, then start the application with pm2
+   
+Point nginx to the dir (there is no need for a process manager since it's running static at this point).
 
-    pm2 start node_modules/react-scripts/scripts/start.js --name "data-collection-tool"
-    
-Save the process lists for startup to work
+```nginx data-collection-tool
+server {
+    listen 80;
+    server_name data.titco.org;
+    include /etc/nginx/snippets/letsencrypt.conf;
+    return 301 https://$host$request_uri;
+}
 
-     pm2 save
+server {
+    listen 443 ssl;
 
-Create systemd config for restarts
+    server_name data.titco.org;
+    include /etc/nginx/snippets/letsencrypt.conf;
 
-    pm2 startup systemd
-    
-Then run the output as root.
-  
-# Monitoring
-Bonus points on connecting it to pm2.io for monitoring
+    include ssl-harden.conf;
 
-    pm2 link <secret> <key> pantanal
+    ssl_certificate_key /etc/nginx/certs/data.titco.org.key;
+    ssl_certificate     /etc/nginx/certs/data.titco.org-fullchain.crt;
+
+    root /var/www/data-collection-tool/cockroach_react/build;
+
+    index index.html;
+
+    location / {
+        satisfy any;
+        auth_basic "Authentication Required";
+        auth_basic_user_file /etc/nginx/auth/data;
+
+        try_files $uri $uri/ $uri.html =404;
+    }
+}
+```
   
 # Pre-reqs for the server
 
