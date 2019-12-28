@@ -1,4 +1,4 @@
-# Deployment
+# Setup
 Become the data-collection-tool user
 
     su data-collection-tool
@@ -12,6 +12,10 @@ In the repo, install the node environment
 Now follow the readme's instruction on build and deploy, then start the application with pm2
 
     pm2 start node_modules/react-scripts/scripts/start.js --name "data-collection-tool"
+    
+Save the process lists for startup to work
+
+     pm2 save
 
 Create systemd config for restarts
 
