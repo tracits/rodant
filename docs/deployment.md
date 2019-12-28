@@ -22,7 +22,7 @@ Then run the output as root.
 # Monitoring
 Bonus points on connecting it to pm2.io for monitoring
 
-  pm2 link <secret> <key> pantanal
+    pm2 link <secret> <key> pantanal
   
 # Pre-reqs for the server
 
