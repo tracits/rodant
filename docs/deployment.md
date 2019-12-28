@@ -1,12 +1,23 @@
 # Deployment
+Become the data-collection-tool user
 
-Clone the repo. In the repo, install the node environment
+    su data-collection-tool
+
+Clone the repo. 
+
+In the repo, install the node environment
 
     nodeenv env
     
 Now follow the readme's instruction on build and deploy, then start the application with pm2
 
-    pm2 start build/
+    pm2 start node_modules/react-scripts/scripts/start.js --name "data-collection-tool"
+
+Create systemd config for restarts
+
+    pm2 startup systemd
+    
+Then run the output as root.
   
 # Monitoring
 Bonus points on connecting it to pm2.io for monitoring
