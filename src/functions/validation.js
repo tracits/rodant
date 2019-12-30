@@ -313,12 +313,7 @@ function thisVars(text) {
 function checkOtherValidDependency(field, member, context, fieldsByName) {
     var text = field[member]
     if (text === null) return false
-    console.log(text
-		.trim()
-		.match(findVarRegex)
-		.filter(d => fieldsByName[d].valid_values !== '')
-		.map(d => fieldsByName[d].valid_values.split(',').includes(context[d]))
-		.some(d => d === true))
+
     return text
 	.trim()
 	.match(findVarRegex)
