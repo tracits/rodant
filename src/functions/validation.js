@@ -272,12 +272,22 @@ function validateRecord(record, fields) {
 				fieldsByName
 			)
 
+	 	// Check if date and time fields include other valid value
+	        let hasOtherValidDependency = false
+	        if (field.logic_checks !== '' && (field.type === "date" || field.type === "time"  || field.type === "datetime"))
+                    hasOtherValidDependency |= checkOtherValidDependency(
+			field,
+			'logic_checks',
+			context,
+			fieldsByName
+		    )
+	    
 		// Remove duplicate errors
 		logicErrors = [...new Set(logicErrors)]
 
 		result[field.name] = {
 			value: context[field.name],
-			valid: hasUnknownDependency || logicErrors.length === 0,
+			valid: hasUnknownDependency || hasOtherValidDependency || logicErrors.length === 0,
 			errors: logicErrors,
 			warnings: logicWarnings,
 			unknown:
@@ -296,6 +306,27 @@ function thisVars(text) {
 	if (text[0] === '$') return text.substr(1)
 	return text.replace(findVarRegex, 'this.$1')
 }
+
+/**
+ * Checks if a field has dependency vars that are valid but not dates or times
+ */
+function checkOtherValidDependency(field, member, context, fieldsByName) {
+    var text = field[member]
+    if (text === null) return false
+    console.log(text
+		.trim()
+		.match(findVarRegex)
+		.filter(d => fieldsByName[d].valid_values !== '')
+		.map(d => fieldsByName[d].valid_values.split(',').includes(context[d]))
+		.some(d => d === true))
+    return text
+	.trim()
+	.match(findVarRegex)
+	.filter(d => fieldsByName[d].valid_values !== '')
+	.map(d => fieldsByName[d].valid_values.split(',').includes(context[d]))
+	.some(d => d === true)
+}
+
 
 /**
  * Checks if a field has any unknown dependency vars
