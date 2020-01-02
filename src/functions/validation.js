@@ -272,6 +272,11 @@ function validateRecord(record, fields) {
 				fieldsByName
 			)
 
+                let ignoreValidation = false
+	        if (field.valid_values !== '')
+		         ignoreValidation |= field.valid_values.split(',').includes(context[field.name])
+
+    
 	 	// Check if date and time fields include other valid value
 	        let hasOtherValidDependency = false
 	        if (field.logic_checks !== '' && (field.type === "date" || field.type === "time"  || field.type === "datetime"))
@@ -285,9 +290,15 @@ function validateRecord(record, fields) {
 		// Remove duplicate errors
 		logicErrors = [...new Set(logicErrors)]
 
+	        // Define valid
+	        let valid = hasUnknownDependency || hasOtherValidDependency || ignoreValidation || logicErrors.length === 0
+
+		// Clear logic errors if valid    
+		if (valid) logicErrors = []    
+		    
 		result[field.name] = {
 			value: context[field.name],
-			valid: hasUnknownDependency || hasOtherValidDependency || logicErrors.length === 0,
+		        valid: valid,
 			errors: logicErrors,
 			warnings: logicWarnings,
 			unknown:
@@ -298,7 +309,7 @@ function validateRecord(record, fields) {
 		}
 	}
 
-	return result
+        return result
 }
 
 let findVarRegex = /([a-z_]+[0-9]*)/g
