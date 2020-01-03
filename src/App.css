@@ -412,6 +412,80 @@ span.issues .fa {
   margin-right: 3px;
 }
 
+.editor {
+  display: flex;
+  width: 100%;
+  position: relative;
+}
+
+.editor .content {
+  flex-shrink: 1;
+}
+
+.editor .validation {
+  min-width: 300px;
+  font-size: 0.7em;
+  position: relative;
+}
+
+.editor .validation .validation-container {
+  position: fixed;
+  width: 300px;
+  right: 20px;
+  top: 250px;
+  bottom: 0px;
+}
+.editor .validation .group {
+  margin-bottom: 1em;
+}
+
+.editor .validation .group .group-name {
+  font-weight: bold;
+  font-size: 1.1em;
+  margin-top: 2em;
+}
+
+.editor .validation .group .field {
+  margin-top: 10px;
+  margin-bottom: 2px;
+  background: #eee;
+  padding: 5px;
+  border-radius: 3px;
+  box-shadow: 0 3px 2px rgba(0, 0, 0, 0.1);
+}
+
+.editor .validation .group .field .field-name {
+  font-weight: bold;
+  margin-bottom: 5px;
+  padding: 5px;
+}
+.editor .validation .group .field .issue {
+  display: flex;
+  align-items: center;
+  background: white;
+  padding: 10px;
+}
+
+.editor .validation .group .field .issue .fa {
+  width: 20px;
+  font-size: 2em;
+}
+
+.editor .validation .group .field .issue.error .fa {
+  color: #ff0000;
+}
+
+.editor .validation .group .field .issue.warning .fa {
+  color: #ffbe68;
+}
+
+.editor .validation .group .field .issue .description {
+  border-left: solid 1px #aaa;
+  margin-left: 10px;
+  padding-left: 10px;
+}
+
+
 
 @media print {
   body {
