@@ -272,33 +272,32 @@ function validateRecord(record, fields) {
 				fieldsByName
 			)
 
-                let ignoreValidation = false
-	        if (field.valid_values !== '')
-		         ignoreValidation |= field.valid_values.split(',').includes(context[field.name])
+		let ignoreValidation = false
+		if (field.valid_values !== '')
+			ignoreValidation |= field.valid_values.split(',').includes(context[field.name])
 
-    
 	 	// Check if date and time fields include other valid value
-	        let hasOtherValidDependency = false
-	        if (field.logic_checks !== '' && (field.type === "date" || field.type === "time"  || field.type === "datetime"))
-                    hasOtherValidDependency |= checkOtherValidDependency(
-			field,
-			'logic_checks',
-			context,
-			fieldsByName
-		    )
-	    
+		let hasOtherValidDependency = false
+		if (field.logic_checks !== '' && (field.type === "date" || field.type === "time"  || field.type === "datetime"))
+			hasOtherValidDependency |= checkOtherValidDependency(
+				field,
+				'logic_checks',
+				context,
+				fieldsByName
+			)
+			
 		// Remove duplicate errors
 		logicErrors = [...new Set(logicErrors)]
 
-	        // Define valid
-	        let valid = hasUnknownDependency || hasOtherValidDependency || ignoreValidation || logicErrors.length === 0
+		// Define valid
+		let valid = hasUnknownDependency || hasOtherValidDependency || ignoreValidation || logicErrors.length === 0
 
 		// Clear logic errors if valid    
 		if (valid) logicErrors = []    
-		    
+				
 		result[field.name] = {
 			value: context[field.name],
-		        valid: valid,
+						valid: valid,
 			errors: logicErrors,
 			warnings: logicWarnings,
 			unknown:
@@ -309,7 +308,7 @@ function validateRecord(record, fields) {
 		}
 	}
 
-        return result
+	return result
 }
 
 let findVarRegex = /([a-z_]+[0-9]*)/g
@@ -322,10 +321,10 @@ function thisVars(text) {
  * Checks if a field has dependency vars that are valid but not dates or times
  */
 function checkOtherValidDependency(field, member, context, fieldsByName) {
-    var text = field[member]
-    if (text === null) return false
+		var text = field[member]
+		if (text === null) return false
 
-    return text
+		return text
 	.trim()
 	.match(findVarRegex)
 	.filter(d => fieldsByName[d].valid_values !== '')
