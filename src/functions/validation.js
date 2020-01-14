@@ -257,7 +257,7 @@ function validateRecord(record, fields) {
 
 		let hasUnknownDependency = false
 		if (field.logic_checks !== '')
-			hasUnknownDependency |= checkUnknownDependencies(
+			hasUnknownDependency = checkUnknownDependencies(
 				field,
 				'logic_checks',
 				context,
@@ -265,7 +265,7 @@ function validateRecord(record, fields) {
 			)
 
 		if (field.calculated === 'yes')
-			hasUnknownDependency |= checkUnknownDependencies(
+			hasUnknownDependency = hasUnknownDependency || checkUnknownDependencies(
 				field,
 				'equation',
 				context,
@@ -274,8 +274,8 @@ function validateRecord(record, fields) {
 
 		let ignoreValidation = false
 		if (field.valid_values !== '')
-			ignoreValidation |= field.valid_values.split(',').includes(context[field.name])
-
+			ignoreValidation = field.valid_values.split(',').includes(context[field.name])
+	
 	 	// Check if date and time fields include other valid value
 		let hasOtherValidDependency = false
 		if (field.logic_checks !== '' && (field.type === "date" || field.type === "time"  || field.type === "datetime"))
@@ -297,12 +297,12 @@ function validateRecord(record, fields) {
 				
 		result[field.name] = {
 			value: context[field.name],
-						valid: valid,
+			valid: valid,
 			errors: logicErrors,
 			warnings: logicWarnings,
 			unknown:
-				field.unknown !== '' &&
-				(context[field.name] || '').toString() === field.unknown,
+				hasUnknownDependency || 
+				isUnknown(context[field.name], field),
 			incomplete: !context[field.name] && context[field.name] !== 0,
 			type: field.type,
 		}
@@ -325,11 +325,11 @@ function checkOtherValidDependency(field, member, context, fieldsByName) {
 		if (text === null) return false
 
 		return text
-	.trim()
-	.match(findVarRegex)
-	.filter(d => fieldsByName[d].valid_values !== '')
-	.map(d => fieldsByName[d].valid_values.split(',').includes(context[d]))
-	.some(d => d === true)
+			.trim()
+			.match(findVarRegex)
+			.filter(d => fieldsByName[d].valid_values !== '')
+			.map(d => fieldsByName[d].valid_values.split(',').includes(context[d]))
+			.some(d => d === true)
 }
 
 
@@ -344,7 +344,7 @@ function checkUnknownDependencies(field, member, context, fieldsByName) {
 		.trim()
 		.match(findVarRegex) // Find vars
 		.filter(d => fieldsByName[d].unknown !== '') // Ignore self and fields where unknown is empty
-		.map(d => context[d] === fieldsByName[d].unknown) // Check if they are marked unknown
+		.map(d => isUnknown(context[d], fieldsByName[d])) // Check if they are marked unknown
 		.some(d => d === true) // If any are unknown, return true
 }
 
@@ -383,8 +383,14 @@ function isValid(validationResult) {
 
 /** Returns true if the value is the same as field.unknown given that field.unknown is not empty */
 function isUnknown(value, field) {
-	if (!field.unknown) return false
-	if (value === field.unknown) return true
+	if (
+		!field.unknown ||
+		value === undefined ||
+		value === null
+	) 
+		return false
+	
+	if (value.toString() === field.unknown) return true
 
 	return false
 }
