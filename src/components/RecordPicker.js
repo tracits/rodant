@@ -325,6 +325,119 @@ class RecordPicker extends React.Component {
 				)
 			})
 
+		var buttons = (
+			<div className="buttons">
+				<button
+					className="button is-primary is-rounded"
+					onClick={() => {
+						this.createRecord()
+					}}
+				>
+					Create Record
+					</button>
+				<button
+					className="button is-rounded"
+					onClick={() => {
+						this.cleanUpInvalidRecords()
+					}}
+				>
+					Delete invalid records
+					</button>
+				<button
+					className="button is-rounded"
+					onClick={() => {
+						this.exportAndDownloadCSV()
+					}}
+				>
+					Export as CSV
+					</button>
+
+				<div className="fileUploader">
+					<FilePicker
+						extensions={['csv']}
+						onChange={fo => this.importCSV(fo)}
+						onError={err => console.log('Upload error', err)}
+					>
+						<button className="button is-rounded">Import from CSV</button>
+					</FilePicker>
+				</div>
+			</div>
+		)
+
+		var search = (
+			<div className="search">
+				<span className="fa fa-search"></span>
+				<input
+					className="input is-primary"
+					type="text"
+					value={this.state.search}
+					onChange={e => this.changeSearchText(e)}
+				/>
+				<div className="select is-primary search-field">
+					<select
+						value={this.state.searchField}
+						onChange={e => this.onSearchFieldChanged(e)}
+					>
+						<option default value="" key="default">
+							All fields
+							</option>
+						{this.props.codebook.map(d => (
+							<option value={d.name} key={d.name}>
+								{d.label}
+							</option>
+						))}
+					</select>
+				</div>
+				<button
+					className="button is-rounded"
+					onClick={() => this.clearSearchText()}
+				>
+					<span className="fa fa-remove"></span>
+				</button>
+			</div>
+		)
+
+		var sort = (
+			<div className="sort">
+				<Pager
+					page={page}
+					max={pageCount}
+					onPageChange={e => this.onPageChange(e)}
+				></Pager>
+				<div className="select is-primary sortField">
+					<select
+						className="select"
+						value={this.state.sortField}
+						onChange={e => this.onSortFieldChanged(e)}
+					>
+						{this.props.codebook.map(d => (
+							<option value={d.name} key={d.name}>
+								{d.label}
+							</option>
+						))}
+					</select>
+				</div>
+				<div className="control">
+					<input
+						type="checkbox"
+						className="checkbox"
+						checked={this.state.sortOrder !== 1}
+						onChange={e => this.onSortOrderChanged(e)}
+					/>
+					<label> Ascending</label>
+				</div>
+				<div className="control">
+					<input
+						type="checkbox"
+						className="checkbox"
+						checked={this.state.includeUnknown}
+						onChange={e => this.onIncludeUnknownChanged(e)}
+					/>
+					<label> Include unknown</label>
+				</div>
+			</div>
+		)
+
 		return (
 			<div className="">
 				<Helmet>
@@ -333,112 +446,10 @@ class RecordPicker extends React.Component {
 				<h2 className="title">
 					Pick record ({filteredRecords.length} / {this.state.records.length})
 				</h2>
-				<div className="search">
-					<span className="fa fa-search"></span>
-					<input
-						className="input is-primary"
-						type="text"
-						value={this.state.search}
-						onChange={e => this.changeSearchText(e)}
-					/>
-					<div className="select is-primary search-field">
-						<select
-							value={this.state.searchField}
-							onChange={e => this.onSearchFieldChanged(e)}
-						>
-							<option default value="" key="default">
-								All fields
-							</option>
-							{this.props.codebook.map(d => (
-								<option value={d.name} key={d.name}>
-									{d.label}
-								</option>
-							))}
-						</select>
-					</div>
-					<button
-						className="button is-rounded"
-						onClick={() => this.clearSearchText()}
-					>
-						<span className="fa fa-remove"></span>
-					</button>
-				</div>
-				<div className="sort">
-					<Pager
-						page={page}
-						max={pageCount}
-						onPageChange={e => this.onPageChange(e)}
-					></Pager>
-					<div className="select is-primary sortField">
-						<select
-							className="select"
-							value={this.state.sortField}
-							onChange={e => this.onSortFieldChanged(e)}
-						>
-							{this.props.codebook.map(d => (
-								<option value={d.name} key={d.name}>
-									{d.label}
-								</option>
-							))}
-						</select>
-					</div>
-					<div className="control">
-						<input
-							type="checkbox"
-							className="checkbox"
-							checked={this.state.sortOrder !== 1}
-							onChange={e => this.onSortOrderChanged(e)}
-						/>
-						<label> Ascending</label>
-					</div>
-					<div className="control">
-						<input
-							type="checkbox"
-							className="checkbox"
-							checked={this.state.includeUnknown}
-							onChange={e => this.onIncludeUnknownChanged(e)}
-						/>
-						<label> Include unknown</label>
-					</div>
-				</div>
+				{buttons}
+				{search}
+				{sort}
 				<div className="list is-hoverable">{records}</div>
-
-				<div className="buttons">
-					<button
-						className="button is-primary is-rounded"
-						onClick={() => {
-							this.createRecord()
-						}}
-					>
-						Create Record
-					</button>
-					<button
-						className="button is-rounded"
-						onClick={() => {
-							this.cleanUpInvalidRecords()
-						}}
-					>
-						Delete invalid records
-					</button>
-					<button
-						className="button is-rounded"
-						onClick={() => {
-							this.exportAndDownloadCSV()
-						}}
-					>
-						Export as CSV
-					</button>
-
-					<div className="fileUploader">
-						<FilePicker
-							extensions={['csv']}
-							onChange={fo => this.importCSV(fo)}
-							onError={err => console.log('Upload error', err)}
-						>
-							<button className="button is-rounded">Import from CSV</button>
-						</FilePicker>
-					</div>
-				</div>
 			</div>
 		)
 	}
