@@ -158,7 +158,7 @@ class RecordPicker extends React.Component {
 			return labels[values.find(d => d.toString() === value.toString())]
 		}
 
-		if ((record[fieldName] || '').toString() === '999') return 'unknown'
+		if (isUnknown(record[fieldName] || '', field)) return 'unknown'
 
 		return record[fieldName]
 	}
