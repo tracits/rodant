@@ -30,6 +30,7 @@ class RecordPicker extends React.Component {
 			pageSize: 10,
 			page: 0,
 			includeUnknown: false,
+			exactMatch: false,
 		}
 	}
 
@@ -139,6 +140,13 @@ class RecordPicker extends React.Component {
 		})
 	}
 
+	onExactMatchChanged(e) {
+		this.setState({
+			exactMatch: e.target.checked,
+			page: 0,
+		})
+	}
+
 	getList(str) {
 		return str
 			.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g)
@@ -237,10 +245,12 @@ class RecordPicker extends React.Component {
 					if (
 						interpolated.hasOwnProperty(k) &&
 						interpolated[k] != null &&
-						interpolated[k]
-							.toString()
-							.toLowerCase()
-							.indexOf(this.state.search) !== -1
+						(this.state.exactMatch
+							? interpolated[k].toString().toLowerCase() == this.state.search.trim()
+							: interpolated[k]
+									.toString()
+									.toLowerCase()
+									.indexOf(this.state.search) !== -1)
 					) {
 						hit = true
 						const field = this.props.codebook.find(d => d.name === k)
@@ -434,6 +444,15 @@ class RecordPicker extends React.Component {
 						onChange={e => this.onIncludeUnknownChanged(e)}
 					/>
 					<label> Include unknown</label>
+				</div>
+				<div className="control">
+					<input
+						type="checkbox"
+						className="checkbox"
+						checked={this.state.exactMatch}
+						onChange={e => this.onExactMatchChanged(e)}
+					/>
+					<label> Exact match</label>
 				</div>
 			</div>
 		)
