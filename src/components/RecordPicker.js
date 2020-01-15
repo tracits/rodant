@@ -268,6 +268,14 @@ class RecordPicker extends React.Component {
 				return false
 			})
 			.sort((a, b) => {
+				// Handle quantitative values with parseInt
+				if (sortField.type === 'quantitative')
+					return (
+						parseInt(a[this.state.sortField]) -
+						parseInt(b[this.state.sortField])
+					) * -this.state.sortOrder
+				
+				// Handle other values as strings
 				if (a[this.state.sortField] > b[this.state.sortField])
 					return -this.state.sortOrder
 				else if (a[this.state.sortField] === b[this.state.sortField]) return 0
