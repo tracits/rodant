@@ -373,8 +373,12 @@ class RecordPicker extends React.Component {
 				<div className="fileUploader">
 					<FilePicker
 						extensions={['csv']}
+						maxSize={100}
 						onChange={fo => this.importCSV(fo)}
-						onError={err => console.log('Upload error', err)}
+						onError={err => { 
+							console.log('Upload error', err)
+							alert(err.toString())
+						}}
 					>
 						<button className="button is-rounded">Import from CSV</button>
 					</FilePicker>
