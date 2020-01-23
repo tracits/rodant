@@ -2,5 +2,6 @@
 	"name": "TITCO Test Data Collection Tool",
 	"id_field": "pid",
 	"codebook": "codebook.csv",
-	"table": "TAFT"
+        "table": "TAFT",
+        "page_size": 100
 }
