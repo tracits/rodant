@@ -27,7 +27,7 @@ class RecordPicker extends React.Component {
 			searchField: '',
 			sortField: this.props.config.id_field,
 			sortOrder: 1,
-			pageSize: 10,
+			pageSize: this.props.config.page_size,
 			page: 0,
 			includeUnknown: false,
 			exactMatch: false,
@@ -246,7 +246,7 @@ class RecordPicker extends React.Component {
 						interpolated.hasOwnProperty(k) &&
 						interpolated[k] != null &&
 						(this.state.exactMatch
-							? interpolated[k].toString().toLowerCase() == this.state.search.trim()
+						 ? interpolated[k].toString().toLowerCase() === this.state.search.trim()
 							: interpolated[k]
 									.toString()
 									.toLowerCase()
