@@ -1,7 +1,7 @@
 {
-    "name": "TTRIS Test Data Collection Tool",
-    "id_field": "pid",
-    "codebook": "codebook.csv",
-    "table": "TTRIS",
-    "page_size": 100
+	"name": "TITCO Test Data Collection Tool",
+	"id_field": "pid",
+	"codebook": "codebook.csv",
+        "table": "TTRIS",
+        "page_size": 100
 }

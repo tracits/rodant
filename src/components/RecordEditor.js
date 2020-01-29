@@ -33,6 +33,7 @@ class RecordEditor extends React.Component {
 			record: null,
 			allowRadios: false,
 			doubleEntry: !!props['double-entry'],
+			disableExitShield: false,
 		}
 	}
 
@@ -112,6 +113,14 @@ class RecordEditor extends React.Component {
 			state: this.state.state,
 			record: this.state.record,
 			focusedField: null,
+		})
+	}
+
+	saveAndExit() {
+		this.setState({
+			disableExitShield: true,
+		}, () => {
+			this.props.history.push('/')	
 		})
 	}
 
@@ -220,7 +229,8 @@ class RecordEditor extends React.Component {
 
 		// Handle leaving page with invalid record
 		let prompt =
-			!valid || (this.state.doubleEntry && this.state.record.locked) ? (
+			!this.state.disableExitShield &&
+			(!valid || (this.state.doubleEntry && this.state.record.locked)) ? (
 				<Prompt
 					message={nextLocation => {
 						if (this.state.doubleEntry) {
@@ -414,7 +424,17 @@ class RecordEditor extends React.Component {
 					<div className="toolbar">
 						{(!this.state.doubleEntry || true) && (
 							<button
-								className="button is-rounded"
+								className="button is-rounded save-and-exit"
+								onClick={() => {
+									this.saveAndExit()
+								}}
+							>
+								Save and Exit
+							</button>
+						)}
+						{(!this.state.doubleEntry || true) && (
+							<button
+								className="button is-rounded mark-unknown"
 								onClick={() => {
 									this.markFieldsUnknown()
 								}}

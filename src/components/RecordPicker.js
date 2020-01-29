@@ -70,7 +70,7 @@ class RecordPicker extends React.Component {
 				isValid(validateRecord(d, this.props.codebook))
 			)
 		)
-		download(csv, 'database.csv')
+		download(csv, `${this.props.config.table}.csv`)
 	}
 
 	async importCSVText(text) {
@@ -269,7 +269,7 @@ class RecordPicker extends React.Component {
 			})
 			.sort((a, b) => {
 				// Handle quantitative values with parseInt
-				if (sortField.type === 'quantitative')
+				if (sortField.type === 'quantitative' || sortField.name == 'pid')
 					return (
 						parseInt(a[this.state.sortField]) -
 						parseInt(b[this.state.sortField])
