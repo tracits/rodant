@@ -70,7 +70,7 @@ class RecordPicker extends React.Component {
 				isValid(validateRecord(d, this.props.codebook))
 			)
 		)
-		download(csv, 'database.csv')
+		download(csv, `${this.props.config.table}.csv`)
 	}
 
 	async importCSVText(text) {
