@@ -17,6 +17,7 @@ export default function(
 	el.setAttribute('href', prefix + encoded)
 	el.setAttribute('download', filename)
 
+    console.log(el)
 	// Virtually click it to have the browser start download
 	el.click()
 
