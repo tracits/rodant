@@ -9,18 +9,12 @@ export default function(
 	prefix = 'data:application/octet-stream,'
 ) {
 	// Encode data
-	let encoded = encodeURIComponent(data)
+	let blob = new Blob([data], { type: prefix })
+	let encoded = URL.createObjectURL(blob)
 
 	// Create element with href and download attributes
-	let el = document.createElement('A')
-	document.body.appendChild(el)
-	el.setAttribute('href', prefix + encoded)
-	el.setAttribute('download', filename)
-
-    console.log(el)
-	// Virtually click it to have the browser start download
-	el.click()
-
-	// Remove element
-	el.remove()
+	let element = document.createElement('A')
+	element.setAttribute('href', encoded)
+	element.setAttribute('download', filename)
+	element.click()
 }
