@@ -82,6 +82,9 @@ class RecordPicker extends React.Component {
 	}
 
 	async importCSV(fo) {
+		if (!window.confirm("Importing might overwrite data. Continue?"))
+			return
+
 		if (fo.text) {
 			let text = await fo.text()
 			this.importCSVText(text)
