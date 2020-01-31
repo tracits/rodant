@@ -1,4 +1,5 @@
 import csvParse from 'csv-parse'
+import { validateRecord } from './validation'
 
 const unset = '<unset>' // The value to use when a value is not defined in the record
 const csv_separator = ',' // Between fields
@@ -29,6 +30,7 @@ function exportCSV(codebook, records) {
 	// Add headers
 	for (let c of codebook)
 		if (c.input === 'yes') headers.push(serializeField(c.name))
+	headers.push('valid')
 
 	// Add data
 	for (let r of records) {
@@ -36,6 +38,14 @@ function exportCSV(codebook, records) {
 
 		for (let c of codebook)
 			if (c.input === 'yes') row.push(serializeField(r[c.name] || unset))
+
+		// Validation
+		let validation = validateRecord(r, codebook)
+		let issues = Object.keys(validation).reduce(
+			(a, b) => a + validation[b].errors.length,
+			0
+		)
+		row.push(issues === 0)
 
 		data.push(row)
 	}
