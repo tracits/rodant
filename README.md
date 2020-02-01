@@ -7,9 +7,15 @@ A web application for collection of data for research.
 ## Usage
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+### Installation
+
+Clone this repository:
+
+#### `git clone https://github.com/tracits/cockroach_react.git`
+
 ### Available Scripts
 
-In the project directory, first run:
+In the project directory, run:
 
 #### `npm install`
 
