@@ -79,8 +79,7 @@ us, follow these advice:
 > 2. Use the imperative mood in the title (e.g. Fix, not Fixed or Fixes header styles)
 > 3. Use labels wisely and assign one label per issue
 
-Bugs should be labelled `bug`, enhancements should be labelled `enhancement`,
-and new functions should be labelled `function`. 
+Bugs should be labelled `bug`, enhancements should be labelled `enhancement`.
 
 ## Commit messages
 Should be written in sentence case, be informative, and make sense. Please
