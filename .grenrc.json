@@ -1,0 +1,25 @@
+{
+    "dataSource": "issues",
+    "prefix": "",
+    "onlyMilestones": false,
+    "changelogFilename": "CHANGELOG.md",
+    "groupBy": {
+	"Enhancements:": ["enhancement"],
+	"Bug Fixes:": ["bug"]
+    },
+    "ignoreIssuesWith": [
+	"replaced",
+	"wontfix",
+	"nobug"
+    ],
+    "template": {
+        "commit": "- [{{message}}]({{url}}) - @{{author}}",
+        "issue": "- [{{text}}]({{url}}) {{name}} ",
+        "label": "",
+        "noLabel": "closed",
+        "group": "\n#### {{heading}}\n",
+        "changelogTitle": "# Changelog\n\n",
+        "release": "## {{release}} ({{date}})\n{{body}}",
+        "releaseSeparator": "\n---\n\n"
+    }
+}
