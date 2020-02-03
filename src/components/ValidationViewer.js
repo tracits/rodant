@@ -20,11 +20,16 @@ const ValidationViewer = props => {
 
 	const groups = _.groupBy(fields, 'field.group1')
 
+	const focus = id => {
+		let element = document.getElementById(`field_${id}`)
+		element.focus()
+	}
+ 
 	let ui = Object.keys(groups).map(g => (
 		<div key={g} className="group">
 			<div className="group-name">{g}</div>
 			{groups[g].map(d => (
-				<div key={d.name} className="field">
+				<div key={d.name} className="field" onClick={() => focus(d.name)}>
 					<div className="field-name">{d.field.label}</div>
 					{props.validation[d.name].errors.map((e, i) => (
 						<div className="issue error" key={`error ${i}`}>
