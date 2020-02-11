@@ -120,6 +120,7 @@ class FieldEditor extends React.Component {
 								key={values[i]}
 							>
 								<input
+									id={`field_${d.name}`}
 									type="radio"
 									disabled={this.props.disabled}
 									onFocus={e => this.onFocus()}
@@ -137,6 +138,7 @@ class FieldEditor extends React.Component {
 				input = (
 					<div className="select is-small is-light">
 						<select
+							id={`field_${d.name}`}
 							placeholder={unlabeled ? d.label : ''}
 							value={this.state.value}
 							disabled={this.props.disabled || d.input !== 'yes'}
@@ -158,6 +160,7 @@ class FieldEditor extends React.Component {
 			// Render number
 			input = (
 				<input
+					id={`field_${d.name}`}
 					className="input is-small"
 					type="number"
 					disabled={d.input !== 'yes' || this.props.disabled}
@@ -178,7 +181,8 @@ class FieldEditor extends React.Component {
 					search={v => searchICD10(v, d.valid_values.split(','))}
 					onChange={(e, v) => {
 						if (v) {
-							if (this.props.onChange) this.props.onChange(this.props.data, v)
+							if (this.props.onChange)
+								this.props.onChange(this.props.data, v)
 
 							this.setState({ value: v })
 						} else {
@@ -196,6 +200,7 @@ class FieldEditor extends React.Component {
 				// Render text
 				input = (
 					<input
+						id={`field_${d.name}`}
 						className="input is-small"
 						disabled={d.input !== 'yes' || this.props.disabled}
 						type="text"
