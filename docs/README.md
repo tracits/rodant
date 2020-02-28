@@ -1,4 +1,4 @@
-# Rodent - data collection for trauma care
+# Rodant - data collection for trauma care
 A web-based tool to collect data for trauma care.
 
 - For now, the document https://github.com/tracits/cockroach/blob/master/Workflow%20and%20terminology.md contains description of the workflow and initial requirements.
