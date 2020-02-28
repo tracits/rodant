@@ -6,11 +6,13 @@ const ValidationViewer = props => {
 	const fields = Object.keys(props.validation)
 		.filter(
 			d =>
-				props.record[d] &&
-				(!props.validation[d].valid ||
-					props.validation[d].warnings.length > 0) &&
-				!props.validation[d].unknown &&
-				!isUnknown(props.validation[d].value, d)
+				(
+					props.record[d] || // Either record has prop...
+					props.codebook.find(e => e.name === d).calculated === "yes" // ... or field is a calculated value
+				) && 
+				(!props.validation[d].valid || // Either not valid... 
+					props.validation[d].warnings.length > 0) && // ... or has warnings
+				!isUnknown(props.validation[d].value, d) // Isn't 'unknown'
 		)
 		.map(d => ({
 			...props.validation[d],
