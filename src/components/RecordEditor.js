@@ -235,21 +235,6 @@ class RecordEditor extends React.Component {
 					message={nextLocation => {
 						if (this.state.doubleEntry) {
 							return 'You have not yet completed this Double Entry. Discard changes?'
-						} else {
-							// Show confirmation
-							let discard = window.confirm(
-								'Can not save incomplete or invalid record. Discard record?'
-							)
-							if (discard) {
-								// Discard record
-								this.discard(this.props.db, this.state.record.uid)
-
-								// Continue to new location
-								return true
-							} else {
-								// Stay
-								return false
-							}
 						}
 					}}
 				></Prompt>
@@ -429,7 +414,7 @@ class RecordEditor extends React.Component {
 									this.saveAndExit()
 								}}
 							>
-								Save and Exit
+								Close record
 							</button>
 						)}
 						{(!this.state.doubleEntry || true) && (
