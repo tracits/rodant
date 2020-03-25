@@ -10,10 +10,12 @@
     "font-awesome": "^4.7.0",
     "lodash": "^4.17.15",
     "moment": "^2.24.0",
+    "pouchdb": "^7.2.1",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "react-file-picker": "^0.0.6",
     "react-helmet": "^5.2.1",
+    "react-pouchdb": "^2.0.0",
     "react-router": "^5.0.0",
     "react-router-dom": "^5.0.0",
     "react-scripts": "3.2.0"

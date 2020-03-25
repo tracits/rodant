@@ -1,0 +1,28 @@
+html, body {
+	padding: 10px;
+	font-family: Roboto, sans-serif;
+}
+
+button {
+	background: black;
+	color: white;
+	margin-right: 3px;
+	padding: 5px;
+	padding-left: 15px;
+	padding-right: 15px;
+	border-radius: 5px;
+	border: none;
+}
+
+button:focus { background-color: darkslategray; }
+button:hover { background-color: slategray; }
+
+input, select {
+	border: solid 1px #ddd;
+	border-radius: 5px;
+	padding: 5px;
+}
+
+label {
+	font-weight: bold;
+}
