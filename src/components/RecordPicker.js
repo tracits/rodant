@@ -30,6 +30,7 @@ class RecordPicker extends React.Component {
 			pageSize: this.props.config.page_size,
 			page: 0,
 			includeUnknown: false,
+			includeLocked: true,
 			exactMatch: false,
 		}
 	}
@@ -140,6 +141,12 @@ class RecordPicker extends React.Component {
 			page: 0,
 		})
 	}
+	onIncludeLockedChanged(e) {
+		this.setState({
+			includeLocked: e.target.checked,
+			page: 0,
+		})
+	}
 
 	onExactMatchChanged(e) {
 		this.setState({
@@ -219,6 +226,9 @@ class RecordPicker extends React.Component {
 		let filteredRecords = this.state.records
 			// Filter on search term
 			.filter(d => {
+				// If not checked, do not include records that are marked as locked
+				if (!this.state.includeLocked && d.locked !== 'FALSE') return false
+				
 				// If not checked, do not include records with sortField unknown
 				if (!this.state.includeUnknown) {
 					let value = d[this.state.sortField] || ''
@@ -310,14 +320,16 @@ class RecordPicker extends React.Component {
 					)
 				}
 
+				var locked = d.locked.toString().toLowerCase() === 'true'
+
 				return (
 					<Link
 						key={d.uid}
 						to={'/record/' + d.uid}
-						className="list-item has-background-white"
+						className={`list-item has-background-white${locked ? ' locked' : ''}`}
 					>
 						<span className="pid">
-							{d.locked === true && <span className="fa fa-lock"> </span>}{' '}
+							{locked && <span className="fa fa-lock"> </span>}{' '}
 							{d.pid} {issueDisplay}
 						</span>
 						<span className="hits">
@@ -457,6 +469,15 @@ class RecordPicker extends React.Component {
 						onChange={e => this.onIncludeUnknownChanged(e)}
 					/>
 					<label> Include unknown</label>
+				</div>
+				<div className="control">
+					<input
+						type="checkbox"
+						className="checkbox"
+						checked={this.state.includeLocked}
+						onChange={e => this.onIncludeLockedChanged(e)}
+					/>
+					<label> Include locked</label>
 				</div>
 				<div className="control">
 					<input

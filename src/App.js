@@ -49,12 +49,9 @@ class App extends React.Component {
 					aria-label="main navigation"
 				>
 					<div className="navbar-brand">
-						<Link
-							to="/"
-							className="navbar-item has-background-primary has-text-weight-bold is-primary"
-						>
+						<div className="navbar-item has-background-primary has-text-weight-bold is-primary">
 							{this.props.config.name}
-						</Link>
+						</div>
 						<a role="button" className="navbar-burger burger" href="/">
 							<span aria-hidden="true"></span>
 							<span aria-hidden="true"></span>
