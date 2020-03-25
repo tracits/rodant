@@ -323,6 +323,13 @@ input.input:focus, .select select:focus {
   display: flex;
 }
 
+.list .list-item.locked > * {
+  opacity: 0.4;
+}
+.list .list-item.locked:hover > * {
+  opacity: 1.0;
+}
+
 .list .list-item > * {
   flex: 1;
 }
