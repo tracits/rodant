@@ -7,6 +7,7 @@ import 'font-awesome/css/font-awesome.min.css'
 import './App.css'
 import RecordEditor from './components/RecordEditor'
 import RecordPicker from './components/RecordPicker'
+import packagejson from '../package.json'
 
 /**
  * Container for the application.
@@ -50,7 +51,7 @@ class App extends React.Component {
 				>
 					<div className="navbar-brand">
 						<div className="navbar-item has-background-primary has-text-weight-bold is-primary">
-							{this.props.config.name}
+							{this.props.config.name} ({packagejson.version})
 						</div>
 						<a role="button" className="navbar-burger burger" href="/">
 							<span aria-hidden="true"></span>
