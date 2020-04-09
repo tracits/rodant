@@ -320,7 +320,7 @@ class RecordPicker extends React.Component {
 					)
 				}
 
-				var locked = d.locked.toString().toLowerCase() === 'true'
+				var locked = (d.locked || '').toString().toLowerCase() === 'true'
 
 				return (
 					<Link
