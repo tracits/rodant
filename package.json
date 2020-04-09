@@ -1,6 +1,6 @@
 {
-  "name": "Rodant",
-  "version": "1.0.0",
+  "name": "rodant",
+  "version": "1.0.2",
   "private": true,
   "dependencies": {
     "async-csv": "^2.1.1",

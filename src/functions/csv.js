@@ -31,6 +31,7 @@ function exportCSV(codebook, records) {
 	for (let c of codebook)
 		if (c.input === 'yes') headers.push(serializeField(c.name))
 	headers.push('valid')
+	headers.push('locked')
 
 	// Add data
 	for (let r of records) {
@@ -46,6 +47,7 @@ function exportCSV(codebook, records) {
 			0
 		)
 		row.push(issues === 0)
+		row.push(r.locked)
 
 		data.push(row)
 	}
