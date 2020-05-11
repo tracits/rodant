@@ -587,3 +587,8 @@ span.issues .fa {
     margin-bottom: 0;
   }
 }
+
+.is-disabled {
+  color: gray;
+  border-color: gray;
+}
