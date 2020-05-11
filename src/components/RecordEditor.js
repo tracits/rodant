@@ -151,6 +151,21 @@ class RecordEditor extends React.Component {
 		})
 	}
 
+	async unlockRecord() {
+		let record = { ...this.state.record }
+		record.locked = 'FALSE'
+		await this.props.db.records
+			.where('uid')
+			.equals(Number(this.props.uid))
+			.modify({
+				locked: false,
+			})
+
+		this.setState({
+			record: record
+		})
+	}
+
 	validateFieldGroup(group, validation) {
 		if (
 			this.state.doubleEntryErrors &&
@@ -443,15 +458,24 @@ class RecordEditor extends React.Component {
 							</button>
 						)}
 
-						{ locked && (
-							<button
-								className="button is-rounded mark-unknown"
-								onClick={() => {
-									this.exitWithoutSaving()
-								}}
-							>
-								Return
-							</button>
+						{ locked && (<>
+								<button
+									className="button is-rounded mark-unknown"
+									onClick={() => {
+										this.exitWithoutSaving()
+									}}
+								>
+									Return
+								</button>
+								<button
+									className="button is-rounded mark-unknown"
+									onClick={() => {
+										this.unlockRecord()
+									}}
+								>
+									Unlock
+								</button>
+							</>
 						)}
 						<div className="control">
 							<label className="checkbox">
