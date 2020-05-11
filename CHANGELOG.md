@@ -1,5 +1,36 @@
 # Changelog
 
+## v1.0.4 (11/05/2020)
+
+#### Enhancements:
+
+- [#31](https://github.com/tracits/cockroach_react/issues/31) Allow users to unlock records 
+
+#### Bug Fixes:
+
+- [#94](https://github.com/tracits/cockroach_react/issues/94) Should not be possible to delete locked records 
+- [#93](https://github.com/tracits/cockroach_react/issues/93) Locked records can still be edited 
+
+---
+
+## v1.0.3 (09/04/2020)
+
+#### Enhancements:
+
+- [#89](https://github.com/tracits/cockroach_react/issues/89) Show Rodant version in tool instance 
+- [#88](https://github.com/tracits/cockroach_react/issues/88) Replace "Save and exit" with "Close record" and remove link from tool title. 
+- [#87](https://github.com/tracits/cockroach_react/issues/87) Remove option to discard record from RecordEditor 
+- [#68](https://github.com/tracits/cockroach_react/issues/68) Ability to navigate from record page even though the entry is incomplete 
+
+#### Bug Fixes:
+
+- [#91](https://github.com/tracits/cockroach_react/issues/91) Tool collapses with TypeError: Cannot read property toString of undefined when trying to import from csv 
+- [#90](https://github.com/tracits/cockroach_react/issues/90) Previously completed and locked records are not displayed as such 
+- [#85](https://github.com/tracits/cockroach_react/issues/85) Change app name to Rodant 
+- [#80](https://github.com/tracits/cockroach_react/issues/80) Validation error for dct_tct when dct is valid and tct is 99 does not show  
+
+---
+
 ## v1.0.0 (17/02/2020)
 
 #### Enhancements:
