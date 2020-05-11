@@ -124,6 +124,14 @@ class RecordEditor extends React.Component {
 		})
 	}
 
+	exitWithoutSaving() {
+		this.setState({
+			disableExitShield: true,
+		}, () => {
+			this.props.history.push('/')	
+		})
+	}
+
 	markFieldsUnknown() {
 		let record = { ...this.state.record }
 		for (let c of this.props.codebook) {
@@ -209,6 +217,9 @@ class RecordEditor extends React.Component {
 		else if (this.state.state === RecordEditorState.NONE)
 			return <div className="content">Idle</div>
 
+		
+		const locked = this.state.record.locked === "TRUE"
+
 		// Populate fields from codebook
 		let fields = {}
 		for (let field of this.props.codebook) fields[field.name] = field
@@ -261,6 +272,7 @@ class RecordEditor extends React.Component {
 						key={d.name}
 						data={d}
 						disabled={
+							locked ||
 							(this.state.doubleEntry && d.double_enter !== 'yes') ||
 							this.state.record.locked === true
 						}
@@ -393,9 +405,12 @@ class RecordEditor extends React.Component {
 			d => d.name === this.props.config.id_field
 		)
 		const id = this.state.record[this.props.config.id_field]
-		const titleText = this.state.doubleEntry
+		let titleText = this.state.doubleEntry
 			? `Double enter ${idField.label}: ${id}`
 			: `Editing ${idField.label}: ${id}`
+
+		if (locked)
+			titleText = <span><span className='fa fa-lock'/> Viewing locked {idField.label}: {id}</span>
 
 		return (
 			<div className="editor">
@@ -407,7 +422,7 @@ class RecordEditor extends React.Component {
 					{prompt}
 					<h1 className="title">{titleText}</h1>
 					<div className="toolbar">
-						{(!this.state.doubleEntry || true) && (
+						{!locked && (!this.state.doubleEntry || true) && (
 							<button
 								className="button is-rounded save-and-exit"
 								onClick={() => {
@@ -417,7 +432,7 @@ class RecordEditor extends React.Component {
 								Close record
 							</button>
 						)}
-						{(!this.state.doubleEntry || true) && (
+						{ !locked && (!this.state.doubleEntry || true) && (
 							<button
 								className="button is-rounded mark-unknown"
 								onClick={() => {
@@ -425,6 +440,17 @@ class RecordEditor extends React.Component {
 								}}
 							>
 								Mark empty fields as Not Known
+							</button>
+						)}
+
+						{ locked && (
+							<button
+								className="button is-rounded mark-unknown"
+								onClick={() => {
+									this.exitWithoutSaving()
+								}}
+							>
+								Return
 							</button>
 						)}
 						<div className="control">

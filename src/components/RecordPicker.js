@@ -193,7 +193,11 @@ class RecordPicker extends React.Component {
 
 		for (let record of records) {
 			let validation = validateRecord(record, this.props.codebook)
-			if (!isValid(validation)) toDelete.push(record.uid)
+			if (
+				record.locked !== 'TRUE' && 
+				!isValid(validation)
+			)
+				toDelete.push(record.uid)
 		}
 
 		if (toDelete.length === 0) {
@@ -344,11 +348,12 @@ class RecordPicker extends React.Component {
 							{this.getFieldText(this.props.codebook, d, this.state.sortField)}
 						</span>
 						<button
+							disabled={d.locked === 'TRUE'}
 							onClick={e => {
 								e.preventDefault()
 								this.deleteRecord(d.uid)
 							}}
-							className="button is-danger is-small is-outlined is-rounded remove"
+							className={`button ${d.locked === 'TRUE' ? 'is-disabled' : ' is-danger'} is-small is-outlined is-rounded remove`}
 						>
 							<span className="fa fa-remove" />
 						</button>
