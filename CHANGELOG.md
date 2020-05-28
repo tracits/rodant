@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.0.5 (28/05/2020)
+
+#### Bug Fixes:
+
+- [#99](https://github.com/tracits/rodant/issues/99) Validation for date and time that includes unknown fails 
+
+---
+
 ## v1.0.4 (11/05/2020)
 
 #### Enhancements:
