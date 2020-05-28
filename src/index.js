@@ -5,6 +5,7 @@ import App from './App'
 import * as serviceWorker from './serviceWorker'
 import csv from 'async-csv'
 import dexie from 'dexie'
+import { csvToCodebook } from './functions/codebook'
 
 // Start service worker
 serviceWorker.register()
@@ -19,13 +20,7 @@ async function bootstrap() {
 	let response = await fetch(`${process.env.PUBLIC_URL}/${config.codebook}`)
 	let codebook = await response.text()
 	let csvString = await csv.parse(codebook)
-	let columns = csvString[0]
-	let items = []
-	for (let i = 1; i < csvString.length; i++) {
-		let o = {}
-		for (let j = 0; j < columns.length; j++) o[columns[j]] = csvString[i][j]
-		items.push(o)
-	}
+	let items = csvToCodebook(csvString)
 
 	// Initialize Dexie database
 	let db = new dexie(config.table)

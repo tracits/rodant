@@ -256,20 +256,17 @@ function validateRecord(record, fields) {
 		}
 
 		let hasUnknownDependency = false
+
 		if (field.logic_checks !== '')
 			hasUnknownDependency = checkUnknownDependencies(
 				field,
-				'logic_checks',
-				context,
-				fieldsByName
+				context
 			)
 
-		if (field.calculated === 'yes')
-			hasUnknownDependency = hasUnknownDependency || checkUnknownDependencies(
+		if (field.calculated === 'yes' && !hasUnknownDependency)
+			hasUnknownDependency = checkUnknownDependencies(
 				field,
-				'equation',
-				context,
-				fieldsByName
+				context
 			)
 
 		let ignoreValidation = false
@@ -335,16 +332,11 @@ function checkOtherValidDependency(field, member, context, fieldsByName) {
 
 /**
  * Checks if a field has any unknown dependency vars
+ * Using the full, recursive dependencies array
  */
-function checkUnknownDependencies(field, member, context, fieldsByName) {
-	var text = field[member]
-	if (text === null) return false
-
-	return text
-		.trim()
-		.match(findVarRegex) // Find vars
-		.filter(d => fieldsByName[d].unknown !== '') // Ignore self and fields where unknown is empty
-		.map(d => isUnknown(context[d], fieldsByName[d])) // Check if they are marked unknown
+function checkUnknownDependencies(field, context) {
+	return field.dependencies // For all dependency fields...
+		.map(d => isUnknown(context[d.name], d)) // ... check if value in context is unknown
 		.some(d => d === true) // If any are unknown, return true
 }
 
