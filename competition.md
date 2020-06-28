@@ -1,4 +1,4 @@
-# COMPETITION
+# Competition
 ### [https://opendatakit.org/](https://opendatakit.org/)
 ### [https://www.castoredc.com/](https://www.castoredc.com/)
 ### [https://www.project-redcap.org/](https://www.project-redcap.org/)
