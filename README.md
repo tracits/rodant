@@ -4,7 +4,7 @@
 
 **A simple and open source web application for collection of research data**
 
-Rodant (intentionally spelt like this, as a combination of rodent and ant, the gatherer and organizer) aims to be a lightweight offline first browser app that simplifies data collection for research across settings. The primary focus is low resource settings with poor or patchy connectivity but being built to work in those settings make it attractive everywhere. 
+Rodant (intentionally spelled like this, as a combination of rodent and ant, the gatherer and organizer) aims to be a lightweight offline first browser app that simplifies data collection for research across settings. The primary focus is low resource settings with poor or patchy connectivity but being built to work in those settings make it attractive everywhere. 
 Rodant aims to be easy to setup and without external dependencies (except the browser it runs in). It is easy to deploy and customize. Its behavior is governed by two files:
 
 ### 1. [`config.json`](public/config.json)
