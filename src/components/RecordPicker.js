@@ -55,10 +55,7 @@ class RecordPicker extends React.Component {
 
 	async deleteRecord(uid) {
 		if (window.confirm(`Really delete record: ${uid}?`)) {
-			await this.props.db.records
-				.where('uid')
-				.equals(uid)
-				.delete()
+			await this.props.db.records.where('uid').equals(uid).delete()
 
 			this.updateRecords()
 		}
@@ -67,9 +64,9 @@ class RecordPicker extends React.Component {
 	exportAndDownloadCSV() {
 		let csv = exportCSV(
 			this.props.codebook,
-		        this.state.records.filter(d => d)
+			this.state.records.filter((d) => d)
 		)
-	    download(csv, `${this.props.config.table}.csv`)
+		download(csv, `${this.props.config.table}.csv`)
 	}
 
 	async importCSVText(text) {
@@ -83,8 +80,7 @@ class RecordPicker extends React.Component {
 	}
 
 	async importCSV(fo) {
-		if (!window.confirm("Importing might overwrite data. Continue?"))
-			return
+		if (!window.confirm('Importing might overwrite data. Continue?')) return
 
 		if (fo.text) {
 			let text = await fo.text()
@@ -92,7 +88,7 @@ class RecordPicker extends React.Component {
 		} else {
 			// For safari that lacks the .text() call
 			var fileReader = new FileReader()
-			fileReader.addEventListener('loadend', e => {
+			fileReader.addEventListener('loadend', (e) => {
 				var text = e.srcElement.result
 				this.importCSVText(text)
 			})
@@ -158,20 +154,20 @@ class RecordPicker extends React.Component {
 	getList(str) {
 		return str
 			.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g)
-			.map(d => d.replace(/"/g, ''))
+			.map((d) => d.replace(/"/g, ''))
 	}
 
 	getFieldText(codebook, record, fieldName) {
-		let field = codebook.find(d => d.name === fieldName)
+		let field = codebook.find((d) => d.name === fieldName)
 		if (
 			field.type === 'qualitative' &&
 			field.valid_values &&
 			field.value_labels
 		) {
-			let values = this.getList(field.valid_values).map(d => parseInt(d))
+			let values = this.getList(field.valid_values).map((d) => parseInt(d))
 			let labels = this.getList(field.value_labels)
 			let value = parseInt(record[fieldName])
-			return labels[values.find(d => d.toString() === value.toString())]
+			return labels[values.find((d) => d.toString() === value.toString())]
 		}
 
 		if (isUnknown(record[fieldName] || '', field)) return 'unknown'
@@ -193,10 +189,7 @@ class RecordPicker extends React.Component {
 
 		for (let record of records) {
 			let validation = validateRecord(record, this.props.codebook)
-			if (
-				record.locked !== 'TRUE' && 
-				!isValid(validation)
-			)
+			if (record.locked !== 'TRUE' && !isValid(validation))
 				toDelete.push(record.uid)
 		}
 
@@ -224,15 +217,15 @@ class RecordPicker extends React.Component {
 	render() {
 		let searchHits = {}
 		const sortField = this.props.codebook.find(
-			d => d.name === this.state.sortField
+			(d) => d.name === this.state.sortField
 		)
 
 		let filteredRecords = this.state.records
 			// Filter on search term
-			.filter(d => {
+			.filter((d) => {
 				// If not checked, do not include records that are marked as locked
 				if (!this.state.includeLocked && d.locked !== 'FALSE') return false
-				
+
 				// If not checked, do not include records with sortField unknown
 				if (!this.state.includeUnknown) {
 					let value = d[this.state.sortField] || ''
@@ -248,10 +241,10 @@ class RecordPicker extends React.Component {
 					interpolated[f.name] = (interpolatedRaw[f.name] || '').toString()
 
 				const keys = this.props.codebook
-					.map(d => d.name)
+					.map((d) => d.name)
 					// If there is a searchField selected, use only keys matching it
 					.filter(
-						d => this.state.searchField === '' || d === this.state.searchField
+						(d) => this.state.searchField === '' || d === this.state.searchField
 					)
 				let hit = false
 				let hits = []
@@ -261,14 +254,15 @@ class RecordPicker extends React.Component {
 						interpolated.hasOwnProperty(k) &&
 						interpolated[k] != null &&
 						(this.state.exactMatch
-						 ? interpolated[k].toString().toLowerCase() === this.state.search.trim()
+							? interpolated[k].toString().toLowerCase() ===
+							  this.state.search.trim()
 							: interpolated[k]
 									.toString()
 									.toLowerCase()
 									.indexOf(this.state.search) !== -1)
 					) {
 						hit = true
-						const field = this.props.codebook.find(d => d.name === k)
+						const field = this.props.codebook.find((d) => d.name === k)
 						if (field)
 							// Sometimes fields do not exist in codebook
 							hits.push([field.label, interpolatedRaw[k]])
@@ -284,12 +278,13 @@ class RecordPicker extends React.Component {
 			})
 			.sort((a, b) => {
 				// Handle quantitative values with parseInt
-				if (sortField.type === 'quantitative' || sortField.name == 'pid')
+				if (sortField.type === 'quantitative' || sortField.name === 'pid')
 					return (
-						parseInt(a[this.state.sortField]) -
-						parseInt(b[this.state.sortField])
-					) * -this.state.sortOrder
-				
+						(parseInt(a[this.state.sortField]) -
+							parseInt(b[this.state.sortField])) *
+						-this.state.sortOrder
+					)
+
 				// Handle other values as strings
 				if (a[this.state.sortField] > b[this.state.sortField])
 					return -this.state.sortOrder
@@ -307,11 +302,11 @@ class RecordPicker extends React.Component {
 				this.state.page * this.state.pageSize,
 				(this.state.page + 1) * this.state.pageSize
 			)
-			.map(d => {
+			.map((d) => {
 				let validation = validateRecord(d, this.props.codebook)
 				let issues = Object.keys(validation)
-					.filter(d => !validation[d].valid)
-					.map(d => [d, validation[d]])
+					.filter((d) => !validation[d].valid)
+					.map((d) => [d, validation[d]])
 
 				let issueDisplay = null
 
@@ -330,11 +325,13 @@ class RecordPicker extends React.Component {
 					<Link
 						key={d.uid}
 						to={'/record/' + d.uid}
-						className={`list-item has-background-white${locked ? ' locked' : ''}`}
+						className={`list-item has-background-white${
+							locked ? ' locked' : ''
+						}`}
 					>
 						<span className="pid">
-							{locked && <span className="fa fa-lock"> </span>}{' '}
-							{d.pid} {issueDisplay}
+							{locked && <span className="fa fa-lock"> </span>} {d.pid}{' '}
+							{issueDisplay}
 						</span>
 						<span className="hits">
 							{searchHits[d.uid] &&
@@ -349,11 +346,13 @@ class RecordPicker extends React.Component {
 						</span>
 						<button
 							disabled={d.locked === 'TRUE'}
-							onClick={e => {
+							onClick={(e) => {
 								e.preventDefault()
 								this.deleteRecord(d.uid)
 							}}
-							className={`button ${d.locked === 'TRUE' ? 'is-disabled' : ' is-danger'} is-small is-outlined is-rounded remove`}
+							className={`button ${
+								d.locked === 'TRUE' ? 'is-disabled' : ' is-danger'
+							} is-small is-outlined is-rounded remove`}
 						>
 							<span className="fa fa-remove" />
 						</button>
@@ -370,7 +369,7 @@ class RecordPicker extends React.Component {
 					}}
 				>
 					Create Record
-					</button>
+				</button>
 				<button
 					className="button is-rounded"
 					onClick={() => {
@@ -378,7 +377,7 @@ class RecordPicker extends React.Component {
 					}}
 				>
 					Delete invalid records
-					</button>
+				</button>
 				<button
 					className="button is-rounded"
 					onClick={() => {
@@ -386,14 +385,14 @@ class RecordPicker extends React.Component {
 					}}
 				>
 					Export as CSV
-					</button>
+				</button>
 
 				<div className="fileUploader">
 					<FilePicker
 						extensions={['csv']}
 						maxSize={100}
-						onChange={fo => this.importCSV(fo)}
-						onError={err => { 
+						onChange={(fo) => this.importCSV(fo)}
+						onError={(err) => {
 							console.log('Upload error', err)
 							alert(err.toString())
 						}}
@@ -411,17 +410,17 @@ class RecordPicker extends React.Component {
 					className="input is-primary"
 					type="text"
 					value={this.state.search}
-					onChange={e => this.changeSearchText(e)}
+					onChange={(e) => this.changeSearchText(e)}
 				/>
 				<div className="select is-primary search-field">
 					<select
 						value={this.state.searchField}
-						onChange={e => this.onSearchFieldChanged(e)}
+						onChange={(e) => this.onSearchFieldChanged(e)}
 					>
 						<option default value="" key="default">
 							All fields
-							</option>
-						{this.props.codebook.map(d => (
+						</option>
+						{this.props.codebook.map((d) => (
 							<option value={d.name} key={d.name}>
 								{d.label}
 							</option>
@@ -442,15 +441,15 @@ class RecordPicker extends React.Component {
 				<Pager
 					page={page}
 					max={pageCount}
-					onPageChange={e => this.onPageChange(e)}
+					onPageChange={(e) => this.onPageChange(e)}
 				></Pager>
 				<div className="select is-primary sortField">
 					<select
 						className="select"
 						value={this.state.sortField}
-						onChange={e => this.onSortFieldChanged(e)}
+						onChange={(e) => this.onSortFieldChanged(e)}
 					>
-						{this.props.codebook.map(d => (
+						{this.props.codebook.map((d) => (
 							<option value={d.name} key={d.name}>
 								{d.label}
 							</option>
@@ -462,7 +461,7 @@ class RecordPicker extends React.Component {
 						type="checkbox"
 						className="checkbox"
 						checked={this.state.sortOrder !== 1}
-						onChange={e => this.onSortOrderChanged(e)}
+						onChange={(e) => this.onSortOrderChanged(e)}
 					/>
 					<label> Ascending</label>
 				</div>
@@ -471,7 +470,7 @@ class RecordPicker extends React.Component {
 						type="checkbox"
 						className="checkbox"
 						checked={this.state.includeUnknown}
-						onChange={e => this.onIncludeUnknownChanged(e)}
+						onChange={(e) => this.onIncludeUnknownChanged(e)}
 					/>
 					<label> Include unknown</label>
 				</div>
@@ -480,7 +479,7 @@ class RecordPicker extends React.Component {
 						type="checkbox"
 						className="checkbox"
 						checked={this.state.includeLocked}
-						onChange={e => this.onIncludeLockedChanged(e)}
+						onChange={(e) => this.onIncludeLockedChanged(e)}
 					/>
 					<label> Include locked</label>
 				</div>
@@ -489,7 +488,7 @@ class RecordPicker extends React.Component {
 						type="checkbox"
 						className="checkbox"
 						checked={this.state.exactMatch}
-						onChange={e => this.onExactMatchChanged(e)}
+						onChange={(e) => this.onExactMatchChanged(e)}
 					/>
 					<label> Exact match</label>
 				</div>
