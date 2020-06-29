@@ -42,16 +42,13 @@ a:hover .hide-until-parent-hovered {
 	display: inline;
 }
 
-#root > .container {
-	/* HACK: Was hard to make distance to top navbar */
-	margin-top: 6em;
-}
 .navigation-bar {
 	width: 100%;
 	display: flex;
 	align-items: center;
 	justify-content: flex-start;
 	min-height: 3.25rem;
+	margin-bottom: 6em;
 	background: var(--primary-color-1);
 }
 .navigation-bar-brand {
@@ -61,19 +58,15 @@ a:hover .hide-until-parent-hovered {
 .navigation-bar-item {
 	padding: 0.6rem 0.85rem;
 	border-radius: 2px;
-	font-weight: bold;
 	color: inherit;
+	font-weight: bold;
+	letter-spacing: 0.5px;
 	background: var(--primary-color-2);
 }
 
 .navigation-bar-item:hover {
 	cursor: pointer;
 	background: #ffffff;
-}
-
-nav.navbar.has-background-light {
-	background: #00a78e !important;
-	color: white !important;
 }
 
 .toolbar {
@@ -556,7 +549,6 @@ span.issues .fa {
 		display: none !important;
 	}
 
-	.navbar,
 	.button,
 	button,
 	h1.title,
