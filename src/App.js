@@ -23,7 +23,7 @@ class App extends React.Component {
 				config={this.props.config}
 			/>
 		)
-		let recordEditor = match => (
+		let recordEditor = (match) => (
 			<RecordEditor
 				db={this.props.db}
 				codebook={this.props.codebook}
@@ -31,7 +31,7 @@ class App extends React.Component {
 				config={this.props.config}
 			/>
 		)
-		let doubleEntry = match => (
+		let doubleEntry = (match) => (
 			<RecordEditor
 				db={this.props.db}
 				codebook={this.props.codebook}
@@ -44,30 +44,13 @@ class App extends React.Component {
 		// Use React Router to select which page to show from the url
 		return (
 			<Router basename={process.env.PUBLIC_URL}>
-				<nav
-					className="navbar has-background-light is-fixed-top"
-					role="navigation"
-					aria-label="main navigation"
-				>
-					<div className="navbar-brand">
-						<div className="navbar-item has-background-primary has-text-weight-bold is-primary">
-							{this.props.config.name} ({packagejson.version})
-						</div>
-						<a role="button" className="navbar-burger burger" href="/">
-							<span aria-hidden="true"></span>
-							<span aria-hidden="true"></span>
-							<span aria-hidden="true"></span>
-						</a>
+				<nav className="navigation-bar">
+					<div className=" navigation-bar-brand">
+						{this.props.config.name} ({packagejson.version})
 					</div>
-
-					<div className="navbar-menu">
-						<div className="navbar-start">
-							<Link to="/" className="navbar-item">
-								Records
-							</Link>
-						</div>
-						<div className="navbar-end"></div>
-					</div>
+					<Link to="/">
+						<div className="navigation-bar-item">Records</div>
+					</Link>
 				</nav>
 
 				<div className="container">
