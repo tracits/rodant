@@ -2,7 +2,6 @@ import React from 'react'
 import { Link, withRouter } from 'react-router-dom'
 import { exportCSV, importCSV } from '../functions/csv'
 import download from '../functions/download'
-import { FilePicker } from 'react-file-picker'
 import {
 	validateRecord,
 	isValid,
@@ -11,6 +10,8 @@ import {
 } from '../functions/validation'
 import Helmet from 'react-helmet'
 import Pager from './Pager'
+
+import ButtonContiner from './ButtonContainer'
 
 /**
  * Renders a list of the available records.
@@ -37,6 +38,7 @@ class RecordPicker extends React.Component {
 
 	async componentDidMount() {
 		await this.updateRecords()
+		console.log(this.props.db.records)
 	}
 
 	async updateRecords() {
@@ -360,49 +362,6 @@ class RecordPicker extends React.Component {
 				)
 			})
 
-		var buttons = (
-			<div className="buttons">
-				<button
-					className="button is-primary is-rounded"
-					onClick={() => {
-						this.createRecord()
-					}}
-				>
-					Create Record
-				</button>
-				<button
-					className="button is-rounded"
-					onClick={() => {
-						this.cleanUpInvalidRecords()
-					}}
-				>
-					Delete invalid records
-				</button>
-				<button
-					className="button is-rounded"
-					onClick={() => {
-						this.exportAndDownloadCSV()
-					}}
-				>
-					Export as CSV
-				</button>
-
-				<div className="fileUploader">
-					<FilePicker
-						extensions={['csv']}
-						maxSize={100}
-						onChange={(fo) => this.importCSV(fo)}
-						onError={(err) => {
-							console.log('Upload error', err)
-							alert(err.toString())
-						}}
-					>
-						<button className="button is-rounded">Import from CSV</button>
-					</FilePicker>
-				</div>
-			</div>
-		)
-
 		var search = (
 			<div className="search">
 				<span className="fa fa-search"></span>
@@ -503,7 +462,14 @@ class RecordPicker extends React.Component {
 				<h2 className="title">
 					Pick record ({filteredRecords.length} / {this.state.records.length})
 				</h2>
-				{buttons}
+
+				<ButtonContiner
+					createRecord={this.createRecord}
+					cleanUpInvalidRecords={this.cleanUpInvalidRecords}
+					exportAndDownloadCSV={this.exportAndDownloadCSV}
+				/>
+
+				{/* {buttons} */}
 				{search}
 				{sort}
 				<div className="list is-hoverable">{records}</div>
