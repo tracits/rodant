@@ -69,6 +69,10 @@ a:hover .hide-until-parent-hovered {
 	background: #ffffff;
 }
 
+.button-container {
+	margin-bottom: 1.5em;
+}
+
 .toolbar {
 	display: flex;
 	justify-content: left;

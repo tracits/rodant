@@ -1,15 +1,16 @@
 import React from 'react'
 import { FilePicker } from 'react-file-picker'
+import Spinner from './Spinner'
 
 function ButtonContainer({
 	createRecord,
 	cleanUpInvalidRecords,
 	exportAndDownloadCSV,
 	importCSV,
-	setLoading,
+	loading,
 }) {
 	return (
-		<div>
+		<div className="button-container">
 			<div className="buttons">
 				<button className="button is-primary is-rounded" onClick={createRecord}>
 					Create Record
@@ -20,7 +21,6 @@ function ButtonContainer({
 				<button className="button is-rounded" onClick={exportAndDownloadCSV}>
 					Export as CSV
 				</button>
-
 				<div className="fileUploader">
 					<FilePicker
 						extensions={['csv']}
@@ -34,6 +34,7 @@ function ButtonContainer({
 						<button className="button is-rounded">Import from CSV</button>
 					</FilePicker>
 				</div>
+				{loading && <Spinner />}
 			</div>
 		</div>
 	)
