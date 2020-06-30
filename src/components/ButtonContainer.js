@@ -9,7 +9,10 @@ function ButtonContainer({
 	return (
 		<div>
 			<div className="buttons">
-				<button className="button is-primary is-rounded" onClick={createRecord}>
+				<button
+					className="button is-primary is-rounded"
+					onClick={() => createRecord()}
+				>
 					Create Record
 				</button>
 				<button className="button is-rounded" onClick={cleanUpInvalidRecords}>

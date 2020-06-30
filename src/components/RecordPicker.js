@@ -464,9 +464,9 @@ class RecordPicker extends React.Component {
 				</h2>
 
 				<ButtonContiner
-					createRecord={this.createRecord}
-					cleanUpInvalidRecords={this.cleanUpInvalidRecords}
-					exportAndDownloadCSV={this.exportAndDownloadCSV}
+					createRecord={this.createRecord.bind(this)}
+					cleanUpInvalidRecords={this.cleanUpInvalidRecords.bind(this)}
+					exportAndDownloadCSV={this.exportAndDownloadCSV.bind(this)}
 				/>
 
 				{/* {buttons} */}
