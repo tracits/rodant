@@ -23,41 +23,44 @@ function serializeField(v) {
  * @param {[]} records  - set of records
  * @returns {string}    - csv formatted string
  */
-async function exportCSV(codebook, records) {
-	let data = []
-	let headers = (data[0] = ['uid'])
+function exportCSV(codebook, records) {
+	let promise = new Promise((resolve, reject) => {
+		let data = []
+		let headers = (data[0] = ['uid'])
 
-	// Add headers
-	for (let c of codebook)
-		if (c.input === 'yes') headers.push(serializeField(c.name))
-	headers.push('valid')
-	headers.push('locked')
-
-	// Add data
-	for (let r of records) {
-		let row = [r.uid]
-
+		// Add headers
 		for (let c of codebook)
-			if (c.input === 'yes') row.push(serializeField(r[c.name] || unset))
+			if (c.input === 'yes') headers.push(serializeField(c.name))
+		headers.push('valid')
+		headers.push('locked')
 
-		// Validation
-		let validation = validateRecord(r, codebook)
-		let issues = await Object.keys(validation).reduce(
-			(a, b) => a + validation[b].errors.length,
-			0
-		)
-		row.push(issues === 0)
-		row.push(r.locked)
+		// Add data
+		for (let r of records) {
+			let row = [r.uid]
 
-		data.push(row)
-	}
+			for (let c of codebook)
+				if (c.input === 'yes') row.push(serializeField(r[c.name] || unset))
 
-	// Create string
-	let result = ''
-	for (let r of data) result += r.join(csv_separator) + csv_row_break
+			// Validation
+			let validation = validateRecord(r, codebook)
+			let issues = Object.keys(validation).reduce(
+				(a, b) => a + validation[b].errors.length,
+				0
+			)
+			row.push(issues === 0)
+			row.push(r.locked)
 
+			data.push(row)
+		}
+
+		// Create string
+		let result = ''
+		for (let r of data) result += r.join(csv_separator) + csv_row_break
+		resolve(result)
+	})
 	// Return the result
-	return result
+	// return result
+	return promise
 }
 
 async function importCSV(text, db) {

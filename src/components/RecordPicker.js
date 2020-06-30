@@ -65,16 +65,22 @@ class RecordPicker extends React.Component {
 
 	async exportAndDownloadCSV() {
 		this.setLoading(true)
-		let csv = exportCSV(
-			this.props.codebook,
-			this.state.records.filter((d) => d)
-		)
-		download(csv, `${this.props.config.table}.csv`)
+		try {
+			this.setState({ loading: !this.state.loading })
+			let exportCSVResults = exportCSV(
+				this.props.codebook,
+				this.state.records.filter((d) => d)
+			)
+			download(exportCSVResults, `${this.props.config.table}.csv`)
+		} catch (error) {
+			console.error(error)
+		}
 		this.setLoading(false)
 	}
+	// this.setLoading(false)
 
-	setLoading(value = false) {
-		return this.setState({ loading: value })
+	setLoading(value) {
+		this.setState({ loading: value })
 	}
 
 	async importCSVText(text) {
@@ -195,6 +201,7 @@ class RecordPicker extends React.Component {
 	async cleanUpInvalidRecords(silent = false) {
 		// Removes records that are not valid from database
 		// Find invalid records
+		this.setLoading(true)
 		let records = await this.props.db.records.toArray()
 		let toDelete = []
 
@@ -221,6 +228,7 @@ class RecordPicker extends React.Component {
 
 				// Update view of records
 				this.updateRecords()
+				this.setLoading(false)
 			}
 		}
 	}
