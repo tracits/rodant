@@ -33,12 +33,12 @@ class RecordPicker extends React.Component {
 			includeUnknown: false,
 			includeLocked: true,
 			exactMatch: false,
+			loading: false,
 		}
 	}
 
 	async componentDidMount() {
 		await this.updateRecords()
-		console.log(this.props.db.records)
 	}
 
 	async updateRecords() {
@@ -68,7 +68,12 @@ class RecordPicker extends React.Component {
 			this.props.codebook,
 			this.state.records.filter((d) => d)
 		)
+		debugger
 		download(csv, `${this.props.config.table}.csv`)
+	}
+
+	setLoading(value = false) {
+		return this.setState({ loading: value })
 	}
 
 	async importCSVText(text) {
@@ -463,13 +468,16 @@ class RecordPicker extends React.Component {
 					Pick record ({filteredRecords.length} / {this.state.records.length})
 				</h2>
 
+				{this.state.loading === true ? <h1>YOOOO</h1> : <h2>woot</h2>}
+
 				<ButtonContiner
 					createRecord={this.createRecord.bind(this)}
 					cleanUpInvalidRecords={this.cleanUpInvalidRecords.bind(this)}
 					exportAndDownloadCSV={this.exportAndDownloadCSV.bind(this)}
+					importCSV={this.importCSV.bind(this)}
+					setLoading={this.setLoading.bind(this)}
 				/>
 
-				{/* {buttons} */}
 				{search}
 				{sort}
 				<div className="list is-hoverable">{records}</div>

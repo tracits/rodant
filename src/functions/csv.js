@@ -23,7 +23,7 @@ function serializeField(v) {
  * @param {[]} records  - set of records
  * @returns {string}    - csv formatted string
  */
-function exportCSV(codebook, records) {
+async function exportCSV(codebook, records) {
 	let data = []
 	let headers = (data[0] = ['uid'])
 
@@ -42,7 +42,7 @@ function exportCSV(codebook, records) {
 
 		// Validation
 		let validation = validateRecord(r, codebook)
-		let issues = Object.keys(validation).reduce(
+		let issues = await Object.keys(validation).reduce(
 			(a, b) => a + validation[b].errors.length,
 			0
 		)
