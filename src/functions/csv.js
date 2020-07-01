@@ -24,7 +24,7 @@ function serializeField(v) {
  * @returns {string}    - csv formatted string
  */
 function exportCSV(codebook, records) {
-	let promise = new Promise((resolve, reject) => {
+	let promise = new Promise((resolve) => {
 		let data = []
 		let headers = (data[0] = ['uid'])
 
@@ -56,6 +56,7 @@ function exportCSV(codebook, records) {
 		// Create string
 		let result = ''
 		for (let r of data) result += r.join(csv_separator) + csv_row_break
+
 		resolve(result)
 	})
 	// Return the result

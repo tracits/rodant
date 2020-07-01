@@ -64,23 +64,27 @@ class RecordPicker extends React.Component {
 	}
 
 	async exportAndDownloadCSV() {
-		this.setLoading(true)
-		try {
-			this.setState({ loading: !this.state.loading })
-			let exportCSVResults = exportCSV(
+		await this.setLoading(true)
+		setTimeout(() => {
+			exportCSV(
 				this.props.codebook,
 				this.state.records.filter((d) => d)
 			)
-			download(exportCSVResults, `${this.props.config.table}.csv`)
-		} catch (error) {
-			console.error(error)
-		}
-		this.setLoading(false)
+				.then((exportCSVResults) =>
+					download(exportCSVResults, `${this.props.config.table}.csv`)
+				)
+				.catch((err) => console.error(`there was an Error: ${err}`))
+		}, 100)
+		// Hack to turn off loading state/spinner after 1.5s
+		setTimeout(() => {
+			this.setLoading(false)
+		}, 1500)
 	}
-	// this.setLoading(false)
 
 	setLoading(value) {
-		this.setState({ loading: value })
+		return new Promise((resolve) => {
+			resolve(this.setState({ loading: value }))
+		})
 	}
 
 	async importCSVText(text) {
@@ -231,6 +235,7 @@ class RecordPicker extends React.Component {
 				this.setLoading(false)
 			}
 		}
+		this.setLoading(false)
 	}
 
 	render() {
