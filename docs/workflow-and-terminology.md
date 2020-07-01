@@ -1,8 +1,5 @@
-# The data-collection-tool project
-
-## Version 0.1, this is a work in progress!
-
-The data collection tool was build as a part of the TITCO project to enable project officers in india to collect and send data to KI servers. The project has grown and covers four sites in india and two major ongoing projects, the TRISS and TAFT project. Both collect data on adult trauma patients at different sites. Each site has a number of project officers employed that collect the data. The future project includes the “open trauma data bank”, this would enable any interested hospital that want to start to collect data to do so using the data collection tool supplied, the idea here is that information is only processed and de-identification is done on the client level and information is automatically uploaded to the internet for aggregation and made available to anyone who wishes to use it. These two different types of usages for the data collection tool  have different requirements in terms of set-up and configuration. The requirements for this future project is described further down in this document.
+# Workflow and terminology
+The data collection tool was built as a part of the TITCO project to enable project officers in India to collect data and upload to Our servers. The project has grown and covers four sites in india and two major ongoing projects, the TRISS and TAFT project. Both collect data on adult trauma patients at different sites. Each site has a number of project officers employed that collect the data. The future project includes the “open trauma data bank”, this would enable any interested hospital that want to start to collect data to do so using the data collection tool supplied, the idea here is that information is only processed and de-identification is done on the client level and information is automatically uploaded to the internet for aggregation and made available to anyone who wishes to use it. These two different types of usages for the data collection tool  have different requirements in terms of set-up and configuration. The requirements for this future project is described further down in this document.
 Some of the sites and project officers now also collect additional data on something called Audit filters, these have been added to the tool
 
 ## Study environments and data collection for TITCO-sites
@@ -10,7 +7,7 @@ Some of the sites and project officers now also collect additional data on somet
 ## The data collection process for TITCO-sites
 For the ongoing projects, each of the four sites involved has several project officers that collect data. As of now, they keep track of the patient ID to make sure it’s unique and when to follow up patients.
 Current workflow:
-1. Project officer logs on to data-collection site and prints several forms on paper.
+1. Project officer (PO) logs on to data-collection site and prints several forms on paper.
 2. PO works in the ED, when patient arrives they collect the data on paper. This is because working with a computer/tabled in the ED is not feasible.
 3. The next day/days they follow up patients that where admitted to hospital to make additional recordings on mortality, admission status and radiology reports. This is added to the paper-form.
 4. The project officers enter the data, _not_ including patient identifying information, from the paper form, into the online form, validates and saves it. _Patient identifying information is only ever stored on paper, locally_
@@ -39,11 +36,13 @@ Data that only contains information about the time of incident, age and medical 
 Next level 3 is data where for example date of incident is not available, it would become impossible with any sensitivity to identify a patient from this data alone.
 The final level, level 4 is aggregated data, for example data that contains several patients in one identifier. Example, one line that states “Hospital X, had 44 femur fractures in 2017”.
 **Data on level 1 needs to be handled with extreme care.**
+
 ### General guidelines for datahandling
 **Level 1** data may never be uploaded from the local site. The patient identifiers are only available locally, with a local backup to an encrypted USB drive. 
 **Level 2** data may be uploaded to KI servers, that is the record minus patient information except for the patient ID that has been generated with the record was created. It would be possible to connect the patient using the KI data and the local data on the USB drive.
 **Level 3** and **level 4** data may be uploaded directly to publicly available servers.
 For local clients data may only ever be uploaded and _never_ downloaded from KI/backend servers to ensure that unauthorised people get control of a client computer or login and download information.
+
 #### User handling
 The tool is available by directing a browser to a specified URL. Here you login with your supplied credentials which gives you access to the tool based on the codebook for that specific site and project. All passwords are stored encrypted in the back end database. For titco projects, assignments are made by the project management team. For the future open databank, users should be able to register an account and a site.
 
