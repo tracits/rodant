@@ -2,7 +2,6 @@ import React from 'react'
 import { Link, withRouter } from 'react-router-dom'
 import { exportCSV, importCSV } from '../functions/csv'
 import download from '../functions/download'
-import { FilePicker } from 'react-file-picker'
 import {
 	validateRecord,
 	isValid,
@@ -11,6 +10,8 @@ import {
 } from '../functions/validation'
 import Helmet from 'react-helmet'
 import Pager from './Pager'
+
+import ButtonContiner from './ButtonContainer'
 
 /**
  * Renders a list of the available records.
@@ -32,6 +33,7 @@ class RecordPicker extends React.Component {
 			includeUnknown: false,
 			includeLocked: true,
 			exactMatch: false,
+			loading: false,
 		}
 	}
 
@@ -61,22 +63,41 @@ class RecordPicker extends React.Component {
 		}
 	}
 
-	exportAndDownloadCSV() {
-		let csv = exportCSV(
-			this.props.codebook,
-			this.state.records.filter((d) => d)
-		)
-		download(csv, `${this.props.config.table}.csv`)
+	async exportAndDownloadCSV() {
+		await this.setLoading(true)
+		setTimeout(() => {
+			exportCSV(
+				this.props.codebook,
+				this.state.records.filter((d) => d)
+			)
+				.then((exportCSVResults) =>
+					download(exportCSVResults, `${this.props.config.table}.csv`)
+				)
+				.catch((err) => console.error(`there was an Error: ${err}`))
+		}, 100)
+		// Hack to turn off loading state/spinner after 1.5s
+		setTimeout(() => {
+			this.setLoading(false)
+		}, 1500)
+	}
+
+	setLoading(value) {
+		return new Promise((resolve) => {
+			resolve(this.setState({ loading: value }))
+		})
 	}
 
 	async importCSVText(text) {
+		this.setLoading(true)
 		try {
 			await importCSV(text, this.props.db)
 			this.updateRecords()
 		} catch (err) {
 			console.log('error', err)
 			alert('Error when importing database: ' + err)
+			this.setLoading(false)
 		}
+		return this.setLoading(false)
 	}
 
 	async importCSV(fo) {
@@ -184,6 +205,7 @@ class RecordPicker extends React.Component {
 	async cleanUpInvalidRecords(silent = false) {
 		// Removes records that are not valid from database
 		// Find invalid records
+		this.setLoading(true)
 		let records = await this.props.db.records.toArray()
 		let toDelete = []
 
@@ -210,8 +232,10 @@ class RecordPicker extends React.Component {
 
 				// Update view of records
 				this.updateRecords()
+				this.setLoading(false)
 			}
 		}
+		this.setLoading(false)
 	}
 
 	render() {
@@ -360,49 +384,6 @@ class RecordPicker extends React.Component {
 				)
 			})
 
-		var buttons = (
-			<div className="buttons">
-				<button
-					className="button is-primary is-rounded"
-					onClick={() => {
-						this.createRecord()
-					}}
-				>
-					Create Record
-				</button>
-				<button
-					className="button is-rounded"
-					onClick={() => {
-						this.cleanUpInvalidRecords()
-					}}
-				>
-					Delete invalid records
-				</button>
-				<button
-					className="button is-rounded"
-					onClick={() => {
-						this.exportAndDownloadCSV()
-					}}
-				>
-					Export as CSV
-				</button>
-
-				<div className="fileUploader">
-					<FilePicker
-						extensions={['csv']}
-						maxSize={100}
-						onChange={(fo) => this.importCSV(fo)}
-						onError={(err) => {
-							console.log('Upload error', err)
-							alert(err.toString())
-						}}
-					>
-						<button className="button is-rounded">Import from CSV</button>
-					</FilePicker>
-				</div>
-			</div>
-		)
-
 		var search = (
 			<div className="search">
 				<span className="fa fa-search"></span>
@@ -503,7 +484,15 @@ class RecordPicker extends React.Component {
 				<h2 className="title">
 					Pick record ({filteredRecords.length} / {this.state.records.length})
 				</h2>
-				{buttons}
+
+				<ButtonContiner
+					createRecord={this.createRecord.bind(this)}
+					cleanUpInvalidRecords={this.cleanUpInvalidRecords.bind(this)}
+					exportAndDownloadCSV={this.exportAndDownloadCSV.bind(this)}
+					importCSV={this.importCSV.bind(this)}
+					loading={this.state.loading}
+				/>
+
 				{search}
 				{sort}
 				<div className="list is-hoverable">{records}</div>
