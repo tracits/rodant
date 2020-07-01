@@ -10,7 +10,8 @@
     "ignoreIssuesWith": [
 	"replaced",
 	"wontfix",
-	"nobug"
+	"nobug",
+        "gren:ignore"
     ],
     "template": {
         "commit": "- [{{message}}]({{url}}) - @{{author}}",
