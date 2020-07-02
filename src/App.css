@@ -1,6 +1,7 @@
 :root {
 	--primary-color-1: #00d1b2;
 	--primary-color-2: #00a78e;
+	--primary-color-3: #00826e;
 
 	--grey0: #ffffff;
 	--grey1: #f5f5f5;
@@ -18,13 +19,22 @@
 /* create dark and light classes */
 
 .light-theme {
-	--body-main: var(--grey2);
+	--nav-main: var(--primary-color-1);
+	--nav-accent: var(--primary-color-2);
+	--nav-button-accent: var(--primary-color-3);
+	--body-main: var(--grey1);
 	--text-main: var(--grey9);
+	--text-accent: var(--grey8);
 }
 
 .dark-theme {
-	--body-main: var(--grey8);
+	--nav-main: var(--primary-color-2);
+	--nav-accent: var(--primary-color-1);
+	--nav-button-accent: var(--primary-color-3);
+	--body-main: var(--grey9);
+	--body-accent: var(--grey8);
 	--text-main: var(--grey2);
+	--text-accent: var(--grey8);
 }
 
 * {
@@ -56,16 +66,19 @@ a:hover {
 a.list-item {
 	text-decoration: none;
 	color: var(-grey9);
+	background: var(--body-accent);
 }
-/* HACK: since react routers Link tag is incompatible with Bulmas list */
+
 .list a.list-item:hover {
-	background: rgba(0, 0, 0, 0.04) !important;
+	background: var(--body-main);
+	color: var(--text-main);
 	font-weight: bold;
 }
 
 h1,
 h2 {
-	font-weight: bold;
+	margin-bottom: 1em;
+	font-weight: 600;
 	font-size: 2em;
 	color: var(--text-main);
 }
@@ -84,8 +97,9 @@ a:hover .hide-until-parent-hovered {
 	align-items: center;
 	justify-content: flex-start;
 	min-height: 3.25rem;
-	margin-bottom: 6em;
-	background: var(--primary-color-1);
+	margin-bottom: 3em;
+	color: var(--text-accent);
+	background: var(--nav-main);
 }
 .navigation-bar-brand {
 	font-weight: bold;
@@ -96,14 +110,16 @@ a:hover .hide-until-parent-hovered {
 	border-radius: 2px;
 	color: inherit;
 
+	font-weight: 600;
 	letter-spacing: 0.5px;
-	background: var(--primary-color-2);
+	background: var(--nav-accent);
 }
 
 .navigation-bar-item:hover {
 	cursor: pointer;
-	font-weight: 400;
-	background: var(--grey0);
+	font-weight: 600;
+	/* color: var(--body-main); */
+	background: var(--nav-button-accent);
 }
 
 .button-container {

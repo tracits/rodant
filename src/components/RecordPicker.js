@@ -349,9 +349,7 @@ class RecordPicker extends React.Component {
 					<Link
 						key={d.uid}
 						to={'/record/' + d.uid}
-						className={`list-item has-background-white${
-							locked ? ' locked' : ''
-						}`}
+						className={`list-item ${locked ? ' locked' : ''}`}
 					>
 						<span className="pid">
 							{locked && <span className="fa fa-lock"> </span>} {d.pid}{' '}
