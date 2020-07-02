@@ -331,7 +331,7 @@ class RecordEditor extends React.Component {
 
 			return (
 				<div className="record_group" key={k}>
-					<h2 className="title">{k}</h2>
+					<h2>{k}</h2>
 					<div className="fields">{fieldGroupElements}</div>
 				</div>
 			)
