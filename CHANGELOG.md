@@ -1,11 +1,10 @@
 # Changelog
 
-## v1.0.6 (01/07/2020)
+## v1.0.6 (01/01/1970)
 
 #### Enhancements:
 
 - [#92](https://github.com/tracits/rodant/issues/92) Display progress bar when importing or exporting data 
-- [#22](https://github.com/tracits/rodant/issues/22) Upload data to back-end servers 
 
 #### Bug Fixes:
 
