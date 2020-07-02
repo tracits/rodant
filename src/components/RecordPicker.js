@@ -349,9 +349,7 @@ class RecordPicker extends React.Component {
 					<Link
 						key={d.uid}
 						to={'/record/' + d.uid}
-						className={`list-item has-background-white${
-							locked ? ' locked' : ''
-						}`}
+						className={`list-item ${locked ? ' locked' : ''}`}
 					>
 						<span className="pid">
 							{locked && <span className="fa fa-lock"> </span>} {d.pid}{' '}
@@ -477,11 +475,11 @@ class RecordPicker extends React.Component {
 		)
 
 		return (
-			<div className="">
+			<div>
 				<Helmet>
 					<title>{`${this.props.config.name} - Records`}</title>
 				</Helmet>
-				<h2 className="title">
+				<h2>
 					Pick record ({filteredRecords.length} / {this.state.records.length})
 				</h2>
 
