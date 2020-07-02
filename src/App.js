@@ -9,8 +9,6 @@ import RecordPicker from './components/RecordPicker'
 import packagejson from '../package.json'
 import Nav from './components/Nav'
 
-document.querySelector('body').setAttribute('class', 'dark-theme')
-
 /**
  * Container for the application.
  * Uses react-router to select what page to show.
