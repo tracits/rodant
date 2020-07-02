@@ -477,11 +477,11 @@ class RecordPicker extends React.Component {
 		)
 
 		return (
-			<div className="">
+			<div>
 				<Helmet>
 					<title>{`${this.props.config.name} - Records`}</title>
 				</Helmet>
-				<h2 className="title">
+				<h2>
 					Pick record ({filteredRecords.length} / {this.state.records.length})
 				</h2>
 

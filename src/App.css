@@ -1,34 +1,61 @@
 :root {
 	--primary-color-1: #00d1b2;
 	--primary-color-2: #00a78e;
+
+	--grey0: #ffffff;
+	--grey1: #f5f5f5;
+	--grey2: #eeeeee;
+	--grey3: #e0e0e0;
+	--grey4: #bdbdbd;
+	--grey5: #9e9e9e;
+	--grey6: #757575;
+	--grey7: #616161;
+	--grey8: #424242;
+	--grey9: #212121;
+	--grey10: #0f1111;
+}
+
+/* create dark and light classes */
+
+.light-theme {
+	--body-main: var(--grey2);
+	--text-main: var(--grey9);
+}
+
+.dark-theme {
+	--body-main: var(--grey8);
+	--text-main: var(--grey2);
 }
 
 * {
+	box-sizing: border-box;
 	outline-color: #00d1b2;
 }
 body,
 html {
 	margin: 0;
 	padding: 0;
+	font-size: 16px;
 	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
 		'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
 		sans-serif;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
-	color: #555;
+
+	color: var(--text-main);
+	background: var(--body-main);
 }
 
 a {
 	color: inherit;
 }
 
+a:hover {
+	color: var(-grey9);
+}
 a.list-item {
 	text-decoration: none;
-	color: #333;
-}
-
-a:hover {
-	color: #111;
+	color: var(-grey9);
 }
 /* HACK: since react routers Link tag is incompatible with Bulmas list */
 .list a.list-item:hover {
@@ -36,10 +63,11 @@ a:hover {
 	font-weight: bold;
 }
 
+h1,
 h2 {
 	font-weight: bold;
-	font-size: 1.5em;
-	margin-top: 2em;
+	font-size: 2em;
+	color: var(--text-main);
 }
 
 .hide-until-parent-hovered {
@@ -67,14 +95,15 @@ a:hover .hide-until-parent-hovered {
 	padding: 0.6rem 0.85rem;
 	border-radius: 2px;
 	color: inherit;
-	font-weight: bold;
+
 	letter-spacing: 0.5px;
 	background: var(--primary-color-2);
 }
 
 .navigation-bar-item:hover {
 	cursor: pointer;
-	background: #ffffff;
+	font-weight: 400;
+	background: var(--grey0);
 }
 
 .button-container {
