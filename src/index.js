@@ -1,6 +1,5 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import './index.css'
 import App from './App'
 import * as serviceWorker from './serviceWorker'
 import csv from 'async-csv'
@@ -24,7 +23,7 @@ async function bootstrap() {
 
 	// Initialize Dexie database
 	let db = new dexie(config.table)
-	let desc = '++uid, locked, ' + items.map(d => d.name).join(', ')
+	let desc = '++uid, locked, ' + items.map((d) => d.name).join(', ')
 	let store = {
 		records: desc,
 	}
