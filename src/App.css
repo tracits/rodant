@@ -39,7 +39,6 @@
 
 * {
 	box-sizing: border-box;
-	outline-color: #00d1b2;
 }
 body,
 html {
@@ -611,10 +610,7 @@ span.issues .fa {
 	h1.title,
 	.toolbar {
 		display: none;
-	}
-
-	#root > .container {
-		margin-top: 0;
+		background: red;
 	}
 
 	.record_group {
@@ -643,9 +639,6 @@ span.issues .fa {
 		padding-top: 2px;
 		padding-bottom: 2px;
 		min-height: 42px;
-	}
-
-	.record_field {
 	}
 
 	.field_group,
