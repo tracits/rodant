@@ -55,7 +55,9 @@ function Nav({ name, version }) {
 				</div>
 			</div>
 			<div className="navigation-bar-version">
-				<div>Built with Rodant (v.{version})</div>
+				<a href="https://github.com/tracits/rodant/blob/master/CHANGELOG.md">
+					Built with Rodant (v.{version})
+				</a>
 			</div>
 		</nav>
 	)
