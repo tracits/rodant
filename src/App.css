@@ -104,18 +104,26 @@ a:hover .hide-until-parent-hovered {
 .navigation-bar {
 	width: 100%;
 	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
 	align-items: center;
-	justify-content: flex-start;
+
 	min-height: 3.25rem;
 	margin-bottom: 3em;
 	color: var(--text-accent);
 	background: var(--nav-main);
 }
+.navigation-bar-contatiner {
+	display: flex;
+	align-items: center;
+	min-width: 60%;
+}
 .navigation-bar-brand {
 	font-weight: bold;
+	text-align: center;
 	padding: 0.5rem 0.75rem;
 }
-.navigation-bar-item {
+.navigation-bar-button {
 	padding: 0.6rem 0.85rem;
 	border-radius: 2px;
 	color: inherit;
@@ -125,11 +133,16 @@ a:hover .hide-until-parent-hovered {
 	background: var(--nav-accent);
 }
 
-.navigation-bar-item:hover {
+.navigation-bar-button:hover {
 	cursor: pointer;
 	font-weight: 600;
 	/* color: var(--body-main); */
 	background: var(--nav-button-accent);
+}
+.navigation-bar-version {
+	padding: 0.5rem 0.75rem;
+	font-size: 0.75em;
+	text-align: center;
 }
 
 .button-container {
