@@ -25,7 +25,7 @@ function Nav({ name, version }) {
 		return isDark ? (
 			<button
 				type="button"
-				class="navigation-bar-item"
+				class="navigation-bar-button"
 				onClick={() => setIsDark((prevValue) => !prevValue)}
 			>
 				{'🌗'}
@@ -33,7 +33,7 @@ function Nav({ name, version }) {
 		) : (
 			<button
 				type="button"
-				class="navigation-bar-item"
+				class="navigation-bar-button"
 				onClick={() => setIsDark((prevValue) => !prevValue)}
 			>
 				{'🌘'}
@@ -43,16 +43,21 @@ function Nav({ name, version }) {
 
 	return (
 		<nav className="navigation-bar">
-			<div className="navigation-bar-brand">
-				{name} ({version})
+			<div className="navigation-bar-contatiner">
+				<div className="navigation-bar-brand">{name}</div>
+				<Link to="/">
+					<button type="button" className="navigation-bar-button">
+						Records
+					</button>
+				</Link>
+				<div>
+					<ThemeButton />
+				</div>
 			</div>
-			<Link to="/">
-				<button type="button" className="navigation-bar-item">
-					Records
-				</button>
-			</Link>
-			<div>
-				<ThemeButton />
+			<div className="navigation-bar-version">
+				<a href="https://github.com/tracits/rodant/blob/master/CHANGELOG.md">
+					Built with Rodant (v.{version})
+				</a>
 			</div>
 		</nav>
 	)
