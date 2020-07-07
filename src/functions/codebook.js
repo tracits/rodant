@@ -1,7 +1,8 @@
 // Populates the 'directDependencies' array for a field
 function getDirectDeps(field, find, visited = []) {
 	// Check visited
-	if (visited.indexOf(field) !== -1) return []
+	// eslint-disable-next-line
+	if (visited.indexOf(field) != -1) return []
 
 	// Add field to the visited fields
 	visited.push(field)
@@ -10,7 +11,8 @@ function getDirectDeps(field, find, visited = []) {
 	var mentioned = {}
 
 	// Add calculated fields
-	if (field.calculated === 'yes')
+	// eslint-disable-next-line
+	if (field.calculated == 'yes')
 		field.equation.match(findVarRegex).forEach((d) => (mentioned[d] = find(d)))
 
 	// Add logic checks
@@ -25,7 +27,8 @@ function getDirectDeps(field, find, visited = []) {
 // Gets all dependencies recursively on a codebook.
 // Only works where getDirectDeps has been used to populate directDependencies
 function getDepsRecursive(field, visited = []) {
-	if (visited.indexOf(field) !== -1) return
+	// eslint-disable-next-line
+	if (visited.indexOf(field) != -1) return
 
 	visited.push(field)
 	for (let dep of field.directDependencies) getDepsRecursive(dep, visited)
@@ -49,7 +52,8 @@ function csvToCodebook(csv) {
 
 	for (let field of codebook)
 		field.directDependencies = getDirectDeps(field, (e) =>
-			codebook.find((d) => d.name === e)
+			// eslint-disable-next-line
+			codebook.find((d) => d.name == e)
 		)
 
 	for (let field of codebook) field.dependencies = getDepsRecursive(field)
