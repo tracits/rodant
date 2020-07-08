@@ -1,6 +1,14 @@
 # Changelog
 
-## v1.0.6 (01/01/1970)
+## v1.0.7 (08/07/2020)
+
+#### Enhancements:
+
+- [#109](https://github.com/tracits/rodant/issues/109) Add switch for dark mode 
+
+---
+
+## v1.0.6 (07/07/2020)
 
 #### Enhancements:
 
