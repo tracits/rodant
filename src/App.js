@@ -1,6 +1,5 @@
 import React from 'react'
-
-import { BrowserRouter as Router, Route, Link } from 'react-router-dom'
+import { BrowserRouter as Router, Route } from 'react-router-dom'
 
 import 'bulma/css/bulma.css'
 import 'font-awesome/css/font-awesome.min.css'
@@ -8,6 +7,7 @@ import './App.css'
 import RecordEditor from './components/RecordEditor'
 import RecordPicker from './components/RecordPicker'
 import packagejson from '../package.json'
+import Nav from './components/Nav'
 
 /**
  * Container for the application.
@@ -44,14 +44,7 @@ class App extends React.Component {
 		// Use React Router to select which page to show from the url
 		return (
 			<Router basename={process.env.PUBLIC_URL}>
-				<nav className="navigation-bar">
-					<div className=" navigation-bar-brand">
-						{this.props.config.name} ({packagejson.version})
-					</div>
-					<Link to="/">
-						<div className="navigation-bar-item">Records</div>
-					</Link>
-				</nav>
+				<Nav name={this.props.config.name} version={packagejson.version} />
 
 				<div className="container">
 					<Route path="/" exact component={recordPicker} />
