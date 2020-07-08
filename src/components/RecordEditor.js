@@ -224,18 +224,41 @@ class RecordEditor extends React.Component {
 
 	render() {
 		// Handle loading and errors
-		if (this.state.state === RecordEditorState.LOADING)
+		if (this.state.state === RecordEditorState.LOADING) {
 			return <div className="content">Loading...</div>
-		else if (this.state.state === RecordEditorState.NOTFOUND)
+		} else if (this.state.state === RecordEditorState.NOTFOUND) {
 			return (
 				<div className="content">
 					Couldn't find record with id: {this.props.uid}
 				</div>
 			)
-		else if (this.state.state === RecordEditorState.NONE)
+		} else if (this.state.state === RecordEditorState.NONE) {
 			return <div className="content">Idle</div>
+		}
 
-		const locked = this.state.record.locked === 'TRUE'
+		let locked = returnLockedValueAsBoolean(this.state.record.locked)
+		function returnLockedValueAsBoolean(tempLockedValue) {
+			if (tempLockedValue === 'TRUE') {
+				return true
+			}
+			if (tempLockedValue === 'true') {
+				return true
+			}
+			if (tempLockedValue === true) {
+				return true
+			}
+
+			if (tempLockedValue === 'FALSE') {
+				return false
+			}
+			if (tempLockedValue === 'false') {
+				return false
+			}
+			if (tempLockedValue === false) {
+				return false
+			}
+			return false
+		}
 
 		// Populate fields from codebook
 		let fields = {}
@@ -258,7 +281,7 @@ class RecordEditor extends React.Component {
 		// Handle leaving page with invalid record
 		let prompt =
 			!this.state.disableExitShield &&
-			(!valid || (this.state.doubleEntry && this.state.record.locked)) ? (
+			(!valid || (this.state.doubleEntry && locked)) ? (
 				<Prompt
 					message={(nextLocation) => {
 						if (this.state.doubleEntry) {
@@ -289,9 +312,7 @@ class RecordEditor extends React.Component {
 						key={d.name}
 						data={d}
 						disabled={
-							locked ||
-							(this.state.doubleEntry && d.double_enter !== 'yes') ||
-							this.state.record.locked === true
+							locked || (this.state.doubleEntry && d.double_enter !== 'yes')
 						}
 						record={this.state.record}
 						allowRadios={this.state.allowRadios}
@@ -341,7 +362,7 @@ class RecordEditor extends React.Component {
 			valid &&
 			this.state.record.cr === '1' &&
 			!this.state.doubleEntry &&
-			this.state.record.locked !== true
+			locked !== true
 		let fieldHelp = !this.state.focusedField ? (
 			<div className="field_help"></div>
 		) : (
@@ -398,7 +419,7 @@ class RecordEditor extends React.Component {
 		) : null
 
 		let checkEntry =
-			this.state.doubleEntry && this.state.record.locked !== true ? (
+			this.state.doubleEntry && locked !== true ? (
 				<div className="finalize-entry">
 					<button
 						className="button is-primary is-rounded"
@@ -425,7 +446,6 @@ class RecordEditor extends React.Component {
 		let titleText = this.state.doubleEntry
 			? `Double enter ${idField.label}: ${id}`
 			: `Editing ${idField.label}: ${id}`
-
 		if (locked)
 			titleText = (
 				<span>

@@ -39,6 +39,10 @@ class RecordPicker extends React.Component {
 
 	async componentDidMount() {
 		await this.updateRecords()
+
+		this.state.records.forEach((el) =>
+			console.log(typeof el.locked, el.locked, el.pid)
+		)
 	}
 
 	async updateRecords() {
@@ -49,6 +53,7 @@ class RecordPicker extends React.Component {
 	async createRecord() {
 		let recordId = await this.props.db.records.add({
 			name: 'Unnamed',
+			locked: 'FALSE',
 		})
 
 		this.props.history.push('/record/' + recordId)

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 
 function Nav({ name, version }) {
-	const [isDark, setIsDark] = useState(true)
+	const [isDark, setIsDark] = useState(false)
 
 	useEffect(() => {
 		// manually setting the button classes that are controlled by the css framework
