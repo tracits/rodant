@@ -2,6 +2,6 @@
 	"name": "Rodant Test Data Collection Tool",
 	"id_field": "pid",
 	"codebook": "codebook.csv",
-        "table": "TTRIS",
+        "table": "rodant-test-db",
         "page_size": 100
 }
