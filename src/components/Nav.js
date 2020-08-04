@@ -25,7 +25,7 @@ function Nav({ name, version }) {
 		return isDark ? (
 			<button
 				type="button"
-				class="navigation-bar-button"
+				className="navigation-bar-button"
 				onClick={() => setIsDark((prevValue) => !prevValue)}
 			>
 				{'🌗'}
@@ -33,7 +33,7 @@ function Nav({ name, version }) {
 		) : (
 			<button
 				type="button"
-				class="navigation-bar-button"
+				className="navigation-bar-button"
 				onClick={() => setIsDark((prevValue) => !prevValue)}
 			>
 				{'🌘'}
