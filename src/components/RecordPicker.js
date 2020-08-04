@@ -12,6 +12,7 @@ import Helmet from 'react-helmet'
 import Pager from './Pager'
 
 import ButtonContiner from './ButtonContainer'
+import SearchRecords from './SearchRecords'
 
 /**
  * Renders a list of the available records.
@@ -496,7 +497,8 @@ class RecordPicker extends React.Component {
 					loading={this.state.loading}
 				/>
 
-				{search}
+				{/* {search} */}
+				{SearchRecords}
 				{sort}
 				<div className="list is-hoverable">{records}</div>
 			</div>
