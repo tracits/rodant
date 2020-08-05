@@ -45,7 +45,10 @@ function RecordPicker(props) {
 
 	async function updateRecords() {
 		let records = await props.db.records.toArray()
-		setState({ ...state, records: records })
+		let tempState = { ...state }
+		tempState.records = records
+		setState(tempState)
+		// setState({ ...state, records: records })
 	}
 
 	async function createRecord() {
@@ -93,7 +96,10 @@ function RecordPicker(props) {
 	async function importCSVText(text) {
 		setLoading(true)
 		try {
+			debugger
+			console.log(text)
 			await importCSV(text, props.db)
+			console.log(props.db)
 			updateRecords()
 		} catch (err) {
 			console.log('error', err)
@@ -108,7 +114,7 @@ function RecordPicker(props) {
 
 		if (fo.text) {
 			let text = await fo.text()
-
+			debugger
 			importCSVText(text)
 		} else {
 			// For safari that lacks the .text() call
@@ -117,7 +123,6 @@ function RecordPicker(props) {
 				var text = e.srcElement.result
 				importCSVText(text)
 			})
-			console.log({ ...fo })
 			fileReader.readAsText(fo)
 		}
 	}

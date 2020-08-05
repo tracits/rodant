@@ -66,6 +66,7 @@ function exportCSV(codebook, records) {
 
 async function importCSV(text, db) {
 	let promise = new Promise((resolve, reject) => {
+		debugger
 		csvParse(
 			text,
 			{
