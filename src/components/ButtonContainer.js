@@ -7,7 +7,7 @@ function ButtonContainer({
 	createRecord,
 	cleanUpInvalidRecords,
 	exportAndDownloadCSV,
-	loading,
+	isLoading,
 	setLoading,
 	updateRecords,
 	db,
@@ -68,7 +68,7 @@ function ButtonContainer({
 						<button className="button is-rounded">Import from CSV</button>
 					</FilePicker>
 				</div>
-				{loading && <Spinner />}
+				{isLoading ? <Spinner /> : null}
 			</div>
 		</div>
 	)

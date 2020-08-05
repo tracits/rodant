@@ -396,7 +396,7 @@ function RecordPicker(props) {
 				setLoading={setLoading}
 				updateRecords={updateRecords}
 				db={props.db}
-				isLoading
+				isLoading={isLoading}
 			/>
 
 			<SearchRecords
