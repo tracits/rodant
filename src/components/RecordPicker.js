@@ -45,10 +45,7 @@ function RecordPicker(props) {
 
 	async function updateRecords() {
 		let records = await props.db.records.toArray()
-		let tempState = { ...state }
-		tempState.records = records
-		setState(tempState)
-		// setState({ ...state, records: records })
+		setState({ ...state, records: records })
 	}
 
 	async function createRecord() {
