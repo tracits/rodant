@@ -9,11 +9,11 @@ import {
 	isUnknown,
 } from '../functions/validation'
 import Helmet from 'react-helmet'
-import Pager from './Pager'
 
 import ButtonContiner from './ButtonContainer'
 import SearchRecords from './SearchRecords'
 import RecordsContainer from './RecordsContainer'
+import SortContainer from './SortContainer'
 
 /**
  * Renders a list of the available records.
@@ -39,9 +39,7 @@ function RecordPicker(props) {
 
 	useEffect(() => {
 		updateRecords()
-		state.records.forEach((el) =>
-			console.log(typeof el.locked, el.locked, el.pid)
-		)
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [])
 
 	async function updateRecords() {
@@ -167,6 +165,7 @@ function RecordPicker(props) {
 	let searchHits = {}
 
 	const sortField = props.codebook.find((d) => d.name === state.sortField)
+
 	let filteredRecords = state.records
 		// Filter on search term
 		.filter((d) => {
@@ -233,75 +232,13 @@ function RecordPicker(props) {
 			return state.sortOrder
 		})
 
-	let pageCount = Math.ceil(filteredRecords.length / state.pageSize)
-	let page = Math.max(0, Math.min(state.page, pageCount - 1))
-
-	const sort = (
-		<div className="sort">
-			<Pager
-				page={page}
-				max={pageCount}
-				onPageChange={(e) => onPageChange(e)}
-			></Pager>
-			<div className="select is-primary sortField">
-				<select
-					className="select"
-					value={state.sortField}
-					onChange={(e) => onSortFieldChanged(e)}
-				>
-					{props.codebook.map((d) => (
-						<option value={d.name} key={d.name}>
-							{d.label}
-						</option>
-					))}
-				</select>
-			</div>
-			<div className="control">
-				<input
-					type="checkbox"
-					className="checkbox"
-					checked={state.sortOrder !== 1}
-					onChange={(e) => onSortOrderChanged(e)}
-				/>
-				<label> Ascending</label>
-			</div>
-			<div className="control">
-				<input
-					type="checkbox"
-					className="checkbox"
-					checked={state.includeUnknown}
-					onChange={(e) => onIncludeUnknownChanged(e)}
-				/>
-				<label> Include unknown</label>
-			</div>
-			<div className="control">
-				<input
-					type="checkbox"
-					className="checkbox"
-					checked={state.includeLocked}
-					onChange={(e) => onIncludeLockedChanged(e)}
-				/>
-				<label> Include locked</label>
-			</div>
-			<div className="control">
-				<input
-					type="checkbox"
-					className="checkbox"
-					checked={state.exactMatch}
-					onChange={(e) => onExactMatchChanged(e)}
-				/>
-				<label> Exact match</label>
-			</div>
-		</div>
-	)
-
 	return (
 		<div>
 			<Helmet>
 				<title>{`${props.config.name} - Records`}</title>
 			</Helmet>
 			<h2>
-				Pick record ({filteredRecords.length} / {state.records.length})
+				Pick record {`(${filteredRecords.length} / ${state.records.length})`}
 			</h2>
 
 			<ButtonContiner
@@ -322,7 +259,23 @@ function RecordPicker(props) {
 				search={state.search}
 				searchField={state.searchField}
 			/>
-			{sort}
+			<SortContainer
+				pageSize={state.pageSize}
+				StatePage={state.page}
+				filteredRecords={filteredRecords}
+				onPageChange={onPageChange}
+				sortField={state.sortField}
+				onSortFieldChanged={onSortFieldChanged}
+				onSortOrderChanged={onSortOrderChanged}
+				codebook={props.codebook}
+				sortOrder={state.sortOrder}
+				exactMatch={state.exactMatch}
+				includeUnknown={state.includeUnknown}
+				includeLocked={state.includeLocked}
+				onIncludeUnknownChanged={onIncludeUnknownChanged}
+				onIncludeLockedChanged={onIncludeLockedChanged}
+				onExactMatchChanged={onExactMatchChanged}
+			/>
 			<div className="list is-hoverable">
 				<RecordsContainer
 					page={state.page}
