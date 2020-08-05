@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Link, withRouter } from 'react-router-dom'
-import { exportCSV, importCSV } from '../functions/csv'
+import { exportCSV } from '../functions/csv'
 import download from '../functions/download'
 import {
 	validateRecord,
@@ -91,37 +91,6 @@ function RecordPicker(props) {
 		return new Promise((resolve) => {
 			resolve(setIsLoading(value))
 		})
-	}
-
-	async function importCSVText(text) {
-		setLoading(true)
-		try {
-			console.log(text)
-			await importCSV(text, props.db)
-			console.log(props.db)
-			updateRecords()
-		} catch (err) {
-			console.log('error', err)
-			alert('Error when importing database: ' + err)
-			setLoading(false)
-		}
-		return setLoading(false)
-	}
-
-	async function handleCsvImport(importCsvFile) {
-		if (!window.confirm('Importing might overwrite data. Continue?')) return
-		if (importCsvFile.text) {
-			let text = await importCsvFile.text()
-			importCSVText(text)
-		} else {
-			// For safari that lacks the .text() call
-			var fileReader = new FileReader()
-			fileReader.addEventListener('loadend', (e) => {
-				var text = e.srcElement.result
-				importCSVText(text)
-			})
-			fileReader.readAsText(importCsvFile)
-		}
 	}
 
 	function changeSearchText(e) {
@@ -424,8 +393,10 @@ function RecordPicker(props) {
 				createRecord={createRecord}
 				cleanUpInvalidRecords={cleanUpInvalidRecords}
 				exportAndDownloadCSV={exportAndDownloadCSV}
-				handleCsvImport={handleCsvImport}
-				loading={isLoading}
+				setLoading={setLoading}
+				updateRecords={updateRecords}
+				db={props.db}
+				isLoading
 			/>
 
 			<SearchRecords
