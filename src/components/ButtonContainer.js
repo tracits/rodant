@@ -6,7 +6,7 @@ function ButtonContainer({
 	createRecord,
 	cleanUpInvalidRecords,
 	exportAndDownloadCSV,
-	importCSV,
+	handleCsvImport,
 	loading,
 }) {
 	return (
@@ -25,7 +25,7 @@ function ButtonContainer({
 					<FilePicker
 						extensions={['csv']}
 						maxSize={100}
-						onChange={(fo) => importCSV(fo)}
+						onChange={(importCsvFile) => handleCsvImport(importCsvFile)}
 						onError={(err) => {
 							console.log('Upload error', err)
 							alert(err.toString())

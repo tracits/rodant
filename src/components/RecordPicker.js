@@ -96,7 +96,6 @@ function RecordPicker(props) {
 	async function importCSVText(text) {
 		setLoading(true)
 		try {
-			debugger
 			console.log(text)
 			await importCSV(text, props.db)
 			console.log(props.db)
@@ -109,12 +108,10 @@ function RecordPicker(props) {
 		return setLoading(false)
 	}
 
-	async function importCSV(fo) {
+	async function handleCsvImport(importCsvFile) {
 		if (!window.confirm('Importing might overwrite data. Continue?')) return
-
-		if (fo.text) {
-			let text = await fo.text()
-			debugger
+		if (importCsvFile.text) {
+			let text = await importCsvFile.text()
 			importCSVText(text)
 		} else {
 			// For safari that lacks the .text() call
@@ -123,7 +120,7 @@ function RecordPicker(props) {
 				var text = e.srcElement.result
 				importCSVText(text)
 			})
-			fileReader.readAsText(fo)
+			fileReader.readAsText(importCsvFile)
 		}
 	}
 
@@ -427,7 +424,7 @@ function RecordPicker(props) {
 				createRecord={createRecord}
 				cleanUpInvalidRecords={cleanUpInvalidRecords}
 				exportAndDownloadCSV={exportAndDownloadCSV}
-				importCSV={importCSV}
+				handleCsvImport={handleCsvImport}
 				loading={isLoading}
 			/>
 
