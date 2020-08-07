@@ -41,17 +41,14 @@ function RecordPicker(props) {
 
 	useEffect(() => {
 		updateRecords()
+
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [])
 
 	async function updateRecords() {
 		let records = await props.db.records.toArray()
 		setState({ ...state, records: records })
 	}
-
-	// const updateRecords = React.useCallback(async () => {
-	// 	let records = await props.db.records.toArray()
-	// 	setState({ ...state, records: records })
-	// }, [props.db.records, state])
 
 	async function createRecord() {
 		let recordId = await props.db.records.add({
@@ -171,7 +168,8 @@ function RecordPicker(props) {
 	const sortField = props.codebook.find((d) => d.name === state.sortField)
 
 	useEffect(() => {
-		filterAndSortRecords(state.records)
+		filterAndSortRecords()
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [state.records, state.search, state.searchField])
 
 	function filterAndSortRecords() {

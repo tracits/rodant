@@ -55,9 +55,8 @@ export default function RecordsContainer({
 			}
 
 			let locked = (d.locked || '').toString().toLowerCase() === 'true'
-			debugger
 			return (
-				<>
+				<div key={d.uid}>
 					<Link
 						key={d.uid}
 						to={'/record/' + d.uid}
@@ -92,7 +91,7 @@ export default function RecordsContainer({
 							<span className="fa fa-remove" />
 						</button>
 					</Link>
-				</>
+				</div>
 			)
 		})
 	return records
