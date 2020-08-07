@@ -20,7 +20,6 @@ export default function SortContainer({
 }) {
 	let pageCount = Math.ceil(filteredRecords.length / pageSize)
 	let page = Math.max(0, Math.min(StatePage, pageCount - 1))
-	debugger
 	let sort = (
 		<div className="sort">
 			<Pager

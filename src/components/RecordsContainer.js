@@ -16,9 +16,7 @@ export default function RecordsContainer({
 			.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g)
 			.map((d) => d.replace(/"/g, ''))
 	}
-
 	function getFieldText(codebook, record, fieldName) {
-		debugger
 		let field = codebook.find((d) => d.name === fieldName)
 		if (
 			field.type === 'qualitative' &&
@@ -57,6 +55,7 @@ export default function RecordsContainer({
 			}
 
 			let locked = (d.locked || '').toString().toLowerCase() === 'true'
+			debugger
 			return (
 				<>
 					<Link
@@ -69,12 +68,13 @@ export default function RecordsContainer({
 							{issueDisplay}
 						</span>
 						<span className="hits">
-							{searchHits[d.uid] &&
-								searchHits[d.uid].slice(0, 10).map((e, i) => (
-									<span key={i}>
-										{e[0]}: {e[1]}
-									</span>
-								))}
+							{searchHits[d.uid]
+								? searchHits[d.uid].slice(0, 10).map((e, i) => (
+										<span key={i}>
+											{e[0]}: {e[1]}
+										</span>
+								  ))
+								: null}
 						</span>
 						<span className="sort-field">
 							{getFieldText(codebook, d, sortField)}

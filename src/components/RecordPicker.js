@@ -36,16 +36,22 @@ function RecordPicker(props) {
 
 	const [state, setState] = useState(initialState)
 	const [isLoading, setIsLoading] = useState(false)
+	const [filteredRecordsState, setFilteredRecordsState] = useState([])
+	const [searchResults, setSearchResults] = useState({})
 
 	useEffect(() => {
 		updateRecords()
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [])
 
 	async function updateRecords() {
 		let records = await props.db.records.toArray()
 		setState({ ...state, records: records })
 	}
+
+	// const updateRecords = React.useCallback(async () => {
+	// 	let records = await props.db.records.toArray()
+	// 	setState({ ...state, records: records })
+	// }, [props.db.records, state])
 
 	async function createRecord() {
 		let recordId = await props.db.records.add({
@@ -121,9 +127,7 @@ function RecordPicker(props) {
 	}
 
 	function onPageChange(page) {
-		setState({
-			page: parseInt(page),
-		})
+		setState({ ...state, page: parseInt(page) })
 	}
 
 	async function cleanUpInvalidRecords(silent = false) {
@@ -166,71 +170,82 @@ function RecordPicker(props) {
 
 	const sortField = props.codebook.find((d) => d.name === state.sortField)
 
-	let filteredRecords = state.records
-		// Filter on search term
-		.filter((d) => {
-			// If not checked, do not include records that are marked as locked
-			if (!state.includeLocked && d.locked !== 'FALSE') return false
+	useEffect(() => {
+		filterAndSortRecords(state.records)
+	}, [state.records, state.search, state.searchField])
 
-			// If not checked, do not include records with sortField unknown
-			if (!state.includeUnknown) {
-				let value = d[state.sortField] || ''
-				if (isUnknown(value, sortField)) return false
-			}
+	function filterAndSortRecords() {
+		let filteredRecords = state.records
+			// Filter on search term
+			.filter((d) => {
+				// If not checked, do not include records that are marked as locked
+				if (!state.includeLocked && d.locked !== 'FALSE') return false
 
-			// Search is empty show all records
-			if (state.search === '') return true
-
-			let interpolatedRaw = interpolateRecord(d, props.codebook)
-			let interpolated = {}
-			for (let f of props.codebook)
-				interpolated[f.name] = (interpolatedRaw[f.name] || '').toString()
-
-			const keys = props.codebook
-				.map((d) => d.name)
-				// If there is a searchField selected, use only keys matching it
-				.filter((d) => state.searchField === '' || d === state.searchField)
-			let hit = false
-			let hits = []
-
-			for (let k of keys) {
-				if (
-					interpolated.hasOwnProperty(k) &&
-					interpolated[k] != null &&
-					(state.exactMatch
-						? interpolated[k].toString().toLowerCase() === state.search.trim()
-						: interpolated[k].toString().toLowerCase().indexOf(state.search) !==
-						  -1)
-				) {
-					hit = true
-					const field = props.codebook.find((d) => d.name === k)
-					if (field)
-						// Sometimes fields do not exist in codebook
-						hits.push([field.label, interpolatedRaw[k]])
+				// If not checked, do not include records with sortField unknown
+				if (!state.includeUnknown) {
+					let value = d[state.sortField] || ''
+					if (isUnknown(value, sortField)) return false
 				}
-			}
+				// Search is empty show all records
+				if (state.search === '') {
+					setSearchResults({})
+					return true
+				}
 
-			if (hit) {
-				searchHits[d.uid] = hits
-				return true
-			}
+				let interpolatedRaw = interpolateRecord(d, props.codebook)
+				let interpolated = {}
+				for (let f of props.codebook)
+					interpolated[f.name] = (interpolatedRaw[f.name] || '').toString()
 
-			return false
-		})
-		.sort((a, b) => {
-			// Handle quantitative values with parseInt
-			if (sortField.type === 'quantitative' || sortField.name === 'pid')
-				return (
-					(parseInt(a[state.sortField]) - parseInt(b[state.sortField])) *
-					-state.sortOrder
-				)
+				const keys = props.codebook
+					.map((d) => d.name)
+					// If there is a searchField selected, use only keys matching it
+					.filter((d) => state.searchField === '' || d === state.searchField)
+				let hit = false
+				let hits = []
 
-			// Handle other values as strings
-			if (a[state.sortField] > b[state.sortField]) return -state.sortOrder
-			else if (a[state.sortField] === b[state.sortField]) return 0
+				for (let k of keys) {
+					if (
+						interpolated.hasOwnProperty(k) &&
+						interpolated[k] != null &&
+						(state.exactMatch
+							? interpolated[k].toString().toLowerCase() === state.search.trim()
+							: interpolated[k]
+									.toString()
+									.toLowerCase()
+									.indexOf(state.search) !== -1)
+					) {
+						hit = true
+						const field = props.codebook.find((d) => d.name === k)
+						if (field)
+							// Sometimes fields do not exist in codebook
+							hits.push([field.label, interpolatedRaw[k]])
+					}
+				}
 
-			return state.sortOrder
-		})
+				if (hit) {
+					searchHits[d.uid] = hits
+					setSearchResults({ ...searchHits })
+					return true
+				}
+
+				return false
+			})
+			.sort((a, b) => {
+				// Handle quantitative values with parseInt
+				if (sortField.type === 'quantitative' || sortField.name === 'pid')
+					return (
+						(parseInt(a[state.sortField]) - parseInt(b[state.sortField])) *
+						-state.sortOrder
+					)
+
+				// Handle other values as strings
+				if (a[state.sortField] > b[state.sortField]) return -state.sortOrder
+				else if (a[state.sortField] === b[state.sortField]) return 0
+				return state.sortOrder
+			})
+		return setFilteredRecordsState([...filteredRecords])
+	}
 
 	return (
 		<div>
@@ -238,7 +253,8 @@ function RecordPicker(props) {
 				<title>{`${props.config.name} - Records`}</title>
 			</Helmet>
 			<h2>
-				Pick record {`(${filteredRecords.length} / ${state.records.length})`}
+				Pick record{' '}
+				{`(${filteredRecordsState.length} / ${state.records.length})`}
 			</h2>
 
 			<ButtonContiner
@@ -262,7 +278,7 @@ function RecordPicker(props) {
 			<SortContainer
 				pageSize={state.pageSize}
 				StatePage={state.page}
-				filteredRecords={filteredRecords}
+				filteredRecords={filteredRecordsState}
 				onPageChange={onPageChange}
 				sortField={state.sortField}
 				onSortFieldChanged={onSortFieldChanged}
@@ -277,15 +293,17 @@ function RecordPicker(props) {
 				onExactMatchChanged={onExactMatchChanged}
 			/>
 			<div className="list is-hoverable">
-				<RecordsContainer
-					page={state.page}
-					pageSize={state.pageSize}
-					codebook={props.codebook}
-					filteredRecords={filteredRecords}
-					searchHits={searchHits}
-					deleteRecord={deleteRecord}
-					sortField={state.sortField}
-				/>
+				{filteredRecordsState ? (
+					<RecordsContainer
+						page={state.page}
+						pageSize={state.pageSize}
+						codebook={props.codebook}
+						filteredRecords={filteredRecordsState}
+						searchHits={searchResults}
+						deleteRecord={deleteRecord}
+						sortField={state.sortField}
+					/>
+				) : null}
 			</div>
 		</div>
 	)
