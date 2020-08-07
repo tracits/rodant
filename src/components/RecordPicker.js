@@ -61,7 +61,7 @@ function RecordPicker(props) {
 	}
 
 	async function deleteRecord(uid) {
-		if (window.confirm(`Really delete record: ${uid}?`)) {
+		if (window.confirm(`💣 Delete record: ${uid}?`)) {
 			await props.db.records.where('uid').equals(uid).delete()
 
 			updateRecords()
@@ -131,7 +131,7 @@ function RecordPicker(props) {
 		// Removes records that are not valid from database
 		// Find invalid records
 		setLoading(true)
-		let records = await props.db.records.toArray()
+		let records = [...state.records]
 		let toDelete = []
 
 		for (let record of records) {
