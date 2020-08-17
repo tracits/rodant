@@ -22,44 +22,43 @@ import useLocalStorage from './Hooks/useLocalStorage'
  * User can also create records here.
  */
 function RecordPicker(props) {
-	let initialState = {
+	const [state, setState] = useState({
 		records: [],
 		search: '',
 		searchField: '',
 		pageSize: props.config.page_size,
 		page: 0,
-	}
-	let initialSortState = {
-		page: 0,
-		sortField: props.config.id_field,
-		sortOrder: 1,
-		includeUnknown: false,
-		includeLocked: true,
-		exactMatch: false,
-	}
+	})
 
+	const [localStorageValue, setLocalStorageValue] = useLocalStorage(
+		'recordPickerSortingState',
+		{
+			sortField: props.config.id_field,
+			sortOrder: 1,
+			includeUnknown: false,
+			includeLocked: true,
+			exactMatch: false,
+		}
+	)
 	let reducer = (sortState, action) => {
 		switch (action.type) {
 			case 'LOCALSTORAGE_STATE_UPDATE':
+				console.log('updating ')
 				setLocalStorageValue({ ...sortState, [action.field]: action.payload })
 				return { ...sortState, [action.field]: action.payload, page: 0 }
 			case 'PAGE_UPDATE':
+				console.log('pageupdate', action.payload, sortState)
 				console.log(action.payload)
 				return setLocalStorageValue({ ...sortState, page: action.payload })
 			default:
 				throw new Error(
 					`Reducer Error when attempting to use this action: ${action.type},
-					 and this Payload: ${action.payload}`
+									 and this Payload: ${action.payload}`
 				)
 		}
 	}
-	const [localStorageValue, setLocalStorageValue] = useLocalStorage(
-		'recordPickerSortingState',
-		initialSortState
-	)
 	const [sortState, dispatch] = useReducer(reducer, localStorageValue)
 
-	const [state, setState] = useState(initialState)
 	const [isLoading, setIsLoading] = useState(false)
 	const [filteredRecordsState, setFilteredRecordsState] = useState([])
 	const [searchResults, setSearchResults] = useState({})
@@ -170,12 +169,12 @@ function RecordPicker(props) {
 
 	function onPageChange(page) {
 		debugger
-		dispatch({
-			type: 'PAGE_UPDATE',
-			payload: parseInt(page),
-			field: 'page',
-		})
 		setState({ ...state, page: parseInt(page) })
+		// dispatch({
+		// 	type: 'PAGE_UPDATE',
+		// 	payload: parseInt(page),
+		// 	field: 'page',
+		// })
 	}
 
 	async function cleanUpInvalidRecords(silent = false) {
@@ -215,7 +214,6 @@ function RecordPicker(props) {
 	}
 
 	let searchHits = {}
-	debugger
 	const sortField = props.codebook.find(
 		(d) =>
 			d.name ===
@@ -286,6 +284,7 @@ function RecordPicker(props) {
 				return false
 			})
 			.sort((a, b) => {
+				debugger
 				// Handle quantitative values with parseInt
 				if (sortField.type === 'quantitative' || sortField.name === 'pid')
 					return (
@@ -333,17 +332,17 @@ function RecordPicker(props) {
 			/>
 			<SortContainer
 				pageSize={state.pageSize}
-				statePage={sortState.page}
+				statePage={state.page}
 				filteredRecords={filteredRecordsState}
 				onPageChange={onPageChange}
-				sortField={sortState.sortField}
-				onSortFieldChanged={onSortFieldChanged}
-				onSortOrderChanged={onSortOrderChanged}
-				codebook={props.codebook}
 				sortOrder={sortState.sortOrder}
 				exactMatch={sortState.exactMatch}
 				includeUnknown={sortState.includeUnknown}
 				includeLocked={sortState.includeLocked}
+				sortField={sortState.sortField}
+				onSortFieldChanged={onSortFieldChanged}
+				onSortOrderChanged={onSortOrderChanged}
+				codebook={props.codebook}
 				onIncludeUnknownChanged={onIncludeUnknownChanged}
 				onIncludeLockedChanged={onIncludeLockedChanged}
 				onExactMatchChanged={onExactMatchChanged}
@@ -352,7 +351,7 @@ function RecordPicker(props) {
 				{filteredRecordsState ? (
 					<RecordsContainer
 						pageSize={state.pageSize}
-						page={sortState.page}
+						page={state.page}
 						codebook={props.codebook}
 						filteredRecords={filteredRecordsState}
 						searchHits={searchResults}
