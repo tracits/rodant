@@ -8,7 +8,7 @@ export default function SortContainer({
 	onPageChange,
 	filteredRecords,
 	pageSize,
-	StatePage,
+	statePage,
 	codebook,
 	sortOrder,
 	exactMatch,
@@ -19,7 +19,7 @@ export default function SortContainer({
 	onExactMatchChanged,
 }) {
 	let pageCount = Math.ceil(filteredRecords.length / pageSize)
-	let page = Math.max(0, Math.min(StatePage, pageCount - 1))
+	let page = Math.max(0, Math.min(statePage, pageCount - 1))
 	let sort = (
 		<div className="sort">
 			<Pager
