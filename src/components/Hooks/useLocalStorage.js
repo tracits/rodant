@@ -20,7 +20,6 @@ function useLocalStorage(key, initialValue) {
 				//Save value to state
 				setSortLocalStorageValue(valueToStore)
 				//Save value to localStorage
-				console.log('setting')
 				window.localStorage.setItem(key, JSON.stringify(valueToStore))
 			} catch (error) {
 				throw new Error(`Error when attempting to useLocalState Hook: ${error}`)

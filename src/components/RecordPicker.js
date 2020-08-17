@@ -43,12 +43,9 @@ function RecordPicker(props) {
 	let reducer = (sortState, action) => {
 		switch (action.type) {
 			case 'LOCALSTORAGE_STATE_UPDATE':
-				console.log('updating ')
 				setLocalStorageValue({ ...sortState, [action.field]: action.payload })
 				return { ...sortState, [action.field]: action.payload, page: 0 }
 			case 'PAGE_UPDATE':
-				console.log('pageupdate', action.payload, sortState)
-				console.log(action.payload)
 				return setLocalStorageValue({ ...sortState, page: action.payload })
 			default:
 				throw new Error(
