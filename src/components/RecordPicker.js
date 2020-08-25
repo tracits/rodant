@@ -1,6 +1,6 @@
-import React from 'react'
-import { Link, withRouter } from 'react-router-dom'
-import { exportCSV, importCSV } from '../functions/csv'
+import React, { useState, useReducer, useEffect } from 'react'
+import { withRouter } from 'react-router-dom'
+import { exportCSV } from '../functions/csv'
 import download from '../functions/download'
 import {
 	validateRecord,
@@ -9,213 +9,180 @@ import {
 	isUnknown,
 } from '../functions/validation'
 import Helmet from 'react-helmet'
-import Pager from './Pager'
 
 import ButtonContiner from './ButtonContainer'
+import SearchRecords from './SearchRecords'
+import RecordsContainer from './RecordsContainer'
+import SortContainer from './SortContainer'
+import useLocalStorage from './Hooks/useLocalStorage'
 
 /**
  * Renders a list of the available records.
  * Clicking a record will take you to the corresponding RecordEditor page.
  * User can also create records here.
  */
-class RecordPicker extends React.Component {
-	constructor(props) {
-		super(props)
+function RecordPicker(props) {
+	const [state, setState] = useState({
+		records: [],
+		search: '',
+		searchField: '',
+		pageSize: props.config.page_size,
+		page: 0,
+	})
 
-		this.state = {
-			records: [],
-			search: '',
-			searchField: '',
-			sortField: this.props.config.id_field,
+	const [localStorageValue, setLocalStorageValue] = useLocalStorage(
+		'recordPickerSortingState',
+		{
+			sortField: props.config.id_field,
 			sortOrder: 1,
-			pageSize: this.props.config.page_size,
-			page: 0,
 			includeUnknown: false,
 			includeLocked: true,
 			exactMatch: false,
-			loading: false,
+		}
+	)
+	let reducer = (sortState, action) => {
+		switch (action.type) {
+			case 'LOCALSTORAGE_STATE_UPDATE':
+				setLocalStorageValue({ ...sortState, [action.field]: action.payload })
+				return { ...sortState, [action.field]: action.payload, page: 0 }
+			case 'PAGE_UPDATE':
+				return setLocalStorageValue({ ...sortState, page: action.payload })
+			default:
+				throw new Error(
+					`Reducer Error when attempting to use this action: ${action.type},
+									 and this Payload: ${action.payload}`
+				)
 		}
 	}
+	const [sortState, dispatch] = useReducer(reducer, localStorageValue)
 
-	async componentDidMount() {
-		await this.updateRecords()
+	const [isLoading, setIsLoading] = useState(false)
+	const [filteredRecordsState, setFilteredRecordsState] = useState([])
+	const [searchResults, setSearchResults] = useState({})
 
-		this.state.records.forEach((el) =>
-			console.log(typeof el.locked, el.locked, el.pid)
-		)
+	useEffect(() => {
+		updateRecords()
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [])
+
+	async function updateRecords() {
+		let records = await props.db.records.toArray()
+		setState({ ...state, records: records })
 	}
 
-	async updateRecords() {
-		let records = await this.props.db.records.toArray()
-		this.setState({ records: records })
-	}
-
-	async createRecord() {
-		let recordId = await this.props.db.records.add({
+	async function createRecord() {
+		let recordId = await props.db.records.add({
 			name: 'Unnamed',
 			locked: 'FALSE',
 		})
 
-		this.props.history.push('/record/' + recordId)
-		this.updateRecords()
+		props.history.push('/record/' + recordId)
+		updateRecords()
 	}
 
-	async deleteRecord(uid) {
-		if (window.confirm(`Really delete record: ${uid}?`)) {
-			await this.props.db.records.where('uid').equals(uid).delete()
+	async function deleteRecord(uid) {
+		if (window.confirm(`💣 Delete record: ${uid}?`)) {
+			await props.db.records.where('uid').equals(uid).delete()
 
-			this.updateRecords()
+			updateRecords()
 		}
 	}
 
-	async exportAndDownloadCSV() {
-		await this.setLoading(true)
+	async function exportAndDownloadCSV() {
+		await setLoading(true)
 		setTimeout(() => {
 			exportCSV(
-				this.props.codebook,
-				this.state.records.filter((d) => d)
+				props.codebook,
+				state.records.filter((d) => d)
 			)
 				.then((exportCSVResults) =>
-					download(exportCSVResults, `${this.props.config.table}.csv`)
+					download(exportCSVResults, `${props.config.table}.csv`)
 				)
 				.catch((err) => console.error(`there was an Error: ${err}`))
 		}, 100)
 		// Hack to turn off loading state/spinner after 1.5s
 		setTimeout(() => {
-			this.setLoading(false)
+			setLoading(false)
 		}, 1500)
 	}
 
-	setLoading(value) {
+	function setLoading(value) {
 		return new Promise((resolve) => {
-			resolve(this.setState({ loading: value }))
+			resolve(setIsLoading(value))
 		})
 	}
 
-	async importCSVText(text) {
-		this.setLoading(true)
-		try {
-			await importCSV(text, this.props.db)
-			this.updateRecords()
-		} catch (err) {
-			console.log('error', err)
-			alert('Error when importing database: ' + err)
-			this.setLoading(false)
-		}
-		return this.setLoading(false)
+	function changeSearchText(e) {
+		setState({ ...state, search: e.target.value, page: 0 })
 	}
 
-	async importCSV(fo) {
-		if (!window.confirm('Importing might overwrite data. Continue?')) return
-
-		if (fo.text) {
-			let text = await fo.text()
-			this.importCSVText(text)
-		} else {
-			// For safari that lacks the .text() call
-			var fileReader = new FileReader()
-			fileReader.addEventListener('loadend', (e) => {
-				var text = e.srcElement.result
-				this.importCSVText(text)
-			})
-			fileReader.readAsText(fo)
-		}
+	function clearSearchText() {
+		setState({ ...state, search: '', page: 0 })
 	}
 
-	changeSearchText(e) {
-		this.setState({
-			search: e.target.value,
-			page: 0,
+	function onSearchFieldChanged(e) {
+		setState({ ...state, searchField: e.target.value, page: 0 })
+	}
+
+	function onSortFieldChanged(e) {
+		dispatch({
+			type: 'LOCALSTORAGE_STATE_UPDATE',
+			payload: e.target.value,
+			field: 'sortField',
+		})
+		// setState({ ...state, sortField: e.target.value, page: 0 })
+	}
+
+	function onSortOrderChanged(e) {
+		dispatch({
+			type: 'LOCALSTORAGE_STATE_UPDATE',
+			payload: e.target.checked ? -1 : 1,
+			field: 'sortOrder',
 		})
 	}
 
-	clearSearchText() {
-		this.setState({
-			search: '',
-			page: 0,
+	function onIncludeUnknownChanged(e) {
+		dispatch({
+			type: 'LOCALSTORAGE_STATE_UPDATE',
+			payload: e.target.checked,
+			field: 'includeUnknown',
+		})
+	}
+	function onIncludeLockedChanged(e) {
+		dispatch({
+			type: 'LOCALSTORAGE_STATE_UPDATE',
+			payload: e.target.checked,
+			field: 'includeLocked',
 		})
 	}
 
-	onSearchFieldChanged(e) {
-		this.setState({
-			searchField: e.target.value,
-			page: 0,
+	function onExactMatchChanged(e) {
+		dispatch({
+			type: 'LOCALSTORAGE_STATE_UPDATE',
+			payload: e.target.checked,
+			field: 'exactMatch',
 		})
 	}
 
-	onSortFieldChanged(e) {
-		this.setState({
-			sortField: e.target.value,
-			page: 0,
-		})
+	function onPageChange(page) {
+		debugger
+		setState({ ...state, page: parseInt(page) })
+		// dispatch({
+		// 	type: 'PAGE_UPDATE',
+		// 	payload: parseInt(page),
+		// 	field: 'page',
+		// })
 	}
 
-	onSortOrderChanged(e) {
-		this.setState({
-			sortOrder: e.target.checked ? -1 : 1,
-			page: 0,
-		})
-	}
-
-	onIncludeUnknownChanged(e) {
-		this.setState({
-			includeUnknown: e.target.checked,
-			page: 0,
-		})
-	}
-	onIncludeLockedChanged(e) {
-		this.setState({
-			includeLocked: e.target.checked,
-			page: 0,
-		})
-	}
-
-	onExactMatchChanged(e) {
-		this.setState({
-			exactMatch: e.target.checked,
-			page: 0,
-		})
-	}
-
-	getList(str) {
-		return str
-			.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g)
-			.map((d) => d.replace(/"/g, ''))
-	}
-
-	getFieldText(codebook, record, fieldName) {
-		let field = codebook.find((d) => d.name === fieldName)
-		if (
-			field.type === 'qualitative' &&
-			field.valid_values &&
-			field.value_labels
-		) {
-			let values = this.getList(field.valid_values).map((d) => parseInt(d))
-			let labels = this.getList(field.value_labels)
-			let value = parseInt(record[fieldName])
-			return labels[values.find((d) => d.toString() === value.toString())]
-		}
-
-		if (isUnknown(record[fieldName] || '', field)) return 'unknown'
-
-		return record[fieldName]
-	}
-
-	onPageChange(page) {
-		this.setState({
-			page: parseInt(page),
-		})
-	}
-
-	async cleanUpInvalidRecords(silent = false) {
+	async function cleanUpInvalidRecords(silent = false) {
 		// Removes records that are not valid from database
 		// Find invalid records
-		this.setLoading(true)
-		let records = await this.props.db.records.toArray()
+		setLoading(true)
+		let records = [...state.records]
 		let toDelete = []
 
 		for (let record of records) {
-			let validation = validateRecord(record, this.props.codebook)
+			let validation = validateRecord(record, props.codebook)
 			if (record.locked !== 'TRUE' && !isValid(validation))
 				toDelete.push(record.uid)
 		}
@@ -230,51 +197,57 @@ class RecordPicker extends React.Component {
 				window.confirm('Really delete ' + toDelete.length + ' records?')
 			) {
 				// Delete from db
-				await this.props.db.records
+				await props.db.records
 					.where('uid')
 					.anyOf(...toDelete)
 					.delete()
 
 				// Update view of records
-				this.updateRecords()
-				this.setLoading(false)
+				updateRecords()
+				setLoading(false)
 			}
 		}
-		this.setLoading(false)
+		setLoading(false)
 	}
 
-	render() {
-		let searchHits = {}
-		const sortField = this.props.codebook.find(
-			(d) => d.name === this.state.sortField
-		)
+	let searchHits = {}
+	let sortField = ''
+	state.sortField
+		? (sortField = props.codebook.find((d) => d.name === state.sortField))
+		: (sortField = 'pid')
 
-		let filteredRecords = this.state.records
+	useEffect(() => {
+		filterAndSortRecords()
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [state.records, state.search, state.searchField, sortState])
+
+	function filterAndSortRecords() {
+		let filteredRecords = state.records
 			// Filter on search term
 			.filter((d) => {
 				// If not checked, do not include records that are marked as locked
-				if (!this.state.includeLocked && d.locked !== 'FALSE') return false
+				if (!sortState.includeLocked && d.locked !== 'FALSE') return false
 
 				// If not checked, do not include records with sortField unknown
-				if (!this.state.includeUnknown) {
-					let value = d[this.state.sortField] || ''
+				if (!sortState.includeUnknown) {
+					let value = d[sortState.sortField] || ''
 					if (isUnknown(value, sortField)) return false
 				}
-
 				// Search is empty show all records
-				if (this.state.search === '') return true
+				if (state.search === '') {
+					setSearchResults({})
+					return true
+				}
 
-				let interpolatedRaw = interpolateRecord(d, this.props.codebook)
+				let interpolatedRaw = interpolateRecord(d, props.codebook)
 				let interpolated = {}
-				for (let f of this.props.codebook)
+				for (let f of props.codebook)
 					interpolated[f.name] = (interpolatedRaw[f.name] || '').toString()
 
-				const keys = this.props.codebook
+				const keys = props.codebook
 					.map((d) => d.name)
 					// If there is a searchField selected, use only keys matching it
-					.filter(
-						(d) => this.state.searchField === '' || d === this.state.searchField
-					)
+					.filter((d) => state.searchField === '' || d === state.searchField)
 				let hit = false
 				let hits = []
 
@@ -282,16 +255,15 @@ class RecordPicker extends React.Component {
 					if (
 						interpolated.hasOwnProperty(k) &&
 						interpolated[k] != null &&
-						(this.state.exactMatch
-							? interpolated[k].toString().toLowerCase() ===
-							  this.state.search.trim()
+						(sortState.exactMatch
+							? interpolated[k].toString().toLowerCase() === state.search.trim()
 							: interpolated[k]
 									.toString()
 									.toLowerCase()
-									.indexOf(this.state.search) !== -1)
+									.indexOf(state.search) !== -1)
 					) {
 						hit = true
-						const field = this.props.codebook.find((d) => d.name === k)
+						const field = props.codebook.find((d) => d.name === k)
 						if (field)
 							// Sometimes fields do not exist in codebook
 							hits.push([field.label, interpolatedRaw[k]])
@@ -300,208 +272,91 @@ class RecordPicker extends React.Component {
 
 				if (hit) {
 					searchHits[d.uid] = hits
+					setSearchResults({ ...searchHits })
 					return true
 				}
 
 				return false
 			})
 			.sort((a, b) => {
+				debugger
 				// Handle quantitative values with parseInt
 				if (sortField.type === 'quantitative' || sortField.name === 'pid')
 					return (
-						(parseInt(a[this.state.sortField]) -
-							parseInt(b[this.state.sortField])) *
-						-this.state.sortOrder
+						(parseInt(a[sortState.sortField]) -
+							parseInt(b[sortState.sortField])) *
+						-sortState.sortOrder
 					)
 
 				// Handle other values as strings
-				if (a[this.state.sortField] > b[this.state.sortField])
-					return -this.state.sortOrder
-				else if (a[this.state.sortField] === b[this.state.sortField]) return 0
-
-				return this.state.sortOrder
+				if (a[sortState.sortField] > b[sortState.sortField])
+					return -sortState.sortOrder
+				else if (a[sortState.sortField] === b[sortState.sortField]) return 0
+				return sortState.sortOrder
 			})
-
-		let pageCount = Math.ceil(filteredRecords.length / this.state.pageSize)
-		let page = Math.max(0, Math.min(this.state.page, pageCount - 1))
-
-		let records = filteredRecords
-			// Paging
-			.slice(
-				this.state.page * this.state.pageSize,
-				(this.state.page + 1) * this.state.pageSize
-			)
-			.map((d) => {
-				let validation = validateRecord(d, this.props.codebook)
-				let issues = Object.keys(validation)
-					.filter((d) => !validation[d].valid)
-					.map((d) => [d, validation[d]])
-
-				let issueDisplay = null
-
-				if (issues.length > 0) {
-					issueDisplay = (
-						<span className="issues">
-							<span className="fa fa-warning issues" />
-							<span>{issues.length}</span>
-						</span>
-					)
-				}
-
-				var locked = (d.locked || '').toString().toLowerCase() === 'true'
-
-				return (
-					<Link
-						key={d.uid}
-						to={'/record/' + d.uid}
-						className={`list-item ${locked ? ' locked' : ''}`}
-					>
-						<span className="pid">
-							{locked && <span className="fa fa-lock"> </span>} {d.pid}{' '}
-							{issueDisplay}
-						</span>
-						<span className="hits">
-							{searchHits[d.uid] &&
-								searchHits[d.uid].slice(0, 10).map((e, i) => (
-									<span key={i}>
-										{e[0]}: {e[1]}
-									</span>
-								))}
-						</span>
-						<span className="sort-field">
-							{this.getFieldText(this.props.codebook, d, this.state.sortField)}
-						</span>
-						<button
-							disabled={d.locked === 'TRUE'}
-							onClick={(e) => {
-								e.preventDefault()
-								this.deleteRecord(d.uid)
-							}}
-							className={`button ${
-								d.locked === 'TRUE' ? 'is-disabled' : ' is-danger'
-							} is-small is-outlined is-rounded remove`}
-						>
-							<span className="fa fa-remove" />
-						</button>
-					</Link>
-				)
-			})
-
-		var search = (
-			<div className="search">
-				<span className="fa fa-search"></span>
-				<input
-					className="input is-primary"
-					type="text"
-					value={this.state.search}
-					onChange={(e) => this.changeSearchText(e)}
-				/>
-				<div className="select is-primary search-field">
-					<select
-						value={this.state.searchField}
-						onChange={(e) => this.onSearchFieldChanged(e)}
-					>
-						<option default value="" key="default">
-							All fields
-						</option>
-						{this.props.codebook.map((d) => (
-							<option value={d.name} key={d.name}>
-								{d.label}
-							</option>
-						))}
-					</select>
-				</div>
-				<button
-					className="button is-rounded"
-					onClick={() => this.clearSearchText()}
-				>
-					<span className="fa fa-remove"></span>
-				</button>
-			</div>
-		)
-
-		var sort = (
-			<div className="sort">
-				<Pager
-					page={page}
-					max={pageCount}
-					onPageChange={(e) => this.onPageChange(e)}
-				></Pager>
-				<div className="select is-primary sortField">
-					<select
-						className="select"
-						value={this.state.sortField}
-						onChange={(e) => this.onSortFieldChanged(e)}
-					>
-						{this.props.codebook.map((d) => (
-							<option value={d.name} key={d.name}>
-								{d.label}
-							</option>
-						))}
-					</select>
-				</div>
-				<div className="control">
-					<input
-						type="checkbox"
-						className="checkbox"
-						checked={this.state.sortOrder !== 1}
-						onChange={(e) => this.onSortOrderChanged(e)}
-					/>
-					<label> Ascending</label>
-				</div>
-				<div className="control">
-					<input
-						type="checkbox"
-						className="checkbox"
-						checked={this.state.includeUnknown}
-						onChange={(e) => this.onIncludeUnknownChanged(e)}
-					/>
-					<label> Include unknown</label>
-				</div>
-				<div className="control">
-					<input
-						type="checkbox"
-						className="checkbox"
-						checked={this.state.includeLocked}
-						onChange={(e) => this.onIncludeLockedChanged(e)}
-					/>
-					<label> Include locked</label>
-				</div>
-				<div className="control">
-					<input
-						type="checkbox"
-						className="checkbox"
-						checked={this.state.exactMatch}
-						onChange={(e) => this.onExactMatchChanged(e)}
-					/>
-					<label> Exact match</label>
-				</div>
-			</div>
-		)
-
-		return (
-			<div>
-				<Helmet>
-					<title>{`${this.props.config.name} - Records`}</title>
-				</Helmet>
-				<h2>
-					Pick record ({filteredRecords.length} / {this.state.records.length})
-				</h2>
-
-				<ButtonContiner
-					createRecord={this.createRecord.bind(this)}
-					cleanUpInvalidRecords={this.cleanUpInvalidRecords.bind(this)}
-					exportAndDownloadCSV={this.exportAndDownloadCSV.bind(this)}
-					importCSV={this.importCSV.bind(this)}
-					loading={this.state.loading}
-				/>
-
-				{search}
-				{sort}
-				<div className="list is-hoverable">{records}</div>
-			</div>
-		)
+		return setFilteredRecordsState([...filteredRecords])
 	}
+
+	return (
+		<div>
+			<Helmet>
+				<title>{`${props.config.name} - Records`}</title>
+			</Helmet>
+			<h2>
+				Pick record{' '}
+				{`(${filteredRecordsState.length} / ${state.records.length})`}
+			</h2>
+
+			<ButtonContiner
+				createRecord={createRecord}
+				cleanUpInvalidRecords={cleanUpInvalidRecords}
+				exportAndDownloadCSV={exportAndDownloadCSV}
+				setLoading={setLoading}
+				updateRecords={updateRecords}
+				db={props.db}
+				isLoading={isLoading}
+			/>
+
+			<SearchRecords
+				changeSearchText={changeSearchText}
+				onSearchFieldChanged={onSearchFieldChanged}
+				codebook={state.codebook}
+				clearSearchText={clearSearchText}
+				search={state.search}
+				searchField={state.searchField}
+			/>
+			<SortContainer
+				pageSize={state.pageSize}
+				statePage={state.page}
+				filteredRecords={filteredRecordsState}
+				onPageChange={onPageChange}
+				sortOrder={sortState.sortOrder}
+				exactMatch={sortState.exactMatch}
+				includeUnknown={sortState.includeUnknown}
+				includeLocked={sortState.includeLocked}
+				sortField={sortState.sortField}
+				onSortFieldChanged={onSortFieldChanged}
+				onSortOrderChanged={onSortOrderChanged}
+				codebook={props.codebook}
+				onIncludeUnknownChanged={onIncludeUnknownChanged}
+				onIncludeLockedChanged={onIncludeLockedChanged}
+				onExactMatchChanged={onExactMatchChanged}
+			/>
+			<div className="list is-hoverable">
+				{filteredRecordsState ? (
+					<RecordsContainer
+						pageSize={state.pageSize}
+						page={state.page}
+						codebook={props.codebook}
+						filteredRecords={filteredRecordsState}
+						searchHits={searchResults}
+						deleteRecord={deleteRecord}
+						sortField={sortState.sortField}
+					/>
+				) : null}
+			</div>
+		</div>
+	)
 }
 
 export default withRouter(RecordPicker)

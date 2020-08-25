@@ -1,65 +1,54 @@
-import React, { useState, useEffect } from 'react'
+import React from 'react'
 import { Link } from 'react-router-dom'
 
+import useDarkMode from './Hooks/useDarkMode'
+
 function Nav({ name, version }) {
-	const [isDark, setIsDark] = useState(false)
+	const { theme, toggleTheme, componentMounted } = useDarkMode()
 
-	useEffect(() => {
-		// manually setting the button classes that are controlled by the css framework
-		if (isDark) {
-			document.querySelector('body').setAttribute('class', 'dark-theme')
-			document.querySelectorAll('button').forEach((element) => {
-				element.className.includes('button is-rounded') &&
-					element.setAttribute('class', 'button is-rounded is-dark')
-			})
-		} else {
-			document.querySelector('body').setAttribute('class', 'light-theme')
-			document.querySelectorAll('button').forEach((element) => {
-				element.className.includes('button is-rounded') &&
-					element.setAttribute('class', 'button is-rounded')
-			})
-		}
-	}, [isDark])
-
-	const ThemeButton = (isDark) => {
-		return isDark ? (
+	const ThemeButton = () => {
+		return theme === 'light' ? (
 			<button
 				type="button"
-				class="navigation-bar-button"
-				onClick={() => setIsDark((prevValue) => !prevValue)}
+				className="navigation-bar-button"
+				onClick={toggleTheme}
 			>
-				{'🌗'}
+				{'🌘'}
 			</button>
 		) : (
 			<button
 				type="button"
-				class="navigation-bar-button"
-				onClick={() => setIsDark((prevValue) => !prevValue)}
+				className="navigation-bar-button"
+				onClick={toggleTheme}
 			>
-				{'🌘'}
+				{'🌖'}
 			</button>
 		)
 	}
 
 	return (
-		<nav className="navigation-bar">
-			<div className="navigation-bar-contatiner">
-				<div className="navigation-bar-brand">{name}</div>
-				<Link to="/">
-					<button type="button" className="navigation-bar-button">
-						Records
-					</button>
-				</Link>
-				<div>
-					<ThemeButton />
-				</div>
-			</div>
-			<div className="navigation-bar-version">
-				<a href="https://github.com/tracits/rodant/blob/master/CHANGELOG.md">
-					Built with Rodant (v.{version})
-				</a>
-			</div>
-		</nav>
+		<>
+			{componentMounted ? (
+				<nav className="navigation-bar">
+					<div className="navigation-bar-contatiner">
+						<div className="navigation-bar-brand">{name}</div>
+						<Link to="/">
+							<button type="button" className="navigation-bar-button">
+								Records
+							</button>
+						</Link>
+						<div>
+							<ThemeButton />
+						</div>
+					</div>
+					<div className="navigation-bar-version">
+						<a href="https://github.com/tracits/rodant/blob/master/CHANGELOG.md">
+							Built with Rodant (v.{version})
+						</a>
+					</div>
+				</nav>
+			) : null}
+		</>
 	)
 }
 
