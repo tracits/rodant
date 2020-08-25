@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useReducer, useEffect } from 'react'
 import { withRouter } from 'react-router-dom'
 import { exportCSV } from '../functions/csv'
 import download from '../functions/download'
@@ -14,6 +14,7 @@ import ButtonContiner from './ButtonContainer'
 import SearchRecords from './SearchRecords'
 import RecordsContainer from './RecordsContainer'
 import SortContainer from './SortContainer'
+import useLocalStorage from './Hooks/useLocalStorage'
 
 /**
  * Renders a list of the available records.
@@ -21,27 +22,46 @@ import SortContainer from './SortContainer'
  * User can also create records here.
  */
 function RecordPicker(props) {
-	let initialState = {
+	const [state, setState] = useState({
 		records: [],
 		search: '',
 		searchField: '',
-		sortField: props.config.id_field,
-		sortOrder: 1,
 		pageSize: props.config.page_size,
 		page: 0,
-		includeUnknown: false,
-		includeLocked: true,
-		exactMatch: false,
-	}
+	})
 
-	const [state, setState] = useState(initialState)
+	const [localStorageValue, setLocalStorageValue] = useLocalStorage(
+		'recordPickerSortingState',
+		{
+			sortField: props.config.id_field,
+			sortOrder: 1,
+			includeUnknown: false,
+			includeLocked: true,
+			exactMatch: false,
+		}
+	)
+	let reducer = (sortState, action) => {
+		switch (action.type) {
+			case 'LOCALSTORAGE_STATE_UPDATE':
+				setLocalStorageValue({ ...sortState, [action.field]: action.payload })
+				return { ...sortState, [action.field]: action.payload, page: 0 }
+			case 'PAGE_UPDATE':
+				return setLocalStorageValue({ ...sortState, page: action.payload })
+			default:
+				throw new Error(
+					`Reducer Error when attempting to use this action: ${action.type},
+									 and this Payload: ${action.payload}`
+				)
+		}
+	}
+	const [sortState, dispatch] = useReducer(reducer, localStorageValue)
+
 	const [isLoading, setIsLoading] = useState(false)
 	const [filteredRecordsState, setFilteredRecordsState] = useState([])
 	const [searchResults, setSearchResults] = useState({})
 
 	useEffect(() => {
 		updateRecords()
-
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [])
 
@@ -105,26 +125,53 @@ function RecordPicker(props) {
 	}
 
 	function onSortFieldChanged(e) {
-		setState({ ...state, sortField: e.target.value, page: 0 })
+		dispatch({
+			type: 'LOCALSTORAGE_STATE_UPDATE',
+			payload: e.target.value,
+			field: 'sortField',
+		})
+		// setState({ ...state, sortField: e.target.value, page: 0 })
 	}
 
 	function onSortOrderChanged(e) {
-		setState({ ...state, sortOrder: e.target.checked ? -1 : 1, page: 0 })
+		dispatch({
+			type: 'LOCALSTORAGE_STATE_UPDATE',
+			payload: e.target.checked ? -1 : 1,
+			field: 'sortOrder',
+		})
 	}
 
 	function onIncludeUnknownChanged(e) {
-		setState({ ...state, includeUnknown: e.target.checked, page: 0 })
+		dispatch({
+			type: 'LOCALSTORAGE_STATE_UPDATE',
+			payload: e.target.checked,
+			field: 'includeUnknown',
+		})
 	}
 	function onIncludeLockedChanged(e) {
-		setState({ ...state, includeLocked: e.target.checked, page: 0 })
+		dispatch({
+			type: 'LOCALSTORAGE_STATE_UPDATE',
+			payload: e.target.checked,
+			field: 'includeLocked',
+		})
 	}
 
 	function onExactMatchChanged(e) {
-		setState({ ...state, exactMatch: e.target.checked, page: 0 })
+		dispatch({
+			type: 'LOCALSTORAGE_STATE_UPDATE',
+			payload: e.target.checked,
+			field: 'exactMatch',
+		})
 	}
 
 	function onPageChange(page) {
+		debugger
 		setState({ ...state, page: parseInt(page) })
+		// dispatch({
+		// 	type: 'PAGE_UPDATE',
+		// 	payload: parseInt(page),
+		// 	field: 'page',
+		// })
 	}
 
 	async function cleanUpInvalidRecords(silent = false) {
@@ -164,24 +211,26 @@ function RecordPicker(props) {
 	}
 
 	let searchHits = {}
-
-	const sortField = props.codebook.find((d) => d.name === state.sortField)
+	let sortField = ''
+	state.sortField
+		? (sortField = props.codebook.find((d) => d.name === state.sortField))
+		: (sortField = 'pid')
 
 	useEffect(() => {
 		filterAndSortRecords()
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [state.records, state.search, state.searchField])
+	}, [state.records, state.search, state.searchField, sortState])
 
 	function filterAndSortRecords() {
 		let filteredRecords = state.records
 			// Filter on search term
 			.filter((d) => {
 				// If not checked, do not include records that are marked as locked
-				if (!state.includeLocked && d.locked !== 'FALSE') return false
+				if (!sortState.includeLocked && d.locked !== 'FALSE') return false
 
 				// If not checked, do not include records with sortField unknown
-				if (!state.includeUnknown) {
-					let value = d[state.sortField] || ''
+				if (!sortState.includeUnknown) {
+					let value = d[sortState.sortField] || ''
 					if (isUnknown(value, sortField)) return false
 				}
 				// Search is empty show all records
@@ -206,7 +255,7 @@ function RecordPicker(props) {
 					if (
 						interpolated.hasOwnProperty(k) &&
 						interpolated[k] != null &&
-						(state.exactMatch
+						(sortState.exactMatch
 							? interpolated[k].toString().toLowerCase() === state.search.trim()
 							: interpolated[k]
 									.toString()
@@ -230,17 +279,20 @@ function RecordPicker(props) {
 				return false
 			})
 			.sort((a, b) => {
+				debugger
 				// Handle quantitative values with parseInt
 				if (sortField.type === 'quantitative' || sortField.name === 'pid')
 					return (
-						(parseInt(a[state.sortField]) - parseInt(b[state.sortField])) *
-						-state.sortOrder
+						(parseInt(a[sortState.sortField]) -
+							parseInt(b[sortState.sortField])) *
+						-sortState.sortOrder
 					)
 
 				// Handle other values as strings
-				if (a[state.sortField] > b[state.sortField]) return -state.sortOrder
-				else if (a[state.sortField] === b[state.sortField]) return 0
-				return state.sortOrder
+				if (a[sortState.sortField] > b[sortState.sortField])
+					return -sortState.sortOrder
+				else if (a[sortState.sortField] === b[sortState.sortField]) return 0
+				return sortState.sortOrder
 			})
 		return setFilteredRecordsState([...filteredRecords])
 	}
@@ -275,17 +327,17 @@ function RecordPicker(props) {
 			/>
 			<SortContainer
 				pageSize={state.pageSize}
-				StatePage={state.page}
+				statePage={state.page}
 				filteredRecords={filteredRecordsState}
 				onPageChange={onPageChange}
-				sortField={state.sortField}
+				sortOrder={sortState.sortOrder}
+				exactMatch={sortState.exactMatch}
+				includeUnknown={sortState.includeUnknown}
+				includeLocked={sortState.includeLocked}
+				sortField={sortState.sortField}
 				onSortFieldChanged={onSortFieldChanged}
 				onSortOrderChanged={onSortOrderChanged}
 				codebook={props.codebook}
-				sortOrder={state.sortOrder}
-				exactMatch={state.exactMatch}
-				includeUnknown={state.includeUnknown}
-				includeLocked={state.includeLocked}
 				onIncludeUnknownChanged={onIncludeUnknownChanged}
 				onIncludeLockedChanged={onIncludeLockedChanged}
 				onExactMatchChanged={onExactMatchChanged}
@@ -293,13 +345,13 @@ function RecordPicker(props) {
 			<div className="list is-hoverable">
 				{filteredRecordsState ? (
 					<RecordsContainer
-						page={state.page}
 						pageSize={state.pageSize}
+						page={state.page}
 						codebook={props.codebook}
 						filteredRecords={filteredRecordsState}
 						searchHits={searchResults}
 						deleteRecord={deleteRecord}
-						sortField={state.sortField}
+						sortField={sortState.sortField}
 					/>
 				) : null}
 			</div>
