@@ -279,14 +279,14 @@ function RecordPicker(props) {
 				return false
 			})
 			.sort((a, b) => {
-				debugger
 				// Handle quantitative values with parseInt
-				if (sortField.type === 'quantitative' || sortField.name === 'pid')
+				if (sortField === 'quantitative' || sortField === 'pid') {
 					return (
 						(parseInt(a[sortState.sortField]) -
 							parseInt(b[sortState.sortField])) *
 						-sortState.sortOrder
 					)
+				}
 
 				// Handle other values as strings
 				if (a[sortState.sortField] > b[sortState.sortField])
