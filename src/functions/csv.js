@@ -35,32 +35,31 @@ function exportCSV(codebook, records) {
 		headers.push('locked')
 
 		// Add data
-		for (let r of records) {
-			let row = [r.uid]
+		for (let record of records) {
+			let row = [record.uid]
 
-			for (let c of codebook)
-				if (c.input === 'yes') row.push(serializeField(r[c.name] || unset))
+			for (let code of codebook)
+				if (code.input === 'yes') {
+					row.push(serializeField(record[code.name] || ''))
+				}
 
 			// Validation
-			let validation = validateRecord(r, codebook)
+			let validation = validateRecord(record, codebook)
 			let issues = Object.keys(validation).reduce(
 				(a, b) => a + validation[b].errors.length,
 				0
 			)
 			row.push(issues === 0)
-			row.push(r.locked)
+			row.push(record.locked)
 
 			data.push(row)
 		}
 
-		// Create string
 		let result = ''
 		for (let r of data) result += r.join(csv_separator) + csv_row_break
 
 		resolve(result)
 	})
-	// Return the result
-	// return result
 	return promise
 }
 
