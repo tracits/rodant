@@ -40,6 +40,7 @@ function RecordPicker(props) {
 			exactMatch: false,
 		}
 	)
+
 	let reducer = (sortState, action) => {
 		switch (action.type) {
 			case 'LOCALSTORAGE_STATE_UPDATE':
@@ -62,8 +63,20 @@ function RecordPicker(props) {
 
 	useEffect(() => {
 		updateRecords()
+		getCodeBookValue()
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [])
+
+	const getCodeBookValue = () => {
+		let { type } = props.codebook.find(
+			(code) => code.name === sortState.sortField
+		)
+		return dispatch({
+			type: 'LOCALSTORAGE_STATE_UPDATE',
+			field: 'sortFieldType',
+			payload: type,
+		})
+	}
 
 	async function updateRecords() {
 		let records = await props.db.records.toArray()
@@ -279,20 +292,20 @@ function RecordPicker(props) {
 				return false
 			})
 			.sort((a, b) => {
-				debugger
 				// Handle quantitative values with parseInt
-				if (sortField.type === 'quantitative' || sortField.name === 'pid')
+				if (sortState.sortFieldType === 'quantitative') {
 					return (
 						(parseInt(a[sortState.sortField]) -
 							parseInt(b[sortState.sortField])) *
 						-sortState.sortOrder
 					)
-
-				// Handle other values as strings
-				if (a[sortState.sortField] > b[sortState.sortField])
-					return -sortState.sortOrder
-				else if (a[sortState.sortField] === b[sortState.sortField]) return 0
-				return sortState.sortOrder
+				} else {
+					// Handle other values as strings
+					if (a[sortState.sortField] > b[sortState.sortField])
+						return -sortState.sortOrder
+					else if (a[sortState.sortField] === b[sortState.sortField]) return 0
+					return sortState.sortOrder
+				}
 			})
 		return setFilteredRecordsState([...filteredRecords])
 	}
