@@ -1,5 +1,17 @@
 # Changelog
 
+## v1.0.9 (08/09/2020)
+
+#### Enhancements:
+
+- [#126](https://github.com/tracits/rodant/issues/126) Exported dataset uses <unset> instead of NULL 
+
+#### Bug Fixes:
+
+- [#128](https://github.com/tracits/rodant/issues/128) Sort id variable as numeric 
+
+---
+
 ## v1.0.8 (25/08/2020)
 
 #### Enhancements:
