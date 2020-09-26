@@ -40,6 +40,7 @@ function RecordPicker(props) {
 			exactMatch: false,
 		}
 	)
+
 	let reducer = (sortState, action) => {
 		switch (action.type) {
 			case 'LOCALSTORAGE_STATE_UPDATE':
@@ -62,8 +63,20 @@ function RecordPicker(props) {
 
 	useEffect(() => {
 		updateRecords()
+		getCodeBookValue()
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [])
+
+	const getCodeBookValue = () => {
+		let { type } = props.codebook.find(
+			(code) => code.name === sortState.sortField
+		)
+		return dispatch({
+			type: 'LOCALSTORAGE_STATE_UPDATE',
+			field: 'sortFieldType',
+			payload: type,
+		})
+	}
 
 	async function updateRecords() {
 		let records = await props.db.records.toArray()
