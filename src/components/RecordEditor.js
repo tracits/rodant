@@ -211,6 +211,15 @@ class RecordEditor extends React.Component {
 		})
 	}
 
+	handleClose() {
+		if (!Object.keys(this.state.record).includes('pid')) {
+			this.props.db.records.where('uid').equals(this.state.record.uid).delete()
+			this.saveAndExit()
+		} else {
+			this.saveAndExit()
+		}
+	}
+
 	async finalizeDoubleEntry() {
 		await this.props.db.records
 			.where('uid')
