@@ -61,8 +61,6 @@ class RecordEditor extends React.Component {
 			this.props.codebook
 				.filter((d) => d.double_enter !== 'yes')
 				.forEach((d) => (state.record[d.name] = record[d.name]))
-
-			console.log(state.record)
 		} else {
 			state.record = record
 		}
@@ -476,7 +474,7 @@ class RecordEditor extends React.Component {
 							<button
 								className="button is-rounded save-and-exit"
 								onClick={() => {
-									this.saveAndExit()
+									this.handleClose()
 								}}
 							>
 								Close record
