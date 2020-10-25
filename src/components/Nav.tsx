@@ -3,7 +3,12 @@ import { Link } from 'react-router-dom'
 
 import useDarkMode from './Hooks/useDarkMode'
 
-function Nav({ name, version }) {
+type Props = {
+	version: string,
+	name: string
+}
+
+function Nav({ name, version }: Props) {
 	const { theme, toggleTheme, componentMounted } = useDarkMode()
 
 	const ThemeButton = () => {
