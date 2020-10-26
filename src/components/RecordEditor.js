@@ -210,7 +210,8 @@ class RecordEditor extends React.Component {
 	}
 
 	handleClose() {
-		if (!Object.keys(this.state.record).includes('pid')) {
+		// checks if the record has a PID field on the record object. If not, the record is not saved.
+		if (!Object.keys(this.state.record).includes(this.props.config.id_field)) {
 			this.props.db.records.where('uid').equals(this.state.record.uid).delete()
 			this.saveAndExit()
 		} else {
