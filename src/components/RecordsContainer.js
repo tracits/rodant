@@ -86,7 +86,7 @@ export default function RecordsContainer({
 							}}
 							className={`button ${
 								d.locked === 'TRUE' ? 'is-disabled' : ' is-danger'
-							} is-small is-outlined is-rounded remove`}
+							} is-small is-outlined  remove`}
 						>
 							<span className="fa fa-remove" />
 						</button>

@@ -29,7 +29,7 @@ export default function SearchRecords({
 					))}
 				</select>
 			</div>
-			<button className="button is-rounded" onClick={() => clearSearchText()}>
+			<button className="button " onClick={() => clearSearchText()}>
 				<span className="fa fa-remove"></span>
 			</button>
 		</div>
