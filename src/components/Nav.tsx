@@ -8,8 +8,6 @@ type Props = {
 	name: string
 }
 
-
-
 function Nav({ name, version }: Props) {
 	const { theme, toggleTheme, componentMounted } = useDarkMode()
 
