@@ -46,13 +46,13 @@ function ButtonContainer({
 	return (
 		<div className="button-container">
 			<div className="buttons">
-				<button className="button is-primary is-rounded" onClick={createRecord}>
+				<button className="button is-primary " onClick={createRecord}>
 					Create Record
 				</button>
-				<button className="button is-rounded" onClick={cleanUpInvalidRecords}>
+				<button className="button " onClick={cleanUpInvalidRecords}>
 					Delete invalid records
 				</button>
-				<button className="button is-rounded" onClick={exportAndDownloadCSV}>
+				<button className="button " onClick={exportAndDownloadCSV}>
 					Export as CSV
 				</button>
 				<div className="fileUploader">
@@ -65,7 +65,7 @@ function ButtonContainer({
 							alert(err.toString())
 						}}
 					>
-						<button className="button is-rounded">Import from CSV</button>
+						<button className="button ">Import from CSV</button>
 					</FilePicker>
 				</div>
 				{isLoading ? <Spinner /> : null}
