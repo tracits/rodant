@@ -61,8 +61,6 @@ class RecordEditor extends React.Component {
 			this.props.codebook
 				.filter((d) => d.double_enter !== 'yes')
 				.forEach((d) => (state.record[d.name] = record[d.name]))
-
-			console.log(state.record)
 		} else {
 			state.record = record
 		}
@@ -209,6 +207,16 @@ class RecordEditor extends React.Component {
 		this.setState({
 			doubleEntryErrors: errors,
 		})
+	}
+
+	handleClose() {
+		// checks if the record has a PID field on the record object. If not, the record is not saved.
+		if (!Object.keys(this.state.record).includes(this.props.config.id_field)) {
+			this.props.db.records.where('uid').equals(this.state.record.uid).delete()
+			this.saveAndExit()
+		} else {
+			this.saveAndExit()
+		}
 	}
 
 	async finalizeDoubleEntry() {
@@ -467,7 +475,7 @@ class RecordEditor extends React.Component {
 							<button
 								className="button  save-and-exit"
 								onClick={() => {
-									this.saveAndExit()
+									this.handleClose()
 								}}
 							>
 								Close record
