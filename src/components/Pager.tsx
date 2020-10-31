@@ -1,8 +1,14 @@
 import React, { useState } from 'react'
 
-function Pager(props) {
-	const clampValue = (value) =>
-		typeof value === 'string' ? value : Math.max(1, Math.min(value, props.max))
+type Props = {
+	max:number,
+	page:number, 
+	onPageChange: any
+}
+
+function Pager(props:Props) {
+	const clampValue = (value:number) =>
+		 Math.max(1, Math.min(value, props.max))
 
 	let [page, setPage] = useState(props.page + 1)
 	page = clampValue(page)
@@ -10,10 +16,10 @@ function Pager(props) {
 	function pageTextChanged(e) {
 		let newPage = parseInt(e.target.value)
 		if (!Number.isNaN(newPage)) updatePage(newPage)
-		else setPage('')
+		else setPage(null)
 	}
 
-	function updatePage(value) {
+	function updatePage(value:number) {
 		value = clampValue(value)
 		setPage(value)
 		props.onPageChange(value - 1)
