@@ -1,5 +1,15 @@
 # Changelog
 
+## v1.0.10 (01/11/2020)
+
+#### Enhancements:
+
+- [#132](https://github.com/tracits/rodant/issues/132) Records containing no data should not be saved 
+- [#120](https://github.com/tracits/rodant/issues/120) Refactor - RecordPicker component 
+- [#23](https://github.com/tracits/rodant/issues/23) Test more compact, “scientific” style 
+
+---
+
 ## v1.0.9 (08/09/2020)
 
 #### Enhancements:
