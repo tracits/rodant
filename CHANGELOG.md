@@ -6,7 +6,6 @@
 
 - [#132](https://github.com/tracits/rodant/issues/132) Records containing no data should not be saved 
 - [#120](https://github.com/tracits/rodant/issues/120) Refactor - RecordPicker component 
-- [#23](https://github.com/tracits/rodant/issues/23) Test more compact, “scientific” style 
 
 ---
 
