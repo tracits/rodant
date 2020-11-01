@@ -1,6 +1,6 @@
 {
   "name": "rodant",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "private": true,
   "dependencies": {
     "@types/jest": "^26.0.15",
