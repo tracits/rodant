@@ -3,26 +3,33 @@ import { Link } from 'react-router-dom'
 
 import useDarkMode from './Hooks/useDarkMode'
 
-function Nav({ name, version }) {
+type Props = {
+	version: string,
+	name: string
+}
+
+function Nav({ name, version }: Props) {
 	const { theme, toggleTheme, componentMounted } = useDarkMode()
 
 	const ThemeButton = () => {
 		return theme === 'light' ? (
+			<div style={{paddingLeft:'1rem'}} >
 			<button
-				type="button"
-				className="navigation-bar-button"
+				className="button is-primary is-active"
 				onClick={toggleTheme}
-			>
+				>
 				{'🌘'}
 			</button>
+			</div>
 		) : (
+			<div style={{paddingLeft:'1rem'}} >
 			<button
-				type="button"
-				className="navigation-bar-button"
+				className="button is-primary is-active"
 				onClick={toggleTheme}
-			>
+				>
 				{'🌖'}
 			</button>
+				</div>
 		)
 	}
 
@@ -33,13 +40,13 @@ function Nav({ name, version }) {
 					<div className="navigation-bar-contatiner">
 						<div className="navigation-bar-brand">{name}</div>
 						<Link to="/">
-							<button type="button" className="navigation-bar-button">
+							<button  className="button is-primary is-active">
 								Records
 							</button>
 						</Link>
-						<div>
+
 							<ThemeButton />
-						</div>
+
 					</div>
 					<div className="navigation-bar-version">
 						<a href="https://github.com/tracits/rodant/blob/master/CHANGELOG.md">

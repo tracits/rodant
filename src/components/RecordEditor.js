@@ -61,8 +61,6 @@ class RecordEditor extends React.Component {
 			this.props.codebook
 				.filter((d) => d.double_enter !== 'yes')
 				.forEach((d) => (state.record[d.name] = record[d.name]))
-
-			console.log(state.record)
 		} else {
 			state.record = record
 		}
@@ -209,6 +207,16 @@ class RecordEditor extends React.Component {
 		this.setState({
 			doubleEntryErrors: errors,
 		})
+	}
+
+	handleClose() {
+		// checks if the record has a id field on the record object. If not, the record is not saved.
+		if (!Object.keys(this.state.record).includes(this.props.config.id_field)) {
+			this.props.db.records.where('uid').equals(this.state.record.uid).delete()
+			this.saveAndExit()
+		} else {
+			this.saveAndExit()
+		}
 	}
 
 	async finalizeDoubleEntry() {
@@ -411,7 +419,7 @@ class RecordEditor extends React.Component {
 		let finalizeEntry = showFinalize ? (
 			<div className="finalize-entry">
 				<Link to={'/complete/' + this.state.record.uid}>
-					<button className="button is-primary is-rounded">
+					<button className="button is-primary ">
 						Begin double entry
 					</button>
 				</Link>
@@ -422,7 +430,7 @@ class RecordEditor extends React.Component {
 			this.state.doubleEntry && locked !== true ? (
 				<div className="finalize-entry">
 					<button
-						className="button is-primary is-rounded"
+						className="button is-primary "
 						onClick={() => this.checkDoubleEntry()}
 					>
 						Check
@@ -430,7 +438,7 @@ class RecordEditor extends React.Component {
 					{this.state.doubleEntryErrors &&
 						this.state.doubleEntryErrors.length === 0 && (
 							<button
-								className="button is-primary is-rounded"
+								className="button is-primary "
 								onClick={() => this.finalizeDoubleEntry()}
 							>
 								Finalize
@@ -465,9 +473,9 @@ class RecordEditor extends React.Component {
 					<div className="toolbar">
 						{!locked && (!this.state.doubleEntry || true) && (
 							<button
-								className="button is-rounded save-and-exit"
+								className="button  save-and-exit"
 								onClick={() => {
-									this.saveAndExit()
+									this.handleClose()
 								}}
 							>
 								Close record
@@ -475,7 +483,7 @@ class RecordEditor extends React.Component {
 						)}
 						{!locked && (!this.state.doubleEntry || true) && (
 							<button
-								className="button is-rounded mark-unknown"
+								className="button  mark-unknown"
 								onClick={() => {
 									this.markFieldsUnknown()
 								}}
@@ -487,7 +495,7 @@ class RecordEditor extends React.Component {
 						{locked && (
 							<>
 								<button
-									className="button is-rounded mark-unknown"
+									className="button  mark-unknown"
 									onClick={() => {
 										this.exitWithoutSaving()
 									}}
@@ -495,7 +503,7 @@ class RecordEditor extends React.Component {
 									Return
 								</button>
 								<button
-									className="button is-rounded mark-unknown"
+									className="button  mark-unknown"
 									onClick={() => {
 										this.unlockRecord()
 									}}

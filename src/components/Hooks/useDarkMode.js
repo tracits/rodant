@@ -18,14 +18,14 @@ export default function useDarkMode() {
 		if (theme === 'dark' && componentMounted) {
 			document.querySelector('body').setAttribute('class', 'dark-theme')
 			document.querySelectorAll('button').forEach((element) => {
-				element.className.includes('button is-rounded') &&
-					element.setAttribute('class', 'button is-rounded is-dark')
+				element.className.includes('button ') &&
+					element.setAttribute('class', 'button  is-dark')
 			})
 		} else {
 			document.querySelector('body').setAttribute('class', 'light-theme')
 			document.querySelectorAll('button').forEach((element) => {
-				element.className.includes('button is-rounded') &&
-					element.setAttribute('class', 'button is-rounded')
+				element.className.includes('button ') &&
+					element.setAttribute('class', 'button ')
 			})
 		}
 	}, [theme, componentMounted])
