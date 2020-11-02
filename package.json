@@ -30,7 +30,7 @@
 	"test": "react-scripts test",
 	"eject": "react-scripts eject",
 	"prettier": "prettier \"**/*.{json,md,scss,yaml,yml,ts,js}\"",
-	
+	"demo": "./deploy_demo.sh"
     },
     "eslintConfig": {
 	"extends": [
