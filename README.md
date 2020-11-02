@@ -4,6 +4,8 @@
 
 **A simple and open source web application for collection of research data**
 
+# [Live demo here!](https://martingerdin.github.io/rodant-demo)
+
 ## Usage
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
