@@ -41,7 +41,7 @@ function RecordPicker(props) {
 		}
 	)
 
-	let reducer = (sortState, action) => {
+	let sortStatereducer = (sortState, action) => {
 		switch (action.type) {
 			case 'LOCALSTORAGE_STATE_UPDATE':
 				setLocalStorageValue({ ...sortState, [action.field]: action.payload })
@@ -55,7 +55,7 @@ function RecordPicker(props) {
 				)
 		}
 	}
-	const [sortState, dispatch] = useReducer(reducer, localStorageValue)
+	const [sortState, dispatch] = useReducer(sortStatereducer, localStorageValue)
 
 	const [isLoading, setIsLoading] = useState(false)
 	const [filteredRecordsState, setFilteredRecordsState] = useState([])
@@ -143,7 +143,6 @@ function RecordPicker(props) {
 			payload: e.target.value,
 			field: 'sortField',
 		})
-		// setState({ ...state, sortField: e.target.value, page: 0 })
 	}
 
 	function onSortOrderChanged(e) {
@@ -178,7 +177,6 @@ function RecordPicker(props) {
 	}
 
 	function onPageChange(page) {
-		debugger
 		setState({ ...state, page: parseInt(page) })
 		// dispatch({
 		// 	type: 'PAGE_UPDATE',
@@ -243,7 +241,7 @@ function RecordPicker(props) {
 
 				// If not checked, do not include records with sortField unknown
 				if (!sortState.includeUnknown) {
-					let value = d[sortState.sortField] || ''
+					let value = d[sortState.sortField] ?? ''
 					if (isUnknown(value, sortField)) return false
 				}
 				// Search is empty show all records
@@ -260,7 +258,8 @@ function RecordPicker(props) {
 				const keys = props.codebook
 					.map((d) => d.name)
 					// If there is a searchField selected, use only keys matching it
-					.filter((d) => state.searchField === '' || d === state.searchField)
+					.filter((d) => d === sortState.sortField ?? props.codebook )
+
 				let hit = false
 				let hits = []
 
