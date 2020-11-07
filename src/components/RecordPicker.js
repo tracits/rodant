@@ -14,7 +14,9 @@ import ButtonContiner from './ButtonContainer'
 import SearchRecords from './SearchRecords'
 import RecordsContainer from './RecordsContainer'
 import SortContainer from './SortContainer'
+import { Model } from './modal'
 import useLocalStorage from './Hooks/useLocalStorage'
+
 
 /**
  * Renders a list of the available records.
