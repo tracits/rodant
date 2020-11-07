@@ -1,4 +1,3 @@
-
 import React, {createContext, useContext, useReducer} from 'react'
 
 const ModalStateContext = createContext(null)
@@ -10,6 +9,12 @@ export type ActionType = {
         header:string, 
         content:string
     }
+}
+
+type State = {
+    show: boolean,
+    header?:string,
+    content?: string
 }
 
 const modalReducer = (state: State, action: ActionType ) => {
@@ -30,12 +35,6 @@ const modalReducer = (state: State, action: ActionType ) => {
             throw new Error(`Incorect action type. Received action: ${action.type} `);
         
     }
-}
-
-type State = {
-    show: boolean,
-    header?:string,
-    content?: string
 }
 
 export function ModalProvider({children}) {    
