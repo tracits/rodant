@@ -2,7 +2,6 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 
 import useDarkMode from './Hooks/useDarkMode'
-import {Modal} from './modal'
 
 type Props = {
 	version: string,
@@ -24,7 +23,6 @@ function Nav({ name, version }: Props) {
 			</div>
 		) : (
 			<div style={{paddingLeft:'1rem'}} >
-				<Modal />
 			<button
 				className="button is-primary is-active"
 				onClick={toggleTheme}
@@ -46,9 +44,7 @@ function Nav({ name, version }: Props) {
 				    Records
 				</button>
 			    </Link>
-
 			    <ThemeButton />
-
 			</div>
 			<div className="navigation-bar-version">
 			    <div className="navigation-bar-contatiner">

@@ -4,12 +4,27 @@ import React, {createContext, useContext, useReducer} from 'react'
 const ModalStateContext = createContext(null)
 const ModalDispatch = createContext(null)
 
-const modalReducer = (state, action ) => {
+export type ActionType = {
+    type: 'SHOW' | 'HIDE',
+    payload?: {
+        header:string, 
+        content:string
+    }
+}
+
+const modalReducer = (state: State, action: ActionType ) => {
     switch (action.type) {
         case 'SHOW':
-            return state
+            if (!action.payload.header ?? !action.payload.content ){
+             throw new Error("Must Pass a payload with a header and content");
+            }
+            return {
+                show:true,
+                header:action.payload.header, 
+                content: action.payload.content
+            }
         case 'HIDE':
-            return state
+            return ({...state, show:false})
     
         default:
             throw new Error(`Incorect action type. Received action: ${action.type} `);
@@ -17,9 +32,18 @@ const modalReducer = (state, action ) => {
     }
 }
 
+type State = {
+    show: boolean,
+    header?:string,
+    content?: string
+}
 
-export function ModalProvider({children}) {
-    const [state, dispatch] = useReducer(modalReducer, false)
+export function ModalProvider({children}) {    
+    const [state, dispatch] = useReducer(modalReducer, {
+        show: false,
+        header: '',
+        content: ''
+    })
 
   return (
       <ModalStateContext.Provider value={state} >
@@ -29,6 +53,9 @@ export function ModalProvider({children}) {
     </ModalStateContext.Provider>
 )}
 
+/**
+ * @returns Modal context. Example `const ModalState = useModalState()`
+ */
 export function useModalState() {
     const context = useContext(ModalStateContext)
     if (context === undefined) {
@@ -37,6 +64,10 @@ export function useModalState() {
     return context
 }
 
+/**
+ * @returns Modal dispatch function. Example `const ModalDispatch = useModalDispatch()`
+ * Example usage: `ModalDispatch({type:'SHOW, payload:{header:'YO', content:'Text goes here'}})`
+ */
 export function useModalDispatch() {
     const context = useContext(ModalDispatch)
     if (context === undefined) {

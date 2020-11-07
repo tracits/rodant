@@ -1,7 +1,7 @@
 import csvParse from 'csv-parse'
 import { validateRecord } from './validation'
 
-const unset = '<unset>' // The value to use when a value is not defined in the record
+// const unset = '<unset>' // The value to use when a value is not defined in the record
 const csv_separator = ',' // Between fields
 const csv_encloser = '"' // Enclosing fields
 const csv_row_break = '\n' // Line break

@@ -14,8 +14,8 @@ import ButtonContiner from './ButtonContainer'
 import SearchRecords from './SearchRecords'
 import RecordsContainer from './RecordsContainer'
 import SortContainer from './SortContainer'
-import { Model } from './modal'
 import useLocalStorage from './Hooks/useLocalStorage'
+import { Modal, useModalDispatch } from './modal'
 
 
 /**
@@ -57,6 +57,8 @@ function RecordPicker(props) {
 				)
 		}
 	}
+
+	const modalDispatch = useModalDispatch()
 	const [sortState, dispatch] = useReducer(reducer, localStorageValue)
 
 	const [isLoading, setIsLoading] = useState(false)
@@ -202,9 +204,8 @@ function RecordPicker(props) {
 				toDelete.push(record.uid)
 		}
 
-		if (toDelete.length === 0) {
-			// No invalid records were found
-			if (!silent) alert('No invalid records to delete.')
+		if (toDelete.length === 0 && silent) {
+			modalDispatch({type: 'SHOW', payload: {header:'No Records Deleted', content: 'No invalid records to delete.'}})
 		} else {
 			// Found invalid records, if not in silent mode ask to delete them
 			if (
@@ -321,7 +322,7 @@ function RecordPicker(props) {
 				Pick record{' '}
 				{`(${filteredRecordsState.length} / ${state.records.length})`}
 			</h2>
-
+			<Modal />
 			<ButtonContiner
 				createRecord={createRecord}
 				cleanUpInvalidRecords={cleanUpInvalidRecords}
