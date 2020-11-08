@@ -205,7 +205,7 @@ function RecordPicker(props) {
 		}
 
 		if (toDelete.length === 0 && silent) {
-			modalDispatch({type: 'SHOW', payload: {header:'No Records Deleted', content: 'No invalid records to delete.'}})
+			modalDispatch({type: 'SHOW', payload: {style:'is-warning' ,header:'No Records Deleted', content: 'No invalid records to delete.'}})
 		} else {
 			// Found invalid records, if not in silent mode ask to delete them
 			if (

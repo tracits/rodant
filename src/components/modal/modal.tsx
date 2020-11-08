@@ -24,7 +24,7 @@ export const Modal = () => {
             className="modal-background">
             </div>
             <div className="modal-content">
-        <article className="message">
+        <article className={`message ${modalState.style}`}>
                 <div className="message-header">
                     <p>{modalState.header}</p>
                 <button onClick={()=>dispatch({type:'HIDE' })}

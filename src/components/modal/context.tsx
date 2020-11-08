@@ -7,16 +7,20 @@ export type ActionType = {
     type: 'SHOW' | 'HIDE',
     payload?: {
         header:string, 
-        content:string
+        content:string,
+        style:ModalStyleType
     }
 }
+
+type ModalStyleType = 'is-warning' | 'is-success' | 'is-danger' | 'is-dark'
 
 type State = {
     show: boolean,
     header?:string,
-    content?: string
+    content?: string,
+    style?: ModalStyleType
 }
-
+ 
 const modalReducer = (state: State, action: ActionType ) => {
     switch (action.type) {
         case 'SHOW':
@@ -24,9 +28,11 @@ const modalReducer = (state: State, action: ActionType ) => {
              throw new Error("Must Pass a payload with a header and content");
             }
             return {
+                ...state,
                 show:true,
                 header:action.payload.header, 
-                content: action.payload.content
+                content: action.payload.content,
+                style:action.payload.style
             }
         case 'HIDE':
             return ({...state, show:false})
@@ -38,11 +44,13 @@ const modalReducer = (state: State, action: ActionType ) => {
 }
 
 export function ModalProvider({children}) {    
-    const [state, dispatch] = useReducer(modalReducer, {
+    const init:State = {
         show: false,
+        style: 'is-dark',
         header: '',
-        content: ''
-    })
+        content: '',
+    }
+    const [state, dispatch] = useReducer(modalReducer, init)
 
   return (
       <ModalStateContext.Provider value={state} >
