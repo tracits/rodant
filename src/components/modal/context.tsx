@@ -3,6 +3,7 @@ import React, {createContext, useContext, useReducer} from 'react'
 const ModalStateContext = createContext(null)
 const ModalDispatch = createContext(null)
 
+type ModalStyleType = 'is-warning' | 'is-success' | 'is-danger' | 'is-dark'
 export type ActionType = {
     type: 'SHOW' | 'HIDE',
     payload?: {
@@ -12,7 +13,6 @@ export type ActionType = {
     }
 }
 
-type ModalStyleType = 'is-warning' | 'is-success' | 'is-danger' | 'is-dark'
 
 type State = {
     show: boolean,

@@ -17,7 +17,6 @@ import SortContainer from './SortContainer'
 import useLocalStorage from './Hooks/useLocalStorage'
 import { Modal, useModalDispatch } from './modal'
 
-
 /**
  * Renders a list of the available records.
  * Clicking a record will take you to the corresponding RecordEditor page.
@@ -205,7 +204,14 @@ function RecordPicker(props) {
 		}
 
 		if (toDelete.length === 0 && silent) {
-			modalDispatch({type: 'SHOW', payload: {style:'is-warning' ,header:'No Records Deleted', content: 'No invalid records to delete.'}})
+			modalDispatch({
+				type: 'SHOW',
+				payload: {
+					style: 'is-warning',
+					header: 'No Records Deleted',
+					content: 'No invalid records to delete.',
+				},
+			})
 		} else {
 			// Found invalid records, if not in silent mode ask to delete them
 			if (
