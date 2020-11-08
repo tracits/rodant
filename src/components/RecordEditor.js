@@ -419,9 +419,7 @@ class RecordEditor extends React.Component {
 		let finalizeEntry = showFinalize ? (
 			<div className="finalize-entry">
 				<Link to={'/complete/' + this.state.record.uid}>
-					<button className="button is-primary ">
-						Begin double entry
-					</button>
+					<button className="button is-primary ">Begin double entry</button>
 				</Link>
 			</div>
 		) : null
