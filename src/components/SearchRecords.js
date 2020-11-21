@@ -1,6 +1,6 @@
 import React from 'react'
 
-export default function SearchRecords({
+function SearchRecords({
 	changeSearchText,
 	onSearchFieldChanged,
 	codebook,
@@ -35,3 +35,6 @@ export default function SearchRecords({
 		</div>
 	)
 }
+
+
+export {SearchRecords}

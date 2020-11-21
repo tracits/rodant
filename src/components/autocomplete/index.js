@@ -1,5 +1,5 @@
 import React from 'react'
-import './Autocomplete.css'
+import './autocomplete.css'
 
 /**
  * Shows an input-element with autocomplete dropdown when typing.
@@ -148,4 +148,4 @@ class Autocomplete extends React.Component {
 	}
 }
 
-export default Autocomplete
+export {Autocomplete}

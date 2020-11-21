@@ -1,5 +1,5 @@
 import React from 'react'
-import './Spinner.css'
+import './spinner.css'
 function Spinner() {
 	return (
 		<div className="lds-spinner">
@@ -19,4 +19,4 @@ function Spinner() {
 	)
 }
 
-export default Spinner
+export {Spinner}

@@ -1,8 +1,8 @@
 import React from 'react'
-import Autocomplete from './Autocomplete'
-import searchICD10 from '../functions/icd10'
+import {Autocomplete} from './autocomplete'
+import {search as searchICD10} from '../functions/icd10'
 
-function getList(str) {
+export function getList(str) {
 	return str
 		.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g)
 		.map((d) => d.replace(/"/g, ''))
@@ -247,4 +247,4 @@ class FieldEditor extends React.Component {
 	}
 }
 
-export default FieldEditor
+export {FieldEditor}

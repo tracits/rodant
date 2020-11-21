@@ -1,7 +1,7 @@
 import React from 'react'
-import Pager from './Pager'
+import { Pager } from './Pager'
 
-export default function SortContainer({
+function SortContainer({
 	onSortFieldChanged,
 	onSortOrderChanged,
 	sortField,
@@ -84,3 +84,4 @@ export default function SortContainer({
 	)
 	return sort
 }
+export { SortContainer }

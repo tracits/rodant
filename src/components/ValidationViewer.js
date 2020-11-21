@@ -51,4 +51,4 @@ const ValidationViewer = (props) => {
 	return <div className="validation-container">{ui}</div>
 }
 
-export default ValidationViewer
+export { ValidationViewer }

@@ -1,5 +1,5 @@
 import React from 'react'
-import Spinner from './Spinner'
+import {Spinner} from './spinner'
 import { FilePicker } from 'react-file-picker'
 import { importCSV } from '../functions/csv'
 
@@ -74,4 +74,4 @@ function ButtonContainer({
 	)
 }
 
-export default ButtonContainer
+export { ButtonContainer }

@@ -1,6 +1,8 @@
 import React, { useState, useReducer, useEffect } from 'react'
+import Helmet from 'react-helmet'
 import { withRouter } from 'react-router-dom'
 import { exportCSV } from '../functions/csv'
+
 import download from '../functions/download'
 import {
 	validateRecord,
@@ -8,14 +10,13 @@ import {
 	interpolateRecord,
 	isUnknown,
 } from '../functions/validation'
-import Helmet from 'react-helmet'
 
-import ButtonContiner from './ButtonContainer'
-import SearchRecords from './SearchRecords'
-import RecordsContainer from './RecordsContainer'
-import SortContainer from './SortContainer'
-import useLocalStorage from './Hooks/useLocalStorage'
-import { Modal, useModalDispatch } from './modal'
+import { ButtonContainer } from '../components/ButtonContainer'
+import {SearchRecords} from '../components/SearchRecords'
+import {RecordsContainer} from '../components/RecordsContainer'
+import {SortContainer} from '../components/SortContainer'
+import {useLocalStorage} from '../components/hooks/useLocalStorage'
+import { Modal, useModalDispatch } from '../components/modal'
 
 /**
  * Renders a list of the available records.
@@ -329,7 +330,7 @@ function RecordPicker(props) {
 				{`(${filteredRecordsState.length} / ${state.records.length})`}
 			</h2>
 			<Modal />
-			<ButtonContiner
+			<ButtonContainer
 				createRecord={createRecord}
 				cleanUpInvalidRecords={cleanUpInvalidRecords}
 				exportAndDownloadCSV={exportAndDownloadCSV}
@@ -380,5 +381,5 @@ function RecordPicker(props) {
 		</div>
 	)
 }
-
-export default withRouter(RecordPicker)
+const RecordPickerWithRouter = withRouter(RecordPicker)
+export { RecordPickerWithRouter as RecordPicker }
