@@ -113,6 +113,9 @@ a:hover .hide-until-parent-hovered {
 	color: var(--text-accent);
 	background: var(--nav-main);
 }
+.navbar-menu-white {
+	color:white;
+}
 .navigation-bar-contatiner {
 	display: flex;
 	align-items: center;
