@@ -12,10 +12,10 @@ import {
 } from '../functions/validation'
 
 import { ButtonContainer } from '../components/ButtonContainer'
-import {SearchRecords} from '../components/SearchRecords'
-import {RecordsContainer} from '../components/RecordsContainer'
-import {SortContainer} from '../components/SortContainer'
-import {useLocalStorage} from '../components/hooks/useLocalStorage'
+import { SearchRecords } from '../components/SearchRecords'
+import { RecordsContainer } from '../components/RecordsContainer'
+import { SortContainer } from '../components/SortContainer'
+import { useLocalStorage } from '../components/hooks/useLocalStorage'
 import { Modal, useModalDispatch } from '../components/modal'
 
 /**

@@ -36,5 +36,4 @@ function SearchRecords({
 	)
 }
 
-
-export {SearchRecords}
+export { SearchRecords }

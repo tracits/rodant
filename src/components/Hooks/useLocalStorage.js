@@ -37,4 +37,4 @@ function useLocalStorage(key, initialValue) {
 
 	return [sortLocalStorageValue, setValue]
 }
-export {useLocalStorage}
+export { useLocalStorage }

@@ -148,4 +148,4 @@ class Autocomplete extends React.Component {
 	}
 }
 
-export {Autocomplete}
+export { Autocomplete }

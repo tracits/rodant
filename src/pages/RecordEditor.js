@@ -1,10 +1,10 @@
 import React from 'react'
 import { Prompt, Link, withRouter } from 'react-router-dom'
 import _ from 'lodash'
-import {FieldEditor} from '../components/FieldEditor'
+import { FieldEditor } from '../components/FieldEditor'
 import { validateRecord, isValid } from '../functions/validation'
 import Helmet from 'react-helmet'
-import {ValidationViewer} from '../components/ValidationViewer'
+import { ValidationViewer } from '../components/ValidationViewer'
 
 const RecordEditorState = {
 	NONE: 0,
@@ -552,4 +552,4 @@ class RecordEditor extends React.Component {
 	}
 }
 const RecordEditorWithRouter = withRouter(RecordEditor)
-export {RecordEditorWithRouter as RecordEditor}
+export { RecordEditorWithRouter as RecordEditor }

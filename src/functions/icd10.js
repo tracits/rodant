@@ -27,4 +27,4 @@ async function search(code, allowed = []) {
 		.map((d) => [d, database[d]])
 }
 
-export {search}
+export { search }
