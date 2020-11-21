@@ -4,68 +4,70 @@ import { Link } from 'react-router-dom'
 import useDarkMode from './Hooks/useDarkMode'
 
 function Nav({ name, version }) {
-	const { theme, toggleTheme, componentMounted } = useDarkMode()
+	const {theme ,toggleTheme, componentMounted } = useDarkMode()
 
-	const ThemeButton = () => {
-		return theme === 'light' ? (
-			<button type="button" className="button is-info" onClick={toggleTheme}>
-				{'🌖'}
-			</button>
-		) : (
-			<button type="button" className="button is-info" onClick={toggleTheme}>
-				{'🌖'}
-			</button>
-		)
+	const toggleMenuIsActive = () => {
+		document.getElementById('burger').classList.toggle('is-active')
+		document.getElementById('nav-bar-menu').classList.toggle('is-active')
+		document.getElementById('more-menu').classList.toggle('is-hidden')
 	}
 
 	return (
 		<>
 			{componentMounted ? (
 				<nav
-					className="navbar is-primary"
+					className={`navbar  ${theme === 'dark' ? 'is-dark' : 'is-primary'}`}
 					role="navigation"
 					aria-label="main navigation"
 				>
 					<div className="navbar-brand">
-						<div className="navbar-brand navbar-item">{name}</div>
+						<div className=" navbar-item">{name}</div>
 						<Link className="navbar-item" to="/">
 							Records
 						</Link>
+						<a
+							role="button"
+							onClick={toggleMenuIsActive}
+							id="burger"
+							className="navbar-burger"
+							data-target="navMenu"
+							aria-label="menu"
+							aria-expanded="false"
+							href
+						>
+							<span aria-hidden="true"></span>
+							<span aria-hidden="true"></span>
+							<span aria-hidden="true"></span>
+						</a>
 					</div>
-					<div className="navbar-menu">
-						<div className="navbar-start">
-							<a
-								href="https://github.com/tracits/rodant/blob/master/CHANGELOG.md"
-								className="navbar-item"
-							>
-								What's New
-							</a>
-
-							<div className="navbar-item has-dropdown is-hoverable">
-								<a className="navbar-link">More</a>
-								<div className="navbar-dropdown">
-									<a className="navbar-item">About</a>
-									<a className="navbar-item">Jobs</a>
-									<a className="navbar-item">Contact</a>
-									<hr className="navbar-divider" />
-									<strong className="navbar-item">v.{version}</strong>
-								</div>
+					<div className="navbar-menu" id="nav-bar-menu">
+						<div className="navbar-item has-dropdown is-hoverable">
+							<div className="navbar-link navbar-menu-white" id="more-menu">
+								More
 							</div>
-						</div>
-
-						<div className="navbar-end">
-							<div className="navbar-item ">
-								<ThemeButton />
-							</div>
-
-							{/* <div className="buttons ">
-								<a
-									className="button is-light"
-									href="https://github.com/tracits/rodant"
-								>
-									<strong>Built with Rodant (v.{version})</strong>
+							<div className="navbar-dropdown">
+								<a className="navbar-item is-white" onClick={toggleTheme} href>
+									Toggle Dark Mode
 								</a>
-							</div> */}
+								<a
+									href="https://github.com/tracits/rodant"
+									className="navbar-item"
+									rel="noopener noreferrer"
+									target="_blank"
+								>
+									About
+								</a>
+								<a
+									href="https://github.com/tracits/rodant/blob/master/CHANGELOG.md"
+									className="navbar-item"
+									rel="noopener noreferrer"
+									target="_blank"
+								>
+									What's New
+								</a>
+								<hr className="navbar-divider" />
+								<strong className="navbar-item">v.{version}</strong>
+							</div>
 						</div>
 					</div>
 				</nav>
