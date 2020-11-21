@@ -49,4 +49,4 @@ function Pager(props) {
 	)
 }
 
-export default Pager
+export { Pager }

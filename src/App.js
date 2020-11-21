@@ -4,10 +4,10 @@ import { BrowserRouter as Router, Route } from 'react-router-dom'
 import 'bulma/css/bulma.css'
 import 'font-awesome/css/font-awesome.min.css'
 import './App.css'
-import RecordEditor from './components/RecordEditor'
-import RecordPicker from './components/RecordPicker'
+import { RecordEditor } from './pages/RecordEditor'
+import { RecordPicker } from './pages/RecordPicker'
 import packagejson from '../package.json'
-import Nav from './components/Nav'
+import { Nav } from './components/Nav'
 import { ModalProvider } from './components/modal'
 
 /**

@@ -2,7 +2,7 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import { validateRecord, isUnknown } from '../functions/validation'
 
-export default function RecordsContainer({
+function RecordsContainer({
 	filteredRecords,
 	page,
 	pageSize,
@@ -96,3 +96,4 @@ export default function RecordsContainer({
 		})
 	return records
 }
+export { RecordsContainer }
