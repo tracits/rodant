@@ -110,11 +110,11 @@ a:hover .hide-until-parent-hovered {
 
 	min-height: 3.25rem;
 	margin-bottom: 3em;
-	/* color: var(--text-accent); */
-	/* background: var(--nav-main); */
+	color: var(--text-accent);
+	background: var(--nav-main);
 }
 .navbar-menu-white {
-	color:#FFF
+	color:white;
 }
 .navigation-bar-contatiner {
 	display: flex;
