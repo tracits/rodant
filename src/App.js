@@ -7,7 +7,7 @@ import './App.css'
 import RecordEditor from './components/RecordEditor'
 import RecordPicker from './components/RecordPicker'
 import packagejson from '../package.json'
-import Nav from './components/Nav'
+import {Nav} from './components/Nav'
 import { ModalProvider } from './components/modal'
 
 /**
