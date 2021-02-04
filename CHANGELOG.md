@@ -1,5 +1,17 @@
 # Changelog
 
+## v1.0.11 (04/02/2021)
+
+#### Enhancements:
+
+- [#144](https://github.com/tracits/rodant/issues/144) Add github octocat icon to after Built with Rodant (vx.x.x) and link to https://github.com/tracits/rodant 
+
+#### Bug Fixes:
+
+- [#151](https://github.com/tracits/rodant/issues/151) Parse error package.json during npm install 
+
+---
+
 ## v1.0.10 (01/11/2020)
 
 #### Enhancements:
