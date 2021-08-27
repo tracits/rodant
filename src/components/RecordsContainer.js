@@ -1,6 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { validateRecord, isUnknown } from '../functions/validation'
+import './misc.css'
 
 export default function RecordsContainer({
 	filteredRecords,
@@ -8,9 +9,10 @@ export default function RecordsContainer({
 	pageSize,
 	codebook,
 	searchHits,
-	deleteRecord,
+	openDialogue,
 	sortField,
 }) {
+
 	function getList(str) {
 		return str
 			.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g)
@@ -69,10 +71,10 @@ export default function RecordsContainer({
 						<span className="hits">
 							{searchHits[d.uid]
 								? searchHits[d.uid].slice(0, 10).map((e, i) => (
-										<span key={i}>
-											{e[0]}: {e[1]}
-										</span>
-								  ))
+									<span key={i}>
+										{e[0]}: {e[1]}
+									</span>
+								))
 								: null}
 						</span>
 						<span className="sort-field">
@@ -82,11 +84,10 @@ export default function RecordsContainer({
 							disabled={d.locked === 'TRUE'}
 							onClick={(e) => {
 								e.preventDefault()
-								deleteRecord(d.uid)
+								openDialogue(d.uid)
 							}}
-							className={`button ${
-								d.locked === 'TRUE' ? 'is-disabled' : ' is-danger'
-							} is-small is-outlined  remove`}
+							className={`button ${d.locked === 'TRUE' ? 'is-disabled' : ' is-danger'
+								} is-small is-outlined  remove`}
 						>
 							<span className="fa fa-remove" />
 						</button>

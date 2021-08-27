@@ -70,6 +70,31 @@ function RecordPicker(props) {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [])
 
+	const [isDialogueActive, setDialogueIsActive] = useState(false);
+	const [recordUid, setRecordUid] = useState(null);
+
+	function Dialogue() {
+		return (
+			<div class={isDialogueActive ? "modal is-active" : "modal"}>
+  				<div class="modal-background"></div>
+  				<div class="modal-card">
+  				  <header class="modal-card-head">
+  				    <p class="modal-card-title">
+						<span role="img" aria-label="bomb">
+							💣 Delete record: {recordUid}? 
+						</span>
+					</p>
+  				    <button onClick={toggleDialogue} class="delete" aria-label="close"></button>
+  				  </header>
+  				  <footer class="modal-card-foot">
+  				    <button onClick={deleteRecord} class="button is-danger">Confirm</button>
+  				    <button onClick={toggleDialogue} class="button">Cancel</button>
+  				  </footer>
+  				</div>
+			</div>
+		);
+	}
+
 	const getCodeBookValue = () => {
 		let { type } = props.codebook.find(
 			(code) => code.name === sortState.sortField
@@ -79,6 +104,15 @@ function RecordPicker(props) {
 			field: 'sortFieldType',
 			payload: type,
 		})
+	}
+
+	function toggleDialogue() {
+		setDialogueIsActive(!isDialogueActive)
+	}
+
+	function openDialogue(uid) {
+		setRecordUid(uid)
+		toggleDialogue()
 	}
 
 	async function updateRecords() {
@@ -96,12 +130,10 @@ function RecordPicker(props) {
 		updateRecords()
 	}
 
-	async function deleteRecord(uid) {
-		if (window.confirm(`💣 Delete record: ${uid}?`)) {
-			await props.db.records.where('uid').equals(uid).delete()
-
-			updateRecords()
-		}
+	async function deleteRecord() {
+		await props.db.records.where('uid').equals(recordUid).delete()
+		toggleDialogue()
+		updateRecords()
 	}
 
 	async function exportAndDownloadCSV() {
@@ -280,9 +312,9 @@ function RecordPicker(props) {
 						(sortState.exactMatch
 							? interpolated[k].toString().toLowerCase() === state.search.trim()
 							: interpolated[k]
-									.toString()
-									.toLowerCase()
-									.indexOf(state.search) !== -1)
+								.toString()
+								.toLowerCase()
+								.indexOf(state.search) !== -1)
 					) {
 						hit = true
 						const field = props.codebook.find((d) => d.name === k)
@@ -364,6 +396,7 @@ function RecordPicker(props) {
 				onIncludeLockedChanged={onIncludeLockedChanged}
 				onExactMatchChanged={onExactMatchChanged}
 			/>
+			<Dialogue />
 			<div className="list is-hoverable">
 				{filteredRecordsState ? (
 					<RecordsContainer
@@ -372,7 +405,7 @@ function RecordPicker(props) {
 						codebook={props.codebook}
 						filteredRecords={filteredRecordsState}
 						searchHits={searchResults}
-						deleteRecord={deleteRecord}
+						openDialogue={openDialogue}
 						sortField={sortState.sortField}
 					/>
 				) : null}
