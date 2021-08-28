@@ -16,6 +16,7 @@ import RecordsContainer from './RecordsContainer'
 import SortContainer from './SortContainer'
 import useLocalStorage from './Hooks/useLocalStorage'
 import { Modal, useModalDispatch } from './modal'
+import Dialogue from './Dialogue'
 
 /**
  * Renders a list of the available records.
@@ -70,31 +71,6 @@ function RecordPicker(props) {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [])
 
-	const [isDialogueActive, setDialogueIsActive] = useState(false);
-	const [recordUid, setRecordUid] = useState(null);
-
-	function Dialogue() {
-		return (
-			<div class={isDialogueActive ? "modal is-active" : "modal"}>
-  				<div class="modal-background"></div>
-  				<div class="modal-card">
-  				  <header class="modal-card-head">
-  				    <p class="modal-card-title">
-						<span role="img" aria-label="bomb">
-							💣 Delete record: {recordUid}? 
-						</span>
-					</p>
-  				    <button onClick={toggleDialogue} class="delete" aria-label="close"></button>
-  				  </header>
-  				  <footer class="modal-card-foot">
-  				    <button onClick={deleteRecord} class="button is-danger">Confirm</button>
-  				    <button onClick={toggleDialogue} class="button">Cancel</button>
-  				  </footer>
-  				</div>
-			</div>
-		);
-	}
-
 	const getCodeBookValue = () => {
 		let { type } = props.codebook.find(
 			(code) => code.name === sortState.sortField
@@ -105,6 +81,9 @@ function RecordPicker(props) {
 			payload: type,
 		})
 	}
+
+    const [isDialogueActive, setDialogueIsActive] = useState(false);
+    const [recordUid, setRecordUid] = useState(null);
 
 	function toggleDialogue() {
 		setDialogueIsActive(!isDialogueActive)
@@ -370,7 +349,6 @@ function RecordPicker(props) {
 				db={props.db}
 				isLoading={isLoading}
 			/>
-
 			<SearchRecords
 				changeSearchText={changeSearchText}
 				onSearchFieldChanged={onSearchFieldChanged}
@@ -396,7 +374,16 @@ function RecordPicker(props) {
 				onIncludeLockedChanged={onIncludeLockedChanged}
 				onExactMatchChanged={onExactMatchChanged}
 			/>
-			<Dialogue />
+			<Dialogue 
+				title = {
+					<span role="img" aria-label="bomb">
+					💣 Delete record: {recordUid}?
+					</span>
+				}
+				isDialogueActive={isDialogueActive}
+				toggleDialogue={toggleDialogue}
+				onConfirm={deleteRecord}
+			/>
 			<div className="list is-hoverable">
 				{filteredRecordsState ? (
 					<RecordsContainer
