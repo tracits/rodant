@@ -3,7 +3,7 @@ import Spinner from './Spinner'
 import { FilePicker } from 'react-file-picker'
 import { importCSV } from '../functions/csv'
 
-function ButtonContainer({
+export default function ButtonContainer({
 	createRecord,
 	cleanUpInvalidRecords,
 	exportAndDownloadCSV,
@@ -73,5 +73,3 @@ function ButtonContainer({
 		</div>
 	)
 }
-
-export default ButtonContainer
