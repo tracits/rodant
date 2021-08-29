@@ -1,7 +1,8 @@
-import React from 'react'
+import React, { useState } from 'react'
 import Spinner from './Spinner'
 import { FilePicker } from 'react-file-picker'
 import { importCSV } from '../functions/csv'
+import Dialogue from './Dialogue'
 
 function ButtonContainer({
 	createRecord,
@@ -12,6 +13,14 @@ function ButtonContainer({
 	updateRecords,
 	db,
 }) {
+
+	const [isImportDialogueActive, setImportDialogueActive] = useState(false)
+	const [csvImportFile, setCsvImportFile] = useState(null)
+
+	function toggleImportDialogue() {
+		setImportDialogueActive(!isImportDialogueActive)
+	}
+
 	async function importCSVText(text) {
 		setLoading(true)
 		try {
@@ -27,10 +36,12 @@ function ButtonContainer({
 		return setLoading(false)
 	}
 
-	async function handleCsvImport(importCsvFile) {
-		if (!window.confirm(`Importing may overwrite data. Continue?`)) return
-		if (importCsvFile.text) {
-			let text = await importCsvFile.text()
+	async function handleCsvImport() {
+		// Close dialogue
+		toggleImportDialogue()
+		if (!csvImportFile) return
+		if (csvImportFile.text) {
+			let text = await csvImportFile.text()
 			importCSVText(text)
 		} else {
 			// For safari that lacks the .text() call
@@ -39,8 +50,13 @@ function ButtonContainer({
 				var text = e.srcElement.result
 				importCSVText(text)
 			})
-			fileReader.readAsText(importCsvFile)
+			fileReader.readAsText(csvImportFile)
 		}
+	}
+
+	function openImportDialogue(importCsvFile) {
+		toggleImportDialogue()
+		setCsvImportFile(importCsvFile)
 	}
 
 	return (
@@ -55,17 +71,29 @@ function ButtonContainer({
 				<button className="button " onClick={exportAndDownloadCSV}>
 					Export as CSV
 				</button>
+				<Dialogue
+					title={
+						"Importing may overwrite data. Continue?"
+					}
+					isDialogueActive={isImportDialogueActive}
+					toggleDialogue={toggleImportDialogue}
+					onConfirm={handleCsvImport}
+				/>
 				<div className="fileUploader">
 					<FilePicker
 						extensions={['csv']}
 						maxSize={100}
-						onChange={(importCsvFile) => handleCsvImport(importCsvFile)}
+						onChange={(importCsvFile) => openImportDialogue(importCsvFile)}
 						onError={(err) => {
 							console.log('Upload error', err)
 							alert(err.toString())
 						}}
 					>
-						<button className="button ">Import from CSV</button>
+						<button
+							className="button "
+						>
+							Import from CSV
+						</button>
 					</FilePicker>
 				</div>
 				{isLoading ? <Spinner /> : null}

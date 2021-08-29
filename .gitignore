@@ -23,5 +23,7 @@ yarn-error.log*
 yarn.lock
 package-lock.json
 
+settings.json
+
 **/*~
 PROJECT.org

@@ -16,6 +16,7 @@ import RecordsContainer from './RecordsContainer'
 import SortContainer from './SortContainer'
 import useLocalStorage from './Hooks/useLocalStorage'
 import { Modal, useModalDispatch } from './modal'
+import Dialogue from './Dialogue'
 
 /**
  * Renders a list of the available records.
@@ -81,6 +82,18 @@ function RecordPicker(props) {
 		})
 	}
 
+    const [isDialogueActive, setDialogueIsActive] = useState(false);
+    const [recordUid, setRecordUid] = useState(null);
+
+	function toggleDialogue() {
+		setDialogueIsActive(!isDialogueActive)
+	}
+
+	function openDialogue(uid) {
+		setRecordUid(uid)
+		toggleDialogue()
+	}
+
 	async function updateRecords() {
 		let records = await props.db.records.toArray()
 		setState({ ...state, records: records })
@@ -96,12 +109,10 @@ function RecordPicker(props) {
 		updateRecords()
 	}
 
-	async function deleteRecord(uid) {
-		if (window.confirm(`💣 Delete record: ${uid}?`)) {
-			await props.db.records.where('uid').equals(uid).delete()
-
-			updateRecords()
-		}
+	async function deleteRecord() {
+		await props.db.records.where('uid').equals(recordUid).delete()
+		toggleDialogue()
+		updateRecords()
 	}
 
 	async function exportAndDownloadCSV() {
@@ -280,9 +291,9 @@ function RecordPicker(props) {
 						(sortState.exactMatch
 							? interpolated[k].toString().toLowerCase() === state.search.trim()
 							: interpolated[k]
-									.toString()
-									.toLowerCase()
-									.indexOf(state.search) !== -1)
+								.toString()
+								.toLowerCase()
+								.indexOf(state.search) !== -1)
 					) {
 						hit = true
 						const field = props.codebook.find((d) => d.name === k)
@@ -338,7 +349,6 @@ function RecordPicker(props) {
 				db={props.db}
 				isLoading={isLoading}
 			/>
-
 			<SearchRecords
 				changeSearchText={changeSearchText}
 				onSearchFieldChanged={onSearchFieldChanged}
@@ -364,6 +374,16 @@ function RecordPicker(props) {
 				onIncludeLockedChanged={onIncludeLockedChanged}
 				onExactMatchChanged={onExactMatchChanged}
 			/>
+			<Dialogue 
+				title = {
+					<span role="img" aria-label="bomb">
+					💣 Delete record: {recordUid}?
+					</span>
+				}
+				isDialogueActive={isDialogueActive}
+				toggleDialogue={toggleDialogue}
+				onConfirm={deleteRecord}
+			/>
 			<div className="list is-hoverable">
 				{filteredRecordsState ? (
 					<RecordsContainer
@@ -372,7 +392,7 @@ function RecordPicker(props) {
 						codebook={props.codebook}
 						filteredRecords={filteredRecordsState}
 						searchHits={searchResults}
-						deleteRecord={deleteRecord}
+						openDialogue={openDialogue}
 						sortField={sortState.sortField}
 					/>
 				) : null}
