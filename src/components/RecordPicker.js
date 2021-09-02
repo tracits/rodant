@@ -279,9 +279,9 @@ function RecordPicker(props) {
 						(sortState.exactMatch
 							? interpolated[k].toString().toLowerCase() === state.search.trim()
 							: interpolated[k]
-									.toString()
-									.toLowerCase()
-									.indexOf(state.search) !== -1)
+								.toString()
+								.toLowerCase()
+								.indexOf(state.search) !== -1)
 					) {
 						hit = true
 						const field = props.codebook.find((d) => d.name === k)
