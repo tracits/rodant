@@ -30,7 +30,6 @@ function RecordPicker(props) {
 		pageSize: props.config.page_size,
 		page: 0,
 	})
-
 	const [localStorageValue, setLocalStorageValue] = useLocalStorage(
 		'recordPickerSortingState',
 		{
@@ -318,7 +317,6 @@ function RecordPicker(props) {
 			})
 		return setFilteredRecordsState([...filteredRecords])
 	}
-
 	return (
 		<div>
 			<Helmet>
@@ -338,11 +336,10 @@ function RecordPicker(props) {
 				db={props.db}
 				isLoading={isLoading}
 			/>
-
 			<SearchRecords
 				changeSearchText={changeSearchText}
 				onSearchFieldChanged={onSearchFieldChanged}
-				codebook={state.codebook}
+				codebook={props.codebook}
 				clearSearchText={clearSearchText}
 				search={state.search}
 				searchField={state.searchField}
