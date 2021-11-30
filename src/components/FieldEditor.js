@@ -5,7 +5,7 @@ import searchICD10 from '../functions/icd10'
 function getList(str) {
 	return str
 		.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g)
-		.map(d => d.replace(/"/g, ''))
+		.map((d) => d.replace(/"/g, ''))
 }
 
 /**
@@ -123,10 +123,10 @@ class FieldEditor extends React.Component {
 									id={`field_${d.name}`}
 									type="radio"
 									disabled={this.props.disabled}
-									onFocus={e => this.onFocus()}
-									onBlur={e => this.onBlur()}
+									onFocus={(e) => this.onFocus()}
+									onBlur={(e) => this.onBlur()}
 									checked={this.state.value === values[i].toString()}
-									onChange={e => this.changeValueRadio(values[i].toString())}
+									onChange={(e) => this.changeValueRadio(values[i].toString())}
 								/>
 								{l}
 							</label>
@@ -142,9 +142,9 @@ class FieldEditor extends React.Component {
 							placeholder={unlabeled ? d.label : ''}
 							value={this.state.value}
 							disabled={this.props.disabled || d.input !== 'yes'}
-							onChange={e => this.changeValueSelect(e)}
-							onFocus={e => this.onFocus()}
-							onBlur={e => this.onBlur()}
+							onChange={(e) => this.changeValueSelect(e)}
+							onFocus={(e) => this.onFocus()}
+							onBlur={(e) => this.onBlur()}
 						>
 							<option key="unset"></option>
 							{values.map((d, i) => (
@@ -166,9 +166,9 @@ class FieldEditor extends React.Component {
 					disabled={d.input !== 'yes' || this.props.disabled}
 					placeholder={unlabeled ? d.label : ''}
 					value={this.state.value}
-					onChange={e => this.changeValueText(e)}
-					onFocus={e => this.onFocus()}
-					onBlur={e => this.onBlur()}
+					onChange={(e) => this.changeValueText(e)}
+					onFocus={(e) => this.onFocus()}
+					onBlur={(e) => this.onBlur()}
 				/>
 			)
 		} else if (d.type === 'icd10') {
@@ -178,19 +178,18 @@ class FieldEditor extends React.Component {
 					value={this.state.value}
 					disabled={this.props.disabled}
 					placeholder={unlabeled ? d.label : ''}
-					search={v => searchICD10(v, d.valid_values.split(','))}
+					search={(v) => searchICD10(v, d.valid_values.split(','))}
 					onChange={(e, v) => {
 						if (v) {
-							if (this.props.onChange)
-								this.props.onChange(this.props.data, v)
+							if (this.props.onChange) this.props.onChange(this.props.data, v)
 
 							this.setState({ value: v })
 						} else {
 							this.changeValueText(e)
 						}
 					}}
-					onFocus={e => this.onFocus()}
-					onBlur={e => this.onBlur()}
+					onFocus={(e) => this.onFocus()}
+					onBlur={(e) => this.onBlur()}
 				/>
 			)
 		} else {
@@ -206,9 +205,9 @@ class FieldEditor extends React.Component {
 						type="text"
 						placeholder={unlabeled ? d.label : ''}
 						value={this.state.value}
-						onChange={e => this.changeValueText(e)}
-						onFocus={e => this.onFocus()}
-						onBlur={e => this.onBlur()}
+						onChange={(e) => this.changeValueText(e)}
+						onFocus={(e) => this.onFocus()}
+						onBlur={(e) => this.onBlur()}
 					/>
 				)
 			}
@@ -227,7 +226,7 @@ class FieldEditor extends React.Component {
 		return (
 			<div
 				className={'record_field ' + this.getFieldClass()}
-				onClick={e => console.log(d)}
+				onClick={(e) => console.log(d)}
 			>
 				{label}
 				<div className="field has-addons">

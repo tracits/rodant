@@ -118,7 +118,7 @@ class Autocomplete extends React.Component {
 					.filter(Boolean)
 					.join(' ')}
 				key={d[0]}
-				onMouseDown={e => this.onClickRow(e, d[0], i)}
+				onMouseDown={(e) => this.onClickRow(e, d[0], i)}
 			>
 				<div className="code">{d[0]}</div>
 				<div className="description">{d[1]}</div>
@@ -133,10 +133,10 @@ class Autocomplete extends React.Component {
 					type="text"
 					value={this.props.value}
 					placeholder={this.props.placeholder}
-					onKeyDown={e => this.onKeyDown(e)}
-					onChange={e => this.onChange(e)}
-					onFocus={e => this.onFocus(e)}
-					onBlur={e => this.onBlur(e)}
+					onKeyDown={(e) => this.onKeyDown(e)}
+					onChange={(e) => this.onChange(e)}
+					onFocus={(e) => this.onFocus(e)}
+					onBlur={(e) => this.onBlur(e)}
 				/>
 				{results.length > 0 && (
 					<div className="results" ref={this.resultsRef}>

@@ -15,6 +15,7 @@ import SearchRecords from './SearchRecords'
 import RecordsContainer from './RecordsContainer'
 import SortContainer from './SortContainer'
 import useLocalStorage from './Hooks/useLocalStorage'
+import { Modal, useModalDispatch } from './modal'
 
 /**
  * Renders a list of the available records.
@@ -29,7 +30,6 @@ function RecordPicker(props) {
 		pageSize: props.config.page_size,
 		page: 0,
 	})
-
 	const [localStorageValue, setLocalStorageValue] = useLocalStorage(
 		'recordPickerSortingState',
 		{
@@ -55,6 +55,8 @@ function RecordPicker(props) {
 				)
 		}
 	}
+
+	const modalDispatch = useModalDispatch()
 	const [sortState, dispatch] = useReducer(reducer, localStorageValue)
 
 	const [isLoading, setIsLoading] = useState(false)
@@ -200,9 +202,15 @@ function RecordPicker(props) {
 				toDelete.push(record.uid)
 		}
 
-		if (toDelete.length === 0) {
-			// No invalid records were found
-			if (!silent) alert('No invalid records to delete.')
+		if (toDelete.length === 0 && silent) {
+			modalDispatch({
+				type: 'SHOW',
+				payload: {
+					style: 'is-warning',
+					header: 'No Records Deleted',
+					content: 'No invalid records to delete.',
+				},
+			})
 		} else {
 			// Found invalid records, if not in silent mode ask to delete them
 			if (
@@ -238,8 +246,10 @@ function RecordPicker(props) {
 		let filteredRecords = state.records
 			// Filter on search term
 			.filter((d) => {
+
+				let locked = (d.locked || '').toString().toLowerCase() === 'true'
 				// If not checked, do not include records that are marked as locked
-				if (!sortState.includeLocked && d.locked !== 'FALSE') return false
+				if (!sortState.includeLocked && locked) return false
 
 				// If not checked, do not include records with sortField unknown
 				if (!sortState.includeUnknown) {
@@ -271,9 +281,9 @@ function RecordPicker(props) {
 						(sortState.exactMatch
 							? interpolated[k].toString().toLowerCase() === state.search.trim()
 							: interpolated[k]
-									.toString()
-									.toLowerCase()
-									.indexOf(state.search) !== -1)
+								.toString()
+								.toLowerCase()
+								.indexOf(state.search) !== -1)
 					) {
 						hit = true
 						const field = props.codebook.find((d) => d.name === k)
@@ -309,7 +319,6 @@ function RecordPicker(props) {
 			})
 		return setFilteredRecordsState([...filteredRecords])
 	}
-
 	return (
 		<div>
 			<Helmet>
@@ -319,7 +328,7 @@ function RecordPicker(props) {
 				Pick record{' '}
 				{`(${filteredRecordsState.length} / ${state.records.length})`}
 			</h2>
-
+			<Modal />
 			<ButtonContiner
 				createRecord={createRecord}
 				cleanUpInvalidRecords={cleanUpInvalidRecords}
@@ -329,11 +338,10 @@ function RecordPicker(props) {
 				db={props.db}
 				isLoading={isLoading}
 			/>
-
 			<SearchRecords
 				changeSearchText={changeSearchText}
 				onSearchFieldChanged={onSearchFieldChanged}
-				codebook={state.codebook}
+				codebook={props.codebook}
 				clearSearchText={clearSearchText}
 				search={state.search}
 				searchField={state.searchField}

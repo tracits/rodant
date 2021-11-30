@@ -8,6 +8,7 @@ import RecordEditor from './components/RecordEditor'
 import RecordPicker from './components/RecordPicker'
 import packagejson from '../package.json'
 import Nav from './components/Nav'
+import { ModalProvider } from './components/modal'
 
 /**
  * Container for the application.
@@ -39,12 +40,14 @@ function App({ db, codebook, config }) {
 	// Use React Router to select which page to show from the url
 	return (
 		<Router basename={process.env.PUBLIC_URL}>
-			<Nav name={config.name} version={packagejson.version} />
-			<div className="container">
-				<Route path="/" exact component={recordPicker} />
-				<Route path="/record/:uid" component={recordEditor} />
-				<Route path="/complete/:uid" component={doubleEntry} />
-			</div>
+			<ModalProvider>
+				<Nav name={config.name} version={packagejson.version} />
+				<div className="container">
+					<Route path="/" exact component={recordPicker} />
+					<Route path="/record/:uid" component={recordEditor} />
+					<Route path="/complete/:uid" component={doubleEntry} />
+				</div>
+			</ModalProvider>
 		</Router>
 	)
 }
