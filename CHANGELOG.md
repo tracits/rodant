@@ -1,5 +1,14 @@
 # Changelog
 
+## v1.0.12 (30/11/2021)
+
+#### Bug Fixes:
+
+- [#143](https://github.com/tracits/rodant/issues/143) Make it impossible to delete locked record 
+- [#134](https://github.com/tracits/rodant/issues/134) Search in specific fields broken 
+
+---
+
 ## v1.0.11 (04/02/2021)
 
 #### Enhancements:
