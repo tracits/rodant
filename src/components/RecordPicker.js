@@ -247,8 +247,10 @@ function RecordPicker(props) {
 		let filteredRecords = state.records
 			// Filter on search term
 			.filter((d) => {
+
+				let locked = (d.locked || '').toString().toLowerCase() === 'true'
 				// If not checked, do not include records that are marked as locked
-				if (!sortState.includeLocked && d.locked !== 'FALSE') return false
+				if (!sortState.includeLocked && locked) return false
 
 				// If not checked, do not include records with sortField unknown
 				if (!sortState.includeUnknown) {
@@ -338,7 +340,6 @@ function RecordPicker(props) {
 				db={props.db}
 				isLoading={isLoading}
 			/>
-
 			<SearchRecords
 				changeSearchText={changeSearchText}
 				onSearchFieldChanged={onSearchFieldChanged}
