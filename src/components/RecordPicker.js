@@ -30,7 +30,6 @@ function RecordPicker(props) {
 		pageSize: props.config.page_size,
 		page: 0,
 	})
-
 	const [localStorageValue, setLocalStorageValue] = useLocalStorage(
 		'recordPickerSortingState',
 		{
@@ -282,9 +281,9 @@ function RecordPicker(props) {
 						(sortState.exactMatch
 							? interpolated[k].toString().toLowerCase() === state.search.trim()
 							: interpolated[k]
-									.toString()
-									.toLowerCase()
-									.indexOf(state.search) !== -1)
+								.toString()
+								.toLowerCase()
+								.indexOf(state.search) !== -1)
 					) {
 						hit = true
 						const field = props.codebook.find((d) => d.name === k)
@@ -320,7 +319,6 @@ function RecordPicker(props) {
 			})
 		return setFilteredRecordsState([...filteredRecords])
 	}
-
 	return (
 		<div>
 			<Helmet>
@@ -343,7 +341,7 @@ function RecordPicker(props) {
 			<SearchRecords
 				changeSearchText={changeSearchText}
 				onSearchFieldChanged={onSearchFieldChanged}
-				codebook={state.codebook}
+				codebook={props.codebook}
 				clearSearchText={clearSearchText}
 				search={state.search}
 				searchField={state.searchField}
