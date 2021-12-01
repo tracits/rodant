@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.0.13 (01/12/2021)
+*No changelog for this release.*
+
+---
+
 ## v1.0.12 (30/11/2021)
 
 #### Bug Fixes:
