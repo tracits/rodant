@@ -29,21 +29,31 @@ const ValidationViewer = (props) => {
     <div key={g} className="group">
 	<div className="group-name">{g}</div>
 	{groups[g].map((d) => (
-	  <div key={d.name} className="field" onClick={() => focus(d.name)}>
-	      <div className="field-name">{d.field.label}</div>
-	      {props.validation[d.name].errors.map((e, i) => (
-		<div className="issue error" key={`error ${i}`}>
-		    <span className="fa fa-bug" />
-		    <div className="description">{e}</div>
-		</div>
-	      ))}
-	      {props.validation[d.name].warnings.map((e, i) => (
-		<div className="issue warning" key={`warning ${i}`}>
-		    <span className="fa fa-warning" />
-		    <div className="description">{e}</div>
-		</div>
-	      ))}
-	  </div>
+	  <div key={d.name} className="field" onClick={() => {
+	    console.log(d.name);
+	    console.log(d);
+	    if (d.field.calculated === "yes") {
+	      d.field.directDependencies.map((directDependency) => {
+		focus(directDependency.name);
+	      })
+	    } else {
+	      focus(d.name);
+	    }
+	  }}>
+	  <div className="field-name">{d.field.label}</div>
+	  {props.validation[d.name].errors.map((e, i) => (
+	    <div className="issue error" key={`error ${i}`}>
+		<span className="fa fa-bug" />
+		<div className="description">{e}</div>
+	    </div>
+	  ))}
+	  {props.validation[d.name].warnings.map((e, i) => (
+	    <div className="issue warning" key={`warning ${i}`}>
+		<span className="fa fa-warning" />
+		<div className="description">{e}</div>
+	    </div>
+	  ))}
+    </div>
 	))}
     </div>
   ))
