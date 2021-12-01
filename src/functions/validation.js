@@ -269,21 +269,13 @@ function validateRecord(record, fields) {
 			      .split(',')
 			      .includes(context[field.name])
 
-    // Check if date and time fields include other valid value
-    let hasOtherValidDependency = false
-    if (
-      field.logic_checks !== '' &&
-      (field.type === 'date' ||
-       field.type === 'time' ||
-       field.type === 'datetime')
-    )
-      hasOtherValidDependency |= checkOtherValidDependency(
-	field,
-	'logic_checks',
-	context,
-	fieldsByName
-      )
-
+    // For calculated fields, check if dependencies are valid and if any
+    // of them are, skip further validation
+    let hasOtherValidDependency = false;
+    if (field.calculated === "yes") {
+      hasOtherValidDependency = checkValidDependencies(field, record);
+    }
+    
     // Remove duplicate errors
     logicErrors = [...new Set(logicErrors)]
 
@@ -318,18 +310,18 @@ function thisVars(text) {
 }
 
 /**
- * Checks if a field has dependency vars that are valid but not dates or times
+ * Checks if a field has dependency vars that are valid
  */
-function checkOtherValidDependency(field, member, context, fieldsByName) {
-  var text = field[member]
-  if (text === null) return false
-
-  return text
-    .trim()
-    .match(findVarRegex)
-    .filter((d) => fieldsByName[d].valid_values !== '')
-    .map((d) => fieldsByName[d].valid_values.split(',').includes(context[d]))
-    .some((d) => d === true)
+const checkValidDependencies = (field, record) => {
+  const { directDependencies } = field;
+  const validValues = directDependencies.map((directDependency) => {
+    const { name } = directDependency;
+    const value = record[name];
+    const validValue = validate(value, directDependency);
+    return validValue;
+  })
+  const someValid = validValues.some(x => Array.isArray(x) && !x.length);
+  return someValid;
 }
 
 /**
@@ -352,14 +344,25 @@ function checkLogic(field, context) {
   return field.logic_checks.split(',').map((c) => {
     // If any of the dependent values are _undefined_ test failure
     // If any of the dependent values are _unknown_ test succeeds
-    let vars = c.trim().match(findVarRegex)
-
+    // If any of the dependent values are another valid value then test succeeds
+    let variables = c.trim().match(findVarRegex)
     // Check if a field dependency
-    for (let v of vars)
-      if (context[v] === undefined || context[v] === '') return v
-    // Dependent value is _undefined_ so return the undefined field id for error message
-    else if (context[v].toString() === (field.unknown || 999).toString())
-      return false // Dependent value is _unknown_ pass test
+
+    for (let variable of variables) {
+      const value = context[variable];
+      const { unknown, valid_values } = field
+	.directDependencies
+	.find((directDependency) => directDependency.name === variable)
+      if (value === undefined || value === '') {
+	return variable // Dependent value is _undefined_ so return the undefined field id for error message
+      }
+      else if (value.toString() === unknown.toString()) {
+	return false // Dependent value is _unknown_ pass test
+      }
+      else if (valid_values.split(",").some((valid_value) => value === valid_value)) {
+	return false // Dependent value is another valid value so pass test
+      }
+    }
 
     // Run the test
     let func = new Function('return ' + thisVars(c.trim())).bind(context)()
