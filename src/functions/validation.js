@@ -316,7 +316,9 @@ const checkValidDependencies = (field, record) => {
   const { directDependencies } = field;
   const validValues = directDependencies.map((directDependency) => {
     const { name } = directDependency;
-    const value = record[name];
+    let value = record[name];
+    if (value == null)
+      value = "";
     const validValue = validate(value, directDependency);
     return validValue;
   })
