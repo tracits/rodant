@@ -100,7 +100,7 @@ function validateDate(value, field) {
 function validateDateTime(value, field) {
   if (value === field.unknown) return []
 
-  if (value === undefined || value === '')
+  if (value === undefined || value.trim() === "undefined" || value === "undefined undefined" || value === '')
     return [`'${field.label}' can not be empty`]
 
   // Check format
@@ -316,7 +316,9 @@ const checkValidDependencies = (field, record) => {
   const { directDependencies } = field;
   const validValues = directDependencies.map((directDependency) => {
     const { name } = directDependency;
-    const value = record[name];
+    let value = record[name];
+    if (value == null)
+      value = "";
     const validValue = validate(value, directDependency);
     return validValue;
   })
