@@ -1,5 +1,14 @@
 # Changelog
 
+## v1.0.14 (05/12/2021)
+
+#### Bug Fixes:
+
+- [#158](https://github.com/tracits/rodant/issues/158) Record editor not opening in version 1.0.13 
+- [#152](https://github.com/tracits/rodant/issues/152) Calculated values for ICU admission has incorrect validation handling and causes correct forms to be invalid 
+
+---
+
 ## v1.0.13 (01/12/2021)
 *No changelog for this release.*
 
