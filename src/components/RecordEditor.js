@@ -7,10 +7,10 @@ import Helmet from 'react-helmet'
 import ValidationViewer from './ValidationViewer'
 
 const RecordEditorState = {
-	NONE: 0,
-	LOADING: 1,
-	NOTFOUND: 2,
-	READY: 3,
+  NONE: 0,
+  LOADING: 1,
+  NOTFOUND: 2,
+  READY: 3,
 }
 
 /**
@@ -19,225 +19,225 @@ const RecordEditorState = {
  * and persists all changes directly to database.
  */
 class RecordEditor extends React.Component {
-	constructor(props) {
-		super(props)
+  constructor(props) {
+    super(props)
 
-		let cbo = {}
-		for (let i = 0; i < props.codebook.length; i++)
-			cbo[props.codebook[i].name] = props.codebook[i]
+    let cbo = {}
+    for (let i = 0; i < props.codebook.length; i++)
+      cbo[props.codebook[i].name] = props.codebook[i]
 
-		console.log(cbo)
+    console.log(cbo)
 
-		this.state = {
-			state: RecordEditorState.NONE,
-			record: null,
-			allowRadios: false,
-			doubleEntry: !!props['double-entry'],
-			disableExitShield: false,
-		}
-	}
+    this.state = {
+      state: RecordEditorState.NONE,
+      record: null,
+      allowRadios: false,
+      doubleEntry: !!props['double-entry'],
+      disableExitShield: false,
+    }
+  }
 
-	async componentDidMount() {
-		this.setState({
-			state: RecordEditorState.LOADING,
-			record: null,
-		})
+  async componentDidMount() {
+    this.setState({
+      state: RecordEditorState.LOADING,
+      record: null,
+    })
 
-		let record = await this.props.db.records
-			.where('uid')
-			.equals(Number(this.props.uid))
-			.first()
+    let record = await this.props.db.records
+	.where('uid')
+	.equals(Number(this.props.uid))
+	.first()
 
-		let pids = await this.props.db.records.toArray()
+    let pids = await this.props.db.records.toArray()
 
-		let state = {
-			state: !record ? RecordEditorState.NOTFOUND : RecordEditorState.READY,
-			pids: pids.map((d) => d.pid),
-		}
+    let state = {
+      state: !record ? RecordEditorState.NOTFOUND : RecordEditorState.READY,
+      pids: pids.map((d) => d.pid),
+    }
 
-		if (this.state.doubleEntry) {
-			state.referenceRecord = { ...record }
-			state.record = { uid: this.props.uid }
-			this.props.codebook
-				.filter((d) => d.double_enter !== 'yes')
-				.forEach((d) => (state.record[d.name] = record[d.name]))
-		} else {
-			state.record = record
-		}
+    if (this.state.doubleEntry) {
+      state.referenceRecord = { ...record }
+      state.record = { uid: this.props.uid }
+      this.props.codebook
+	.filter((d) => d.double_enter !== 'yes')
+	.forEach((d) => (state.record[d.name] = record[d.name]))
+    } else {
+      state.record = record
+    }
 
-		this.setState(state)
-	}
+    this.setState(state)
+  }
 
-	async updatePIDs() {
-		let pids = await this.props.db.records.toArray()
+  async updatePIDs() {
+    let pids = await this.props.db.records.toArray()
 
-		this.setState({
-			pids: pids.map((d) => d[this.props.config.id_field]),
-		})
-	}
+    this.setState({
+      pids: pids.map((d) => d[this.props.config.id_field]),
+    })
+  }
 
-	// Persists changes to databases
-	async onChange(field, value) {
-		let record = { ...this.state.record }
-		record[field.name] = value
-		this.setState({
-			record: record,
-		})
+  // Persists changes to databases
+  async onChange(field, value) {
+    let record = { ...this.state.record }
+    record[field.name] = value
+    this.setState({
+      record: record,
+    })
 
-		if (this.state.doubleEntry) return
+    if (this.state.doubleEntry) return
 
-		let modify = {}
-		modify[field.name] = value
+    let modify = {}
+    modify[field.name] = value
 
-		await this.props.db.records
-			.where('uid')
-			.equals(Number(this.props.uid))
-			.modify(modify)
+    await this.props.db.records
+      .where('uid')
+      .equals(Number(this.props.uid))
+      .modify(modify)
 
-		// If the field that changed was idField, update the cached id numbers
-		if (field.name === this.props.config.id_field) await this.updatePIDs()
-	}
+    // If the field that changed was idField, update the cached id numbers
+    if (field.name === this.props.config.id_field) await this.updatePIDs()
+  }
 
-	onFocusFieldEditor(fe) {
-		this.setState({
-			state: this.state.state,
-			record: this.state.record,
-			focusedField: fe,
-		})
-	}
+  onFocusFieldEditor(fe) {
+    this.setState({
+      state: this.state.state,
+      record: this.state.record,
+      focusedField: fe,
+    })
+  }
 
-	onBlurFieldEditor(fe) {
-		this.setState({
-			state: this.state.state,
-			record: this.state.record,
-			focusedField: null,
-		})
-	}
+  onBlurFieldEditor(fe) {
+    this.setState({
+      state: this.state.state,
+      record: this.state.record,
+      focusedField: null,
+    })
+  }
 
-	saveAndExit() {
-		this.setState(
-			{
-				disableExitShield: true,
-			},
-			() => {
-				this.props.history.push('/')
-			}
-		)
-	}
+  saveAndExit() {
+    this.setState(
+      {
+	disableExitShield: true,
+      },
+      () => {
+	this.props.history.push('/')
+      }
+    )
+  }
 
-	exitWithoutSaving() {
-		this.setState(
-			{
-				disableExitShield: true,
-			},
-			() => {
-				this.props.history.push('/')
-			}
-		)
-	}
+  exitWithoutSaving() {
+    this.setState(
+      {
+	disableExitShield: true,
+      },
+      () => {
+	this.props.history.push('/')
+      }
+    )
+  }
 
-	markFieldsUnknown() {
-		let record = { ...this.state.record }
-		for (let c of this.props.codebook) {
-			if (
-				c.input === 'yes' &&
-				(record[c.name] === undefined || record[c.name] === '')
-			) {
-				record[c.name] = c.unknown
-				this.onChange(c, c.unknown)
-			}
-		}
+  markFieldsUnknown() {
+    let record = { ...this.state.record }
+    for (let c of this.props.codebook) {
+      if (
+	c.input === 'yes' &&
+	  (record[c.name] === undefined || record[c.name] === '')
+      ) {
+	record[c.name] = c.unknown
+	this.onChange(c, c.unknown)
+      }
+    }
 
-		this.setState({
-			state: this.state.state,
-			record: record,
-			focusedField: null,
-		})
-	}
+    this.setState({
+      state: this.state.state,
+      record: record,
+      focusedField: null,
+    })
+  }
 
-	async unlockRecord() {
-		let record = { ...this.state.record }
-		record.locked = 'FALSE'
-		await this.props.db.records
-			.where('uid')
-			.equals(Number(this.props.uid))
-			.modify({
-				locked: false,
-			})
+  async unlockRecord() {
+    let record = { ...this.state.record }
+    record.locked = 'FALSE'
+    await this.props.db.records
+      .where('uid')
+      .equals(Number(this.props.uid))
+      .modify({
+	locked: false,
+      })
 
-		this.setState({
-			record: record,
-		})
-	}
+    this.setState({
+      record: record,
+    })
+  }
 
-	validateFieldGroup(group, validation) {
-		if (
-			this.state.doubleEntryErrors &&
-			group.some((d) => this.state.doubleEntryErrors.indexOf(d.name) !== -1)
-		)
-			return 'double-entry-error'
+  validateFieldGroup(group, validation) {
+    if (
+      this.state.doubleEntryErrors &&
+	group.some((d) => this.state.doubleEntryErrors.indexOf(d.name) !== -1)
+    )
+      return 'double-entry-error'
 
-		if (group.some((d) => d.input !== 'yes')) return 'valid'
+    if (group.some((d) => d.input !== 'yes')) return 'valid'
 
-		if (group.some((d) => validation[d.name].unknown)) return 'unknown'
+    if (group.some((d) => validation[d.name].unknown)) return 'unknown'
 
-		if (group.some((d) => validation[d.name].incomplete)) return 'incomplete'
+    if (group.some((d) => validation[d.name].incomplete)) return 'incomplete'
 
-		if (group.some((d) => !validation[d.name].valid)) return 'invalid'
+    if (group.some((d) => !validation[d.name].valid)) return 'invalid'
 
-		return 'valid'
-	}
+    return 'valid'
+  }
 
-	async discard(db, uid) {
-		db.records.where('uid').equals(uid).delete()
-	}
+  async discard(db, uid) {
+    db.records.where('uid').equals(uid).delete()
+  }
 
-	checkDoubleEntry() {
-		let errors = this.props.codebook
-			.filter(
-				(d) =>
-					d.double_enter === 'yes' &&
-					d.input === 'yes' &&
-					d.calculated !== 'yes' &&
-					this.state.referenceRecord[d.name] !== this.state.record[d.name]
-			)
-			.map((d) => d.name)
+  checkDoubleEntry() {
+    let errors = this.props.codebook
+	.filter(
+	  (d) =>
+	  d.double_enter === 'yes' &&
+	    d.input === 'yes' &&
+	    d.calculated !== 'yes' &&
+	    this.state.referenceRecord[d.name] !== this.state.record[d.name]
+	)
+	.map((d) => d.name)
 
-		console.log(errors)
-		this.setState({
-			doubleEntryErrors: errors,
-		})
-	}
+    console.log(errors)
+    this.setState({
+      doubleEntryErrors: errors,
+    })
+  }
 
-	handleClose() {
-		// checks if the record has a id field on the record object. If not, the record is not saved.
-		if (!Object.keys(this.state.record).includes(this.props.config.id_field)) {
-			this.props.db.records.where('uid').equals(this.state.record.uid).delete()
-			this.saveAndExit()
-		} else {
-			this.saveAndExit()
-		}
-	}
+  handleClose() {
+    // checks if the record has a id field on the record object. If not, the record is not saved.
+    if (!Object.keys(this.state.record).includes(this.props.config.id_field)) {
+      this.props.db.records.where('uid').equals(this.state.record.uid).delete()
+      this.saveAndExit()
+    } else {
+      this.saveAndExit()
+    }
+  }
 
-	async finalizeDoubleEntry() {
-		await this.props.db.records
-			.where('uid')
-			.equals(Number(this.props.uid))
-			.modify({
-				locked: true,
-			})
+  async finalizeDoubleEntry() {
+    await this.props.db.records
+      .where('uid')
+      .equals(Number(this.props.uid))
+      .modify({
+	locked: true,
+      })
 
-		this.props.history.push('/')
-	}
+    this.props.history.push('/')
+  }
 
-	render() {
-		// Handle loading and errors
-		if (this.state.state === RecordEditorState.LOADING) {
-			return <div className="content">Loading...</div>
-		} else if (this.state.state === RecordEditorState.NOTFOUND) {
-			return (
-				<div className="content">
-					Couldn't find record with id: {this.props.uid}
+  render() {
+    // Handle loading and errors
+    if (this.state.state === RecordEditorState.LOADING) {
+      return <div className="content">Loading...</div>
+    } else if (this.state.state === RecordEditorState.NOTFOUND) {
+      return (
+	  <div className="content">
+	  Couldn't find record with id: {this.props.uid}
 				</div>
 			)
 		} else if (this.state.state === RecordEditorState.NONE) {

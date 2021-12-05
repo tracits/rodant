@@ -100,7 +100,7 @@ function validateDate(value, field) {
 function validateDateTime(value, field) {
   if (value === field.unknown) return []
 
-  if (value === undefined || value === '')
+  if (value === undefined || value.trim() === "undefined" || value === "undefined undefined" || value === '')
     return [`'${field.label}' can not be empty`]
 
   // Check format
